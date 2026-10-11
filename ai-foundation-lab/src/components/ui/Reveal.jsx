@@ -32,7 +32,7 @@ export default function Reveal({
     style = {},
     as = "div",
     once = true,
-    amount = 0.2,
+    amount = 0.1,
     ...rest
 }) {
     const base = VARIANTS[variant] || fadeUp;

@@ -61,7 +61,7 @@ export default function Navbar() {
             </div>
 
             {mobileOpen && (
-                <div className="navbar__mobile" role="dialog" aria-label="Menu">
+                <div className="navbar__mobile" aria-label="Mobile primary">
                     <div
                         className="container"
                         style={{ display: "grid", gap: "var(--space-4)" }}

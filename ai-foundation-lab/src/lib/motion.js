@@ -22,12 +22,12 @@ export const DUR = {
 
 /* Fade + slight upward motion (the default scroll reveal)  */
 export const fadeUp = {
-    hidden: { opacity: 0, y: 18 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.55, ease: EASE_OUT },
-    },
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: EASE_OUT },
+  },
 };
 
 /* Pure fade  */
@@ -149,5 +149,5 @@ export function useMotionSafe(variants) {
 }
 
 /* VIEWPORT DEFAULT, Shared "trigger once" viewport config. */
-export const viewportOnce = { once: true, amount: 0.2 };
-export const viewportOnceTop = { once: true, amount: 0.1 };
+export const viewportOnce = { once: true, amount: 0.1 };
+export const viewportOnceTop = { once: true, amount: 0.08 };

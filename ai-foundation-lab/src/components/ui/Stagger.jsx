@@ -17,7 +17,7 @@ export default function Stagger({
     className = "",
     style = {},
     as = "div",
-    amount = 0.2,
+    amount = 0.1,
     ...rest
 }) {
     const container = useMotionSafe(

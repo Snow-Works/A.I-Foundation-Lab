@@ -1,13 +1,45 @@
 // src/App.jsx
+import { lazy, Suspense } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import RootLayout from "./components/layout/RootLayout.jsx";
 import Landing from "./pages/Landing.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import StyleGuideLayout from "./pages/style-guide/StyleGuideLayout.jsx";
-import StyleGuideIndex from "./pages/style-guide/StyleGuideIndex.jsx";
-import Foundations from "./pages/style-guide/sections/Foundations.jsx";
-import Components from "./pages/style-guide/sections/Components.jsx";
-import Patterns from "./pages/style-guide/sections/Patterns.jsx";
+
+/* Lazy-loaded routes — only fetched when the user visits them */
+const StyleGuideLayout = lazy(() =>
+  import("./pages/style-guide/StyleGuideLayout.jsx")
+);
+const StyleGuideIndex = lazy(() =>
+  import("./pages/style-guide/StyleGuideIndex.jsx")
+);
+const Foundations = lazy(() =>
+  import("./pages/style-guide/sections/Foundations.jsx")
+);
+const Components = lazy(() =>
+  import("./pages/style-guide/sections/Components.jsx")
+);
+const Patterns = lazy(() =>
+  import("./pages/style-guide/sections/Patterns.jsx")
+);
+
+/* Lightweight fallback — shown while a lazy route loads */
+function RouteFallback() {
+  return (
+    <div
+      style={{
+        minHeight: "60vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--text-muted)",
+        fontFamily: "var(--font-body)",
+        fontSize: "var(--fs-sm)",
+      }}
+    >
+      Loading…
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -16,11 +48,46 @@ export default function App() {
         <Route element={<RootLayout />}>
           <Route index element={<Landing />} />
 
-          <Route path="style-guide" element={<StyleGuideLayout />}>
-            <Route index element={<StyleGuideIndex />} />
-            <Route path="foundations" element={<Foundations />} />
-            <Route path="components" element={<Components />} />
-            <Route path="patterns" element={<Patterns />} />
+          <Route
+            path="style-guide"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <StyleGuideLayout />
+              </Suspense>
+            }
+          >
+            <Route
+              index
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <StyleGuideIndex />
+                </Suspense>
+              }
+            />
+            <Route
+              path="foundations"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <Foundations />
+                </Suspense>
+              }
+            />
+            <Route
+              path="components"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <Components />
+                </Suspense>
+              }
+            />
+            <Route
+              path="patterns"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <Patterns />
+                </Suspense>
+              }
+            />
           </Route>
 
           <Route path="*" element={<NotFound />} />

@@ -8,10 +8,11 @@
   width: 100%;
   isolation: isolate;
   overflow: hidden;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  padding-block: var(--space-9);
+
+  display: grid;
+  place-items: center;
+
+  padding-block: var(--space-5);
 }
 
 /* ---------- BACKGROUND ---------- */
@@ -132,6 +133,9 @@
   text-align: center;
   gap: var(--space-6);
   width: 100%;
+  max-width: var(--container-lg);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
 }
 
 /* ---------- WORDMARK + ROCKET ---------- */
@@ -197,7 +201,6 @@
   align-items: center;
 }
 
-/* Override the GlowPulse button to be more prominent on gradient */
 .final-cta__register-btn {
   background: var(--white) !important;
   color: var(--ink-950) !important;
@@ -233,8 +236,7 @@
 
 @media (max-width: 767px) {
   .final-cta {
-    min-height: auto;
-    padding-block: var(--space-8);
+    padding-block: var(--space-7);
   }
 
   .final-cta__content {
