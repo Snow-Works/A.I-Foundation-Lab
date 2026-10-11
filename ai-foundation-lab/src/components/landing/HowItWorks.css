@@ -1,0 +1,35 @@
+/* ============================================================
+   HOW IT WORKS — section header + timeline
+   ============================================================ */
+
+.hiw__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.hiw__title {
+  color: var(--white);
+  max-width: 22ch;
+  margin: 0;
+}
+
+.hiw__subtitle {
+  color: var(--silver);
+  max-width: 60ch;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .hiw__header {
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .hiw__title {
+    max-width: 26ch;
+  }
+}

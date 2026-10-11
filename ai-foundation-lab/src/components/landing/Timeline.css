@@ -1,0 +1,297 @@
+/* TIMELINE */
+/* Desktop: central spine, cards alternate left/right. */
+/* Mobile: spine on the left, single-column cards. */
+  
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* DESKTOP / TABLET — alternating layout with central spine */
+@media (min-width: 768px) {
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    left: 50%;
+    width: 3px;
+    transform: translateX(-50%);
+    background: var(--gradient-button);
+    border-radius: var(--radius-pill);
+    opacity: 0.7;
+    z-index: 0;
+  }
+
+  .timeline__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 88px 1fr;
+    align-items: center;
+    gap: var(--space-5);
+    min-height: 100px;
+  }
+
+  /* Nodes sit in the center column */
+  .timeline__node-wrap {
+    grid-column: 2;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Card position depends on side */
+  .timeline__item[data-side="left"] .timeline__card {
+    grid-column: 1;
+    text-align: right;
+  }
+
+  .timeline__item[data-side="right"] .timeline__card {
+    grid-column: 3;
+    text-align: left;
+  }
+}
+
+/* MOBILE — spine on the left, single column */
+@media (max-width: 767px) {
+  .timeline {
+    gap: var(--space-5);
+    padding-left: 56px;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    bottom: 24px;
+    left: 23px;
+    width: 3px;
+    background: var(--gradient-button);
+    border-radius: var(--radius-pill);
+    opacity: 0.7;
+    z-index: 0;
+  }
+
+  .timeline__item {
+    position: relative;
+    display: block;
+  }
+
+  .timeline__node-wrap {
+    position: absolute;
+    left: -56px;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .timeline__card {
+    text-align: left;
+  }
+}
+
+/* NODE (the numbered circle) */
+.timeline__node {
+  position: relative;
+  z-index: 2;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink-950);
+  border: 2px solid var(--step-accent, var(--pink-400));
+  color: var(--step-accent, var(--pink-400));
+  box-shadow:
+    0 0 0 6px rgba(10, 6, 48, 0.55),
+    0 0 24px color-mix(in srgb, var(--step-accent, #FF3FA4) 35%, transparent);
+}
+
+.timeline__node svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Small numeric badge above the node */
+.timeline__num {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--step-accent, var(--pink-400));
+  background: rgba(10, 6, 48, 0.9);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--step-accent, #FF3FA4) 30%, transparent);
+}
+
+/* CARD  */
+.timeline__card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+}
+
+/* Push the card toward the spine so the gap feels intentional */
+.timeline__item[data-side="left"] .timeline__card {
+  margin-left: auto;
+}
+
+.timeline__label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--step-accent, var(--pink-400));
+  margin-bottom: var(--space-2);
+}
+
+.timeline__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--white);
+  margin: 0 0 var(--space-2);
+}
+
+.timeline__desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+  margin: 0;
+}
+
+/* RESPONSIVE TUNING */
+
+/* Small desktop — tighten the center column */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .timeline__item {
+    grid-template-columns: 1fr 72px 1fr;
+    gap: var(--space-4);
+  }
+
+  .timeline__node {
+    width: 56px;
+    height: 56px;
+  }
+
+  .timeline__node svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Small mobile — smaller node, tighter left rail */
+@media (max-width: 479px) {
+  .timeline {
+    padding-left: 48px;
+  }
+
+  .timeline::before {
+    left: 19px;
+  }
+
+  .timeline__node-wrap {
+    left: -48px;
+  }
+
+  .timeline__node {
+    width: 44px;
+    height: 44px;
+    box-shadow:
+      0 0 0 4px rgba(10, 6, 48, 0.55),
+      0 0 16px color-mix(in srgb, var(--step-accent, #FF3FA4) 30%, transparent);
+  }
+
+  .timeline__node svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .timeline__num {
+    font-size: 0.625rem;
+    padding: 1px 6px;
+  }
+
+  .timeline__card {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .timeline__title {
+    font-size: var(--fs-base);
+  }
+
+  .timeline__desc {
+    font-size: var(--fs-xs);
+  }
+}
+
+/* Tiny — 220px to 359px */
+@media (max-width: 359px) {
+  .timeline {
+    padding-left: 40px;
+    gap: var(--space-4);
+  }
+
+  .timeline::before {
+    left: 15px;
+  }
+
+  .timeline__node-wrap {
+    left: -40px;
+  }
+
+  .timeline__node {
+    width: 36px;
+    height: 36px;
+    box-shadow:
+      0 0 0 3px rgba(10, 6, 48, 0.55),
+      0 0 12px color-mix(in srgb, var(--step-accent, #FF3FA4) 30%, transparent);
+  }
+
+  .timeline__node svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .timeline__num {
+    font-size: 0.5625rem;
+    padding: 1px 5px;
+  }
+
+  .timeline__card {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .timeline__title {
+    font-size: var(--fs-sm);
+  }
+
+  .timeline__desc {
+    font-size: 0.6875rem;
+    line-height: 1.5;
+  }
+}

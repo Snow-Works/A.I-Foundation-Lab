@@ -1,0 +1,91 @@
+/* MISSION / VISION / WHO IS FOR? */
+/* Three stacked full-width glass cards with floating pills. */
+
+.mv__stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+    /* generous gap so pill tabs have room */
+}
+
+/* Anchor target — scroll-margin so sticky navbar doesn't cover it */
+.mv__slot {
+    scroll-margin-top: 96px;
+    position: relative;
+}
+
+/*  CARD  */
+.mv__card {
+    width: 100%;
+}
+
+/*  BODY TEXT  */
+.mv__body {
+    max-width: 72ch;
+    color: var(--silver);
+    margin: 0;
+    font-size: clamp(1rem, 0.95rem + 0.35vw, 1.1875rem);
+    line-height: 1.7;
+}
+
+/* Emphasis on the "not" — matches the poster's tone */
+.mv__emphasis {
+    color: var(--pink-400);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.02em;
+}
+
+/* RESPONSIVENESS SECTION*/
+
+/* Tablet and below — tighter gap between cards */
+@media (max-width: 1023px) {
+    .mv__stack {
+        gap: var(--space-6);
+    }
+
+    .mv__body {
+        max-width: none;
+    }
+}
+
+/* Small mobile — even tighter, allow pill to stay readable */
+@media (max-width: 639px) {
+    .mv__stack {
+        gap: var(--space-5);
+    }
+
+    .mv__slot {
+        scroll-margin-top: 80px;
+    }
+
+    .mv__body {
+        font-size: var(--fs-base);
+        line-height: 1.65;
+    }
+}
+
+/* Tiny screens — reduce content padding via the card size */
+@media (max-width: 479px) {
+    .mv__stack {
+        gap: var(--space-4);
+    }
+
+    .mv__body {
+        font-size: 0.9375rem;
+        /* 15px */
+        line-height: 1.6;
+    }
+}
+
+/* Smallest — 220px to 359px */
+@media (max-width: 359px) {
+    .mv__stack {
+        gap: var(--space-3);
+    }
+
+    .mv__body {
+        font-size: 0.875rem;
+        /* 14px */
+        line-height: 1.55;
+    }
+}
