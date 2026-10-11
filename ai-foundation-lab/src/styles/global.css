@@ -164,3 +164,42 @@ input[type="number"] {
     scroll-behavior: auto !important;
   }
 }
+
+
+
+
+
+
+
+
+/*  ICON STROKE VARIANTS */
+/* Applied to Lucide icons or our custom SVGs.*/
+
+
+.icon-gradient {
+  stroke: url(#icon-grad);
+}
+
+.icon-gradient-cyan {
+  stroke: url(#icon-grad-cyan);
+}
+
+.icon-gradient-silver {
+  stroke: url(#icon-grad-silver);
+}
+
+/* Default: inherit current color, no gradient */
+.icon-default {
+  stroke: currentColor;
+}
+
+/* Smooth transitions when icons animate on hover */
+.icon-transition {
+  transition: stroke var(--dur-normal) var(--ease-out),
+              transform var(--dur-normal) var(--ease-out);
+}
+
+/* Slight lift on interactive icon buttons */
+.icon-lift:hover {
+  transform: translateY(-2px);
+}
