@@ -2,6 +2,7 @@
 export {
     RegisterIcon,
     VerifyIcon,
+    ShieldCheckIcon,
     PhotoIcon,
     CommunityIcon,
     OrientationIcon,

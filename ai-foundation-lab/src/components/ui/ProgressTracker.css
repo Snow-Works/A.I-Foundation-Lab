@@ -1,0 +1,337 @@
+/* PROGRESS TRACKER */
+/* The state-machine strip: REGISTERED → … → MARKED */
+
+
+.tracker {
+    position: relative;
+    width: 100%;
+}
+
+/*  HORIZONTAL LAYOUT */
+.tracker--horizontal {
+    display: grid;
+    grid-template-columns: repeat(var(--steps, 9), 1fr);
+    align-items: start;
+    gap: 0;
+    padding: var(--space-4) 0;
+}
+
+/*  VERTICAL LAYOUT*/
+.tracker--vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: var(--space-2) 0;
+}
+
+/* HORIZONTAL STEP */
+.tracker--horizontal .step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 var(--space-1);
+    min-width: 0;
+}
+
+/* The connector line — drawn between nodes, behind them */
+.tracker--horizontal .step::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    /* center of the 40px node */
+    left: calc(50% + 24px);
+    right: calc(-50% + 24px);
+    height: 2px;
+    background: rgba(255, 255, 255, 0.10);
+    z-index: 0;
+}
+
+.tracker--horizontal .step:last-child::before {
+    display: none;
+}
+
+/* Completed connector — gradient fill */
+.tracker--horizontal .step--done::before,
+.tracker--horizontal .step--active::before {
+    background: var(--gradient-button);
+}
+
+/* Active step's connector stays dim until the next step is reached */
+.tracker--horizontal .step--active::before {
+    background: linear-gradient(to right,
+            var(--pink-400) 0%,
+            var(--pink-400) 50%,
+            rgba(255, 255, 255, 0.10) 50%,
+            rgba(255, 255, 255, 0.10) 100%);
+}
+
+/* VERTICAL STEP */
+.tracker--vertical .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    min-width: 0;
+}
+
+.tracker--vertical .step::before {
+    content: "";
+    position: absolute;
+    left: 19px;
+    top: 52px;
+    bottom: -12px;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.10);
+    z-index: 0;
+}
+
+.tracker--vertical .step:last-child::before {
+    display: none;
+}
+
+.tracker--vertical .step--done::before {
+    background: var(--gradient-button);
+}
+
+.tracker--vertical .step--active::before {
+    background: linear-gradient(to bottom,
+            var(--pink-400) 0%,
+            var(--pink-400) 30%,
+            rgba(255, 255, 255, 0.10) 30%,
+            rgba(255, 255, 255, 0.10) 100%);
+}
+
+/* NODE (the circle with the icon) */
+.step__node {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink-950);
+    border: 2px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-muted);
+    transition:
+        background var(--dur-normal) var(--ease-out),
+        border-color var(--dur-normal) var(--ease-out),
+        color var(--dur-normal) var(--ease-out),
+        box-shadow var(--dur-normal) var(--ease-out);
+}
+
+.step__node svg {
+    width: 18px;
+    height: 18px;
+}
+
+/*  DONE */
+.step--done .step__node {
+    background: var(--gradient-button);
+    border-color: transparent;
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(255, 63, 164, 0.30);
+}
+
+/* ACTIVE */
+.step--active .step__node {
+    background: var(--ink-950);
+    border-color: var(--cyan-400);
+    color: var(--cyan-400);
+    box-shadow:
+        0 0 0 4px rgba(46, 200, 255, 0.15),
+        var(--glow-cyan);
+    animation: tracker-pulse 2s var(--ease-in-out) infinite;
+}
+
+@keyframes tracker-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 4px rgba(46, 200, 255, 0.15), 0 0 20px rgba(46, 200, 255, 0.55);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(46, 200, 255, 0.05), 0 0 28px rgba(46, 200, 255, 0.75);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .step--active .step__node {
+        animation: none;
+    }
+}
+
+/* ERROR -*/
+.step--error .step__node {
+    background: rgba(225, 6, 0, 0.12);
+    border-color: var(--alert-red);
+    color: var(--alert-red);
+    box-shadow: 0 0 20px rgba(225, 6, 0, 0.35);
+}
+
+/*  PENDING  */
+.step--pending .step__node {
+    opacity: 0.55;
+}
+
+/* LABELS */
+.step__body {
+    min-width: 0;
+}
+
+.tracker--horizontal .step__body {
+    margin-top: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.step__label {
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    font-size: 0.6875rem;
+    /* 11px */
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.step--done .step__label {
+    color: var(--silver);
+}
+
+.step--active .step__label {
+    color: var(--white);
+}
+
+.step--error .step__label {
+    color: var(--alert-red);
+}
+
+.step__hint {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+    max-width: 100%;
+}
+
+.tracker--horizontal .step__hint {
+    display: none;
+    /* horizontal mode is too tight for hints */
+}
+
+/* COMPACT VARIANT */
+.tracker--compact {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.tracker--compact .compact-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tracker--compact .compact-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all var(--dur-normal) var(--ease-out);
+}
+
+.tracker--compact .compact-dot--done {
+    background: var(--pink-400);
+}
+
+.tracker--compact .compact-dot--active {
+    background: var(--cyan-400);
+    box-shadow: 0 0 10px rgba(46, 200, 255, 0.7);
+    transform: scale(1.3);
+}
+
+.tracker--compact .compact-label {
+    font-family: var(--font-display);
+    font-weight: var(--fw-black);
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--white);
+}
+
+.tracker--compact .compact-count {
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+}
+
+/* RESPONSIVENESS */
+/* auto-switch to vertical below 640px */
+@media (max-width: 639px) {
+    .tracker--horizontal {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: var(--space-2) 0;
+    }
+
+    .tracker--horizontal .step {
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        align-items: flex-start;
+        gap: var(--space-4);
+        padding: var(--space-3) 0;
+        text-align: left;
+    }
+
+    .tracker--horizontal .step::before {
+        left: 19px;
+        top: 52px;
+        right: auto;
+        bottom: -12px;
+        width: 2px;
+        height: auto;
+    }
+
+    .tracker--horizontal .step:last-child::before {
+        display: none;
+    }
+
+    .tracker--horizontal .step--done::before,
+    .tracker--horizontal .step--active::before {
+        background: var(--gradient-button);
+    }
+
+    .tracker--horizontal .step--active::before {
+        background: linear-gradient(to bottom,
+                var(--pink-400) 0%,
+                var(--pink-400) 30%,
+                rgba(255, 255, 255, 0.10) 30%,
+                rgba(255, 255, 255, 0.10) 100%);
+    }
+
+    .tracker--horizontal .step__body {
+        margin-top: 0;
+        align-items: flex-start;
+    }
+
+    .tracker--horizontal .step__hint {
+        display: block;
+    }
+}

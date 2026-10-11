@@ -106,10 +106,11 @@ export function ResultIcon({ size = 24, className = "", ...rest }) {
     );
 }
 
-/* --- Named export map (handy for iterating in a showcase) --- */
+/*  Named export map (handy for iterating in a showcase)  */
 export const JourneyIcons = {
     Register: RegisterIcon,
     Verify: VerifyIcon,
+    ShieldCheck: ShieldCheckIcon,
     Photo: PhotoIcon,
     Community: CommunityIcon,
     Orientation: OrientationIcon,
@@ -117,3 +118,17 @@ export const JourneyIcons = {
     Exam: ExamIcon,
     Result: ResultIcon,
 };
+
+
+
+
+/* Extra: Shield check (admin approved)  */
+export function ShieldCheckIcon({ size = 24, className = "", ...rest }) {
+    return (
+        <svg {...base} width={size} height={size} className={className} {...rest}>
+            <path d="M12 22s8-3.8 8-10V5.5L12 3 4 5.5V12c0 6.2 8 10 8 10z" />
+            <path d="M9.5 12.5h5" />
+            <path d="M12 10v5" />
+        </svg>
+    );
+}
