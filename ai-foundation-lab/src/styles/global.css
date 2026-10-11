@@ -1,9 +1,166 @@
-/* Global base styles — filled in Step 1.5 */
+/* GLOBAL BASE STYLES */
+  /* Import order matters: reset → tokens → responsive → global rules.*/
 @import "./reset.css";
 @import "./tokens.css";
+@import "./responsive.css";
+
+/*  BASE  */
+html {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: 16px;
+  line-height: var(--lh-normal);
+  /* Firefox scrollbar styling */
+  scrollbar-color: var(--indigo-700) var(--ink-950);
+  scrollbar-width: thin;
+}
 
 body {
-  background: #0A0630;
-  color: #FFFFFF;
-  font-family: sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+/*  FOCUS */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--glow-cyan);
+}
+
+/* TEXT SELECTION  */
+::selection {
+  background: var(--pink-400);
+  color: var(--ink-950);
+}
+
+::-moz-selection {
+  background: var(--pink-400);
+  color: var(--ink-950);
+}
+
+/* SCROLLBAR (WebKit)  */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ink-950);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--indigo-700);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--ink-950);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--violet-600);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--ink-950);
+}
+
+/*  LINKS  */
+a {
+  color: var(--accent-link);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--pink-400);
+}
+
+/*  CONTAINER  */
+.container {
+  width: 100%;
+  max-width: var(--container-lg);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: var(--container-md);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+.container-wide {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+/* Full-bleed section — no max-width */
+.section {
+  width: 100%;
+  padding-block: var(--space-8);
+  padding-inline: var(--container-padding);
+}
+
+/*  HEADINGS DEFAULT  */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+/*  BUTTON RESET  */
+button {
+  color: inherit;
+  font-family: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/*  FORM ELEMENTS  */
+input,
+textarea,
+select {
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/*  REDUCED MOTION  */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
