@@ -1,7 +1,8 @@
 // src/App.jsx
-import { ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
+import { Sparkles, ShieldCheck, Eye, Award } from "lucide-react";
 import Button from "./components/ui/Button.jsx";
 import Card from "./components/ui/Card.jsx";
+import PillTab from "./components/ui/PillTab.jsx";
 import { GradientDefs } from "./components/ui/icons";
 
 export default function App() {
@@ -19,7 +20,7 @@ export default function App() {
         <section className="section">
           <div className="container">
             <p className="type-caption" style={{ marginBottom: "var(--space-3)" }}>
-              Step 1.9 — card component
+              Step 1.10 — pill tab component
             </p>
             <h2
               className="type-h3"
@@ -30,49 +31,16 @@ export default function App() {
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
-                gap: "var(--space-5)",
+                display: "flex",
+                gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
               }}
             >
-              <Card variant="glass">
-                <span className="type-label" style={{ color: "var(--pink-400)" }}>
-                  Glass
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Translucent indigo with backdrop blur and a light inner border.
-                  This is the default surface from the poster.
-                </p>
-              </Card>
-
-              <Card variant="strong">
-                <span className="type-label" style={{ color: "var(--cyan-400)" }}>
-                  Strong
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Higher-contrast glass with a heavier blur. Used for exam and
-                  modal surfaces where content must stay legible.
-                </p>
-              </Card>
-
-              <Card variant="outline">
-                <span className="type-label" style={{ color: "var(--text-secondary)" }}>
-                  Outline
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Border only, no fill. Sits quietly over any background.
-                </p>
-              </Card>
-
-              <Card variant="gradient">
-                <span className="type-label" style={{ color: "var(--white)" }}>
-                  Gradient
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)", color: "var(--white)" }}>
-                  Signature gradient surface. Reserved for hero and final CTAs.
-                </p>
-              </Card>
+              <PillTab variant="default">Default</PillTab>
+              <PillTab variant="primary">Primary</PillTab>
+              <PillTab variant="cyan">Cyan</PillTab>
+              <PillTab variant="silver">Silver</PillTab>
             </div>
           </div>
         </section>
@@ -89,165 +57,68 @@ export default function App() {
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
-                gap: "var(--space-5)",
+                display: "flex",
+                gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
               }}
             >
-              <Card size="sm">
-                <p className="type-body-sm">Small — tight padding.</p>
-              </Card>
-              <Card size="md">
-                <p className="type-body-sm">Medium — default.</p>
-              </Card>
-              <Card size="lg">
-                <p className="type-body-sm">Large — spacious.</p>
-              </Card>
+              <PillTab size="sm">Small</PillTab>
+              <PillTab size="md">Medium</PillTab>
+              <PillTab size="lg">Large</PillTab>
             </div>
           </div>
         </section>
 
-        {/* --- Decorative layers --- */}
+        {/* --- With icons --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              Decorative layers
+              With icons
             </h2>
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
-                gap: "var(--space-5)",
+                display: "flex",
+                gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
               }}
             >
-              <Card variant="glass" pattern glow="pink" size="lg">
-                <span className="type-label" style={{ color: "var(--pink-400)" }}>
-                  Pattern + glow
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Faint hex-grid overlay and a soft radial pink glow, mimicking
-                  the poster's textured hero panels.
-                </p>
-              </Card>
-
-              <Card variant="glass" glow="cyan" size="lg" accent="cyan">
-                <span className="type-label" style={{ color: "var(--cyan-400)" }}>
-                  Cyan accent
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Cyan glow with a subtle outer halo — for active states and
-                  success surfaces.
-                </p>
-              </Card>
-
-              <Card variant="glass" pattern glow="orange" size="lg" accent="orange">
-                <span className="type-label" style={{ color: "var(--orange-500)" }}>
-                  Orange heat
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Warmth from the top-right corner of the poster's gradient.
-                </p>
-              </Card>
+              <PillTab variant="default" icon={<Sparkles size={12} />}>
+                Mission
+              </PillTab>
+              <PillTab variant="cyan" icon={<Eye size={12} />}>
+                Vision
+              </PillTab>
+              <PillTab variant="primary" icon={<Award size={12} />}>
+                Exam
+              </PillTab>
+              <PillTab variant="silver" icon={<ShieldCheck size={12} />}>
+                Verified
+              </PillTab>
             </div>
           </div>
         </section>
 
-        {/* --- Interactive --- */}
+        {/* --- Overlap: the poster pattern --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
-              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
+              style={{ color: "var(--white)", marginBottom: "var(--space-7)" }}
             >
-              Interactive &amp; hoverable
+              Overlapping cards — the poster pattern
             </h2>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
-                gap: "var(--space-5)",
-              }}
-            >
-              <Card variant="glass" hoverable>
-                <span className="type-label" style={{ color: "var(--text-secondary)" }}>
-                  Hoverable
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Hover me — I lift 3px and my shadow deepens.
-                </p>
-              </Card>
-
-              <Card
-                variant="glass"
-                clickable
-                hoverable
-                onClick={() => alert("Card clicked — this is the FAQ pattern.")}
-              >
-                <span className="type-label" style={{ color: "var(--cyan-400)" }}>
-                  Clickable
-                </span>
-                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
-                  Renders as a real button. Tab to me — cyan focus ring.
-                </p>
-              </Card>
-
-              <Card variant="gradient" clickable hoverable>
-                <span className="type-label" style={{ color: "var(--white)" }}>
-                  Gradient CTA card
-                </span>
-                <p
-                  className="type-body"
-                  style={{ marginTop: "var(--space-2)", color: "var(--white)" }}
-                >
-                  For the final call-to-action on the landing page.
-                </p>
-                <div style={{ marginTop: "var(--space-4)" }}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    rightIcon={<ArrowRight size={14} />}
-                  >
-                    Register
-                  </Button>
-                </div>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* --- Real-world composition preview --- */}
-        <section className="section" style={{ paddingTop: 0 }}>
-          <div className="container">
-            <h2
-              className="type-h3"
-              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
-            >
-              Preview: Mission, Vision, Who is it for?
-            </h2>
-
-            <div style={{ display: "grid", gap: "var(--space-4)" }}>
-              <Card variant="glass" size="md" pattern glow="pink">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "var(--space-2)",
-                    marginBottom: "var(--space-3)",
-                  }}
-                >
-                  <Sparkles size={16} className="icon-gradient" />
-                  <span className="type-label" style={{ color: "var(--pink-400)" }}>
-                    Mission
-                  </span>
-                </div>
+            <div style={{ display: "grid", gap: "var(--space-7)" }}>
+              <Card variant="glass" size="md" withTab glow="pink">
+                <PillTab floating position="center" variant="default">
+                  Mission
+                </PillTab>
                 <p className="type-body">
                   To give students who are already proficient in programming a
                   guild through which to build and apply artificial intelligence
@@ -256,40 +127,20 @@ export default function App() {
                 </p>
               </Card>
 
-              <Card variant="glass" size="md" pattern glow="cyan">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "var(--space-2)",
-                    marginBottom: "var(--space-3)",
-                  }}
-                >
-                  <Sparkles size={16} className="icon-gradient-cyan" />
-                  <span className="type-label" style={{ color: "var(--cyan-400)" }}>
-                    Vision
-                  </span>
-                </div>
+              <Card variant="glass" size="md" withTab glow="cyan">
+                <PillTab floating position="center" variant="default">
+                  Vision
+                </PillTab>
                 <p className="type-body">
                   To build a community of students who can build and apply
                   artificial intelligence to their respective academic fields.
                 </p>
               </Card>
 
-              <Card variant="glass" size="md" pattern glow="orange" accent="orange">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "var(--space-2)",
-                    marginBottom: "var(--space-3)",
-                  }}
-                >
-                  <ShieldCheck size={16} className="icon-gradient" />
-                  <span className="type-label" style={{ color: "var(--orange-500)" }}>
-                    Who is the lab for?
-                  </span>
-                </div>
+              <Card variant="glass" size="md" withTab glow="orange" accent="orange">
+                <PillTab floating position="center" variant="default">
+                  Who is the lab for?
+                </PillTab>
                 <p className="type-body">
                   The AI Foundation Lab is <strong>not</strong> an entry point
                   for beginners. It is a guild for students who already have
@@ -298,6 +149,81 @@ export default function App() {
                   AI within their own academic discipline.
                 </p>
               </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Position variants --- */}
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container">
+            <h2
+              className="type-h3"
+              style={{ color: "var(--white)", marginBottom: "var(--space-7)" }}
+            >
+              Position — left, center, right
+            </h2>
+
+            <div style={{ display: "grid", gap: "var(--space-7)" }}>
+              <Card variant="glass" withTab>
+                <PillTab floating position="left" variant="primary">
+                  Left
+                </PillTab>
+                <p className="type-body">
+                  Pill anchored to the left edge of the card.
+                </p>
+              </Card>
+
+              <Card variant="glass" withTab>
+                <PillTab floating position="center" variant="primary">
+                  Center
+                </PillTab>
+                <p className="type-body">
+                  Pill centered — the poster's default treatment.
+                </p>
+              </Card>
+
+              <Card variant="glass" withTab>
+                <PillTab floating position="right" variant="primary">
+                  Right
+                </PillTab>
+                <p className="type-body">
+                  Pill anchored to the right edge of the card.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Interactive pills (badges) --- */}
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container">
+            <h2
+              className="type-h3"
+              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
+            >
+              Interactive pills — status badges
+            </h2>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "var(--space-3)",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              <PillTab variant="silver" interactive onClick={() => alert("Registered")}>
+                Registered
+              </PillTab>
+              <PillTab variant="default" interactive onClick={() => alert("Email verified")}>
+                Email verified
+              </PillTab>
+              <PillTab variant="cyan" interactive onClick={() => alert("Approved")}>
+                Approved
+              </PillTab>
+              <PillTab variant="primary" interactive onClick={() => alert("Exam unlocked")}>
+                Exam unlocked
+              </PillTab>
             </div>
           </div>
         </section>
