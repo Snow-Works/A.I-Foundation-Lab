@@ -1,0 +1,420 @@
+/* AI FOUNDATION LAB USER INTERFACE  TOKENS
+
+Extracted from the brand poster.
+
+All values live here. Components never hard-code colors.  */
+
+:root {
+
+  /*  CORE PALETTE (from the poster) */
+  --ink-950:      #0A0630; /* deepest navy  page base */
+  --indigo-900:   #140A5C;
+  --indigo-700:   #2A1B9B; /* royal panel blue */
+  --violet-600:   #5B2BD6;
+  --purple-500:   #8A2FD0;
+  --magenta-500:  #D4249B;
+  --pink-400:     #FF3FA4; /* swirl ribbon accent */
+  --crimson-600:  #C4162E;
+  --orange-500:   #F2511F; /* top-right heat of the gradient */
+  --cyan-400:     #2EC8FF; /* robot LED glow, focus rings, links */
+
+  /*  NEUTRALS  */
+  --white:        #FFFFFF;
+  --silver:       #DCE3F5;
+  --silver-muted: #A8B2D1;
+  --alert-red:    #E10600; /* like the "SCAN ME" tag */
+
+  /*  SEMANTIC (aliases for meaning)  */
+  --bg-base:        var(--ink-950);
+  --bg-panel:       var(--indigo-900);
+  --bg-panel-alt:   var(--indigo-700);
+  --text-primary:   var(--white);
+  --text-secondary: var(--silver);
+  --text-muted:     var(--silver-muted);
+  --accent-link:    var(--cyan-400);
+  --accent-focus:   var(--cyan-400);
+  --accent-danger:  var(--alert-red);
+  --accent-success: var(--cyan-400);
+
+  /*  SIGNATURE GRADIENT  */
+  --gradient-signature: linear-gradient(
+    to top right,
+    #140A5C 0%,
+    #2A1B9B 25%,
+    #8A2FD0 50%,
+    #D4249B 68%,
+    #E03A2B 85%,
+    #F2511F 100%
+  );
+
+  /* Secondary gradients used for buttons and glows */
+  --gradient-button: linear-gradient(135deg, var(--pink-400) 0%, var(--orange-500) 100%);
+  --gradient-button-hover: linear-gradient(135deg, var(--magenta-500) 0%, var(--crimson-600) 100%);
+  --gradient-text: linear-gradient(90deg, var(--pink-400) 0%, var(--orange-500) 100%);
+  --gradient-cyan: linear-gradient(135deg, var(--cyan-400) 0%, var(--violet-600) 100%);
+
+  /*  GLASS SURFACES  */
+  --glass-bg:        rgba(20, 10, 92, 0.78);
+  --glass-bg-strong: rgba(10, 6, 48, 0.90);
+  --glass-border:    rgba(255, 255, 255, 0.10);
+  --glass-blur:      16px;
+
+  /* GLOWS & SHADOWS */
+  --glow-pink:    0 0 24px rgba(255, 63, 164, 0.45);
+  --glow-orange:  0 0 28px rgba(242, 81, 31, 0.40);
+  --glow-cyan:    0 0 20px rgba(46, 200, 255, 0.55);
+  --shadow-card:  0 8px 40px rgba(0, 0, 0, 0.45);
+  --shadow-soft:  0 4px 20px rgba(0, 0, 0, 0.30);
+
+  /*  RADII  */
+  --radius-xs:  6px;
+  --radius-sm:  10px;
+  --radius-md:  16px;
+  --radius-lg:  24px; /* cards — per spec */
+  --radius-xl:  32px;
+  --radius-pill: 999px;
+
+  /*  BORDERS  */
+  --border-hairline: 1px solid rgba(255, 255, 255, 0.08);
+  --border-strong:   1px solid rgba(255, 255, 255, 0.18);
+  --border-inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.10); /* 1px inner light border on cards */
+
+  /* SPACING SCALE (8px base)  */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /*  TYPOGRAPHY SCALE  */
+--font-display: "Montserrat", system-ui, sans-serif;
+--font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+--font-ui:      "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+--font-script:  "Mrs Saint Delafield", "Allura", cursive;
+
+    /* ---------- FLUID TYPE SCALE (clamp: min, fluid, max) ---------- */
+  --fs-xs:   clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);   /* 11 → 12px */
+  --fs-sm:   clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);  /* 13 → 14px */
+  --fs-base: clamp(0.9375rem, 0.90rem + 0.20vw, 1rem);      /* 15 → 16px */
+  --fs-lg:   clamp(1rem,     0.95rem + 0.30vw, 1.125rem);   /* 16 → 18px */
+  --fs-xl:   clamp(1.0625rem, 1.00rem + 0.40vw, 1.25rem);   /* 17 → 20px */
+  --fs-2xl:  clamp(1.125rem, 1.05rem + 0.60vw, 1.5rem);     /* 18 → 24px */
+  --fs-3xl:  clamp(1.25rem,  1.10rem + 1.00vw, 2rem);       /* 20 → 32px */
+  --fs-4xl:  clamp(1.5rem,   1.20rem + 1.80vw, 2.75rem);    /* 24 → 44px */
+  --fs-5xl:  clamp(1.75rem,  1.30rem + 2.80vw, 3.75rem);    /* 28 → 60px */
+  --fs-6xl:  clamp(2rem,     1.40rem + 4.00vw, 5rem);       /* 32 → 80px */
+  --fs-hero: clamp(2rem,     1.00rem + 8.00vw, 7rem);       /* 32 → 112px */
+
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.7;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-regular: 400;
+--fw-medium:  500;
+--fw-semibold: 600;
+--fw-bold:    700;
+--fw-black:   800;
+--fw-ultra:   900;
+  --fw-bold:    700;
+  --fw-black:   800;
+  --fw-ultra:   900;
+
+  --tracking-tight:  -0.02em;
+  --tracking-tighter: -0.04em;
+  --tracking-wide:   0.02em;
+  --tracking-widest: 0.12em;
+
+  /*  MOTION  */
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --dur-fast:   150ms;
+  --dur-normal: 250ms;
+  --dur-slow:   450ms;
+
+  /*  Z-INDEX SCALE  */
+  --z-base:      1;
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:   500;
+  --z-modal:     1000;
+  --z-toast:     1500;
+  --z-watermark: 50; /* exam watermark sits above content, below modals */
+
+  /*  CONTAINER WIDTHS */
+    /* ---------- CONTAINER WIDTHS ---------- */
+  --container-sm: 640px;
+  --container-md: 860px;
+  --container-lg: 1140px;
+  --container-xl: 1320px;
+
+  /* Responsive container padding (overridden per breakpoint) */
+  --container-padding: 16px;
+
+  /* ---------- SAFE AREA (notched devices) ---------- */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+
+  /* ---------- BREAKPOINT REFERENCE (for JS, not usable in @media) ---------- */
+  --bp-tiny:     220px;
+  --bp-mobile-s: 360px;
+  --bp-mobile-l: 480px;
+  --bp-tablet-s: 640px;
+  --bp-tablet-l: 768px;
+  --bp-laptop:   1024px;
+  --bp-desktop:  1280px;
+  --bp-wide:     1536px;
+}
+
+/* REDUCED MOTION
+If the user prefers reduced motion, collapse durations.
+Components that use Framer Motion should also check this. */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast:   1ms;
+    --dur-normal: 1ms;
+    --dur-slow:   1ms;
+  }
+}
+
+
+/* SURFACE PATTERNS
+Reusable overlays for hero and key surfaces. */
+
+/* Soft radial pink glow — place inside a relatively positioned parent */
+.pattern-radial-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 63, 164, 0.22) 0%, transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(46, 200, 255, 0.12) 0%, transparent 60%);
+  z-index: 0;
+}
+
+/* Faint hex-grid pattern overlay at ~6% opacity */
+.pattern-hex-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image:
+    linear-gradient(30deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+    linear-gradient(150deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+    linear-gradient(30deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+    linear-gradient(150deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+    linear-gradient(60deg, rgba(255, 255, 255, 0.6) 25%, transparent 25.5%, transparent 75%, rgba(255, 255, 255, 0.6) 75%);
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0;
+  z-index: 0;
+}
+
+/* Convenience: content stays above patterns */
+.pattern-content {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+
+
+
+
+
+
+/* TYPOGRAPHY UTILITIES */
+/*  Semantic classes that map directly to the type scale. */
+
+/*  Display (Montserrat, uppercase, tight) */
+.type-display {
+  font-family: var(--font-display);
+  font-weight: var(--fw-ultra);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tighter);
+  line-height: var(--lh-tight);
+}
+
+.type-hero {
+  font-family: var(--font-display);
+  font-weight: var(--fw-ultra);
+  font-size: var(--fs-hero);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tighter);
+  line-height: var(--lh-tight);
+}
+
+.type-h1 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-5xl);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-snug);
+}
+
+.type-h2 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-4xl);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-snug);
+}
+
+.type-h3 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-snug);
+}
+
+.type-h4 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-xl);
+  line-height: var(--lh-snug);
+}
+
+/*  Section label (the pill tabs, e.g. MISSION)  */
+.type-label {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+}
+
+/* Body  */
+.type-body {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--text-secondary);
+}
+
+.type-body-lg {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-relaxed);
+  color: var(--text-secondary);
+}
+
+.type-body-sm {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  color: var(--text-muted);
+}
+
+.type-caption {
+  font-family: var(--font-body);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-muted);
+}
+
+/* Script (founder signature) */
+.type-script {
+  font-family: var(--font-script);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-4xl);
+  line-height: 1;
+  color: var(--white);
+}
+
+/*  Gradient text (for CTAs and accents)  */
+.type-gradient {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/*  Alignment helper  */
+.type-left   { text-align: left; }
+.type-center { text-align: center; }
+.type-right  { text-align: right; }
+
+
+/*  UI microcopy (buttons, labels, inputs, badges) */
+.type-ui {
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  letter-spacing: 0;
+}
+
+.type-ui-strong {
+  font-family: var(--font-ui);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  letter-spacing: 0;
+}
+
+
+
+
+
+/* RESPONSIVE UTILITY CLASSES */
+/*Small helpers that work across all breakpoints. */
+
+/* Visually hidden but readable by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Prevent text selection (used on the Telegram link card later) */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Hides content on tiny screens (below 360px) */
+@media (max-width: 359px) {
+  .hide-tiny { display: none !important; }
+}
+
+/* Hides content on mobile, shows on tablet+ */
+@media (max-width: 767px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 768px) {
+  .show-mobile-only { display: none !important; }
+}
+
+
+
+
