@@ -1,0 +1,262 @@
+/* ============================================================
+   FOUNDER
+   Signature, bio, portrait, and closing quote.
+   ============================================================ */
+
+.founder__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.founder__title {
+  color: var(--white);
+  max-width: 24ch;
+  margin: 0;
+}
+
+/* ============================================================
+   GRID
+   ============================================================ */
+
+.founder__grid {
+  display: grid;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .founder__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: var(--space-8);
+    align-items: center;
+  }
+}
+
+/* ============================================================
+   PORTRAIT
+   ============================================================ */
+
+.founder__portrait-col {
+  display: flex;
+  justify-content: center;
+}
+
+.founder__portrait {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 3 / 4;
+}
+
+
+
+.founder__glow {
+  position: absolute;
+  inset: 8% 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 55%,
+    rgba(255, 63, 164, 0.38) 0%,
+    rgba(212, 36, 155, 0.20) 40%,
+    transparent 75%
+  );
+  filter: blur(50px);
+  z-index: 0;
+}
+
+.founder__portrait-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+}
+
+.founder__portrait-inner {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
+  
+
+  /* Fade the bottom edge into the page */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 72%,
+    rgba(0, 0, 0, 0.55) 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 72%,
+    rgba(0, 0, 0, 0.55) 88%,
+    transparent 100%
+  );
+
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
+}
+
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+
+.founder__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 620px;
+}
+
+/* ---------- SIGNATURE ---------- */
+.founder__signature-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.founder__signature {
+  font-family: var(--font-script);
+  font-weight: var(--fw-regular);
+  font-size: clamp(2.5rem, 2rem + 2vw, 4.25rem);
+  line-height: 1;
+  color: var(--white);
+  letter-spacing: 0.01em;
+  /* Soft glow behind the script */
+  text-shadow: 0 6px 24px rgba(255, 63, 164, 0.25);
+}
+
+.founder__surname {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--silver);
+}
+
+/* ---------- BIO ---------- */
+.founder__bio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.founder__bio-p {
+  color: var(--silver);
+  margin: 0;
+  max-width: 62ch;
+  line-height: var(--lh-relaxed);
+}
+
+/* ---------- QUOTE ---------- */
+.founder__quote-card {
+  position: relative;
+  padding-left: calc(var(--space-5) + 8px);
+}
+
+.founder__quote-icon {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  opacity: 0.9;
+}
+
+.founder__quote {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--white);
+  font-style: italic;
+  margin: 0;
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--pink-400);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1023px) {
+  .founder__header {
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .founder__grid {
+    gap: var(--space-7);
+  }
+
+  .founder__portrait {
+    max-width: 340px;
+  }
+
+  .founder__content {
+    margin-inline: auto;
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 639px) {
+  .founder__title {
+    max-width: 26ch;
+  }
+
+  .founder__portrait {
+    max-width: 280px;
+  }
+
+  .founder__content {
+    gap: var(--space-5);
+  }
+
+  .founder__bio {
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 359px) {
+  .founder__portrait {
+    max-width: 220px;
+  }
+
+  .founder__signature {
+    font-size: 2rem;
+  }
+
+  .founder__surname {
+    font-size: 0.6875rem;
+  }
+
+  .founder__bio-p {
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+
+  .founder__quote {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    padding-left: var(--space-3);
+  }
+
+  .founder__quote-icon {
+    display: none; /* Tiny screens can't afford the space */
+  }
+
+  .founder__quote-card {
+    padding-left: var(--space-4);
+  }
+}
