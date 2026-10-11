@@ -1,0 +1,9 @@
+/* Global base styles — filled in Step 1.5 */
+@import "./reset.css";
+@import "./tokens.css";
+
+body {
+  background: #0A0630;
+  color: #FFFFFF;
+  font-family: sans-serif;
+}
