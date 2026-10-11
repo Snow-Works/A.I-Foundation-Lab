@@ -1,30 +1,20 @@
 // src/App.jsx
-import { Sparkles, UserPlus, ShieldCheck, Camera, Users, Compass } from "lucide-react";
-import { GradientDefs, JourneyIcons } from "./components/ui/icons";
+import { useState } from "react";
+import { ArrowRight, Play, Plus, X, Download, LogIn } from "lucide-react";
+import Button from "./components/ui/Button.jsx";
+import { GradientDefs } from "./components/ui/icons";
 
 export default function App() {
-  const lucideIcons = [
-    { name: "Sparkles", Icon: Sparkles },
-    { name: "UserPlus", Icon: UserPlus },
-    { name: "ShieldCheck", Icon: ShieldCheck },
-    { name: "Camera", Icon: Camera },
-    { name: "Users", Icon: Users },
-    { name: "Compass", Icon: Compass },
-  ];
+  const [loading, setLoading] = useState(false);
 
-  const variants = [
-    { label: "icon-default", className: "icon-default" },
-    { label: "icon-gradient", className: "icon-gradient" },
-    { label: "icon-gradient-cyan", className: "icon-gradient-cyan" },
-    { label: "icon-gradient-silver", className: "icon-gradient-silver" },
-  ];
-
-  const sizes = [16, 20, 24, 32, 48, 64];
+  const simulate = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1800);
+  };
 
   return (
     <>
       <GradientDefs />
-
       <div
         style={{
           background: "var(--bg-base)",
@@ -32,182 +22,182 @@ export default function App() {
           color: "var(--white)",
         }}
       >
-        {/* --- Custom journey icons --- */}
+        {/* --- Variants --- */}
         <section className="section">
           <div className="container">
             <p className="type-caption" style={{ marginBottom: "var(--space-3)" }}>
-              Step 1.7 — journey icons (custom)
+              Step 1.8 — button component
             </p>
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              Eight stages. One visual language.
+              Five variants
             </h2>
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fill, minmax(min(160px, 100%), 1fr))",
+                display: "flex",
                 gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
               }}
             >
-              {Object.entries(JourneyIcons).map(([name, Icon]) => (
-                <div
-                  key={name}
-                  style={{
-                    background: "var(--glass-bg)",
-                    border: "var(--border-hairline)",
-                    borderRadius: "var(--radius-lg)",
-                    padding: "var(--space-5)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "var(--space-3)",
-                    backdropFilter: "blur(var(--glass-blur))",
-                    WebkitBackdropFilter: "blur(var(--glass-blur))",
-                    boxShadow: "var(--shadow-soft)",
-                  }}
-                >
-                  <Icon
-                    size={40}
-                    className="icon-gradient icon-transition"
-                    aria-hidden="true"
-                  />
-                  <span className="type-ui-strong" style={{ color: "var(--white)" }}>
-                    {name}
-                  </span>
-                </div>
-              ))}
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="danger">Danger</Button>
+              <Button variant="icon" aria-label="Add item">
+                <Plus size={18} />
+              </Button>
             </div>
           </div>
         </section>
 
-        {/* --- Lucide icons with gradient stroke --- */}
+        {/* --- Sizes --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              Lucide icons with the same gradient treatment
+              Three sizes
             </h2>
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fill, minmax(min(140px, 100%), 1fr))",
+                display: "flex",
                 gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
               }}
             >
-              {lucideIcons.map(({ name, Icon }) => (
-                <div
-                  key={name}
-                  style={{
-                    background: "var(--glass-bg)",
-                    border: "var(--border-hairline)",
-                    borderRadius: "var(--radius-lg)",
-                    padding: "var(--space-5)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "var(--space-3)",
-                  }}
-                >
-                  <Icon
-                    size={40}
-                    className="icon-gradient icon-transition icon-lift"
-                    aria-hidden="true"
-                  />
-                  <span className="type-body-sm">{name}</span>
-                </div>
-              ))}
+              <Button size="sm">Small</Button>
+              <Button size="md">Medium</Button>
+              <Button size="lg">Large</Button>
             </div>
           </div>
         </section>
 
-        {/* --- Variant matrix --- */}
+        {/* --- With icons --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              All four stroke variants
+              With icons
             </h2>
 
             <div
               style={{
-                background: "var(--glass-bg)",
-                border: "var(--border-hairline)",
-                borderRadius: "var(--radius-lg)",
-                padding: "var(--space-5)",
-                backdropFilter: "blur(var(--glass-blur))",
-                WebkitBackdropFilter: "blur(var(--glass-blur))",
-                overflowX: "auto",
+                display: "flex",
+                gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
               }}
             >
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th
-                      className="type-caption"
-                      style={{
-                        textAlign: "left",
-                        padding: "var(--space-2) var(--space-3)",
-                        borderBottom: "var(--border-hairline)",
-                      }}
-                    >
-                      variant
-                    </th>
-                    {sizes.map((s) => (
-                      <th
-                        key={s}
-                        className="type-caption"
-                        style={{
-                          padding: "var(--space-2) var(--space-3)",
-                          borderBottom: "var(--border-hairline)",
-                        }}
-                      >
-                        {s}px
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {variants.map((v) => (
-                    <tr key={v.label}>
-                      <td
-                        className="type-body-sm"
-                        style={{
-                          padding: "var(--space-3)",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {v.label}
-                      </td>
-                      {sizes.map((s) => (
-                        <td
-                          key={s}
-                          style={{
-                            padding: "var(--space-3)",
-                            textAlign: "center",
-                          }}
-                        >
-                          <ShieldCheck
-                            size={s}
-                            className={v.className}
-                            aria-hidden="true"
-                            style={{ display: "inline-block" }}
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <Button variant="primary" rightIcon={<ArrowRight size={16} />}>
+                Register
+              </Button>
+              <Button variant="secondary" leftIcon={<Play size={16} />}>
+                Watch intro
+              </Button>
+              <Button variant="ghost" leftIcon={<LogIn size={16} />}>
+                Log in
+              </Button>
+              <Button
+                variant="primary"
+                size="lg"
+                rightIcon={<ArrowRight size={18} />}
+                pulse
+              >
+                Take the exam
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* --- States --- */}
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container">
+            <h2
+              className="type-h3"
+              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
+            >
+              States
+            </h2>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "var(--space-4)",
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                variant="primary"
+                loading={loading}
+                onClick={simulate}
+                leftIcon={<Download size={16} />}
+              >
+                {loading ? "Submitting…" : "Simulate loading"}
+              </Button>
+
+              <Button variant="primary" disabled>
+                Disabled
+              </Button>
+
+              <Button variant="secondary" disabled>
+                Disabled secondary
+              </Button>
+
+              <Button variant="icon" aria-label="Close" disabled>
+                <X size={18} />
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Anchor mode --- */}
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container">
+            <h2
+              className="type-h3"
+              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
+            >
+              As link (href)
+            </h2>
+
+            <div style={{ display: "flex", gap: "var(--space-4)", flexWrap: "wrap" }}>
+              <Button href="https://example.com" variant="primary" rightIcon={<ArrowRight size={16} />}>
+                External link
+              </Button>
+              <Button href="https://example.com" variant="ghost" aria-disabled="true">
+                Disabled link
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Full width --- */}
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container-narrow">
+            <h2
+              className="type-h3"
+              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
+            >
+              Full width (forms)
+            </h2>
+
+            <div style={{ display: "grid", gap: "var(--space-3)" }}>
+              <Button variant="primary" size="lg" fullWidth>
+                Create account
+              </Button>
+              <Button variant="secondary" size="lg" fullWidth>
+                I already have an account
+              </Button>
             </div>
           </div>
         </section>
