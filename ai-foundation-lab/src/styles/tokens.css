@@ -97,7 +97,7 @@ All values live here. Components never hard-code colors.  */
 --font-ui:      "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 --font-script:  "Mrs Saint Delafield", "Allura", cursive;
 
-    /* ---------- FLUID TYPE SCALE (clamp: min, fluid, max) ---------- */
+    /*  FLUID TYPE SCALE (clamp: min, fluid, max)  */
   --fs-xs:   clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);   /* 11 → 12px */
   --fs-sm:   clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);  /* 13 → 14px */
   --fs-base: clamp(0.9375rem, 0.90rem + 0.20vw, 1rem);      /* 15 → 16px */
@@ -151,7 +151,7 @@ All values live here. Components never hard-code colors.  */
   --z-watermark: 50; /* exam watermark sits above content, below modals */
 
   /*  CONTAINER WIDTHS */
-    /* ---------- CONTAINER WIDTHS ---------- */
+    /*  CONTAINER WIDTHS  */
   --container-sm: 640px;
   --container-md: 860px;
   --container-lg: 1140px;
@@ -160,13 +160,13 @@ All values live here. Components never hard-code colors.  */
   /* Responsive container padding (overridden per breakpoint) */
   --container-padding: 16px;
 
-  /* ---------- SAFE AREA (notched devices) ---------- */
+  /*  SAFE AREA (notched devices) */
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-right:  env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left:   env(safe-area-inset-left, 0px);
 
-  /* ---------- BREAKPOINT REFERENCE (for JS, not usable in @media) ---------- */
+  /* BREAKPOINT REFERENCE (for JS, not usable in @media) */
   --bp-tiny:     220px;
   --bp-mobile-s: 360px;
   --bp-mobile-l: 480px;
@@ -238,9 +238,9 @@ Reusable overlays for hero and key surfaces. */
 
 
 /* TYPOGRAPHY UTILITIES */
-/*  Semantic classes that map directly to the type scale. */
+  /*  Semantic classes that map directly to the type scale. */
 
-/*  Display (Montserrat, uppercase, tight) */
+/* --- Display (Montserrat, uppercase, tight) --- */
 .type-display {
   font-family: var(--font-display);
   font-weight: var(--fw-ultra);

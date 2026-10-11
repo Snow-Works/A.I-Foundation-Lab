@@ -1,17 +1,10 @@
 // src/App.jsx
-import { useState } from "react";
-import { ArrowRight, Play, Plus, X, Download, LogIn } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
 import Button from "./components/ui/Button.jsx";
+import Card from "./components/ui/Card.jsx";
 import { GradientDefs } from "./components/ui/icons";
 
 export default function App() {
-  const [loading, setLoading] = useState(false);
-
-  const simulate = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1800);
-  };
-
   return (
     <>
       <GradientDefs />
@@ -26,30 +19,60 @@ export default function App() {
         <section className="section">
           <div className="container">
             <p className="type-caption" style={{ marginBottom: "var(--space-3)" }}>
-              Step 1.8 — button component
+              Step 1.9 — card component
             </p>
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              Five variants
+              Four variants
             </h2>
 
             <div
               style={{
-                display: "flex",
-                gap: "var(--space-4)",
-                flexWrap: "wrap",
-                alignItems: "center",
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
+                gap: "var(--space-5)",
               }}
             >
-              <Button variant="primary">Primary</Button>
-              <Button variant="secondary">Secondary</Button>
-              <Button variant="ghost">Ghost</Button>
-              <Button variant="danger">Danger</Button>
-              <Button variant="icon" aria-label="Add item">
-                <Plus size={18} />
-              </Button>
+              <Card variant="glass">
+                <span className="type-label" style={{ color: "var(--pink-400)" }}>
+                  Glass
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Translucent indigo with backdrop blur and a light inner border.
+                  This is the default surface from the poster.
+                </p>
+              </Card>
+
+              <Card variant="strong">
+                <span className="type-label" style={{ color: "var(--cyan-400)" }}>
+                  Strong
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Higher-contrast glass with a heavier blur. Used for exam and
+                  modal surfaces where content must stay legible.
+                </p>
+              </Card>
+
+              <Card variant="outline">
+                <span className="type-label" style={{ color: "var(--text-secondary)" }}>
+                  Outline
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Border only, no fill. Sits quietly over any background.
+                </p>
+              </Card>
+
+              <Card variant="gradient">
+                <span className="type-label" style={{ color: "var(--white)" }}>
+                  Gradient
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)", color: "var(--white)" }}>
+                  Signature gradient surface. Reserved for hero and final CTAs.
+                </p>
+              </Card>
             </div>
           </div>
         </section>
@@ -66,138 +89,215 @@ export default function App() {
 
             <div
               style={{
-                display: "flex",
-                gap: "var(--space-4)",
-                flexWrap: "wrap",
-                alignItems: "center",
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
+                gap: "var(--space-5)",
               }}
             >
-              <Button size="sm">Small</Button>
-              <Button size="md">Medium</Button>
-              <Button size="lg">Large</Button>
+              <Card size="sm">
+                <p className="type-body-sm">Small — tight padding.</p>
+              </Card>
+              <Card size="md">
+                <p className="type-body-sm">Medium — default.</p>
+              </Card>
+              <Card size="lg">
+                <p className="type-body-sm">Large — spacious.</p>
+              </Card>
             </div>
           </div>
         </section>
 
-        {/* --- With icons --- */}
+        {/* --- Decorative layers --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              With icons
+              Decorative layers
             </h2>
 
             <div
               style={{
-                display: "flex",
-                gap: "var(--space-4)",
-                flexWrap: "wrap",
-                alignItems: "center",
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
+                gap: "var(--space-5)",
               }}
             >
-              <Button variant="primary" rightIcon={<ArrowRight size={16} />}>
-                Register
-              </Button>
-              <Button variant="secondary" leftIcon={<Play size={16} />}>
-                Watch intro
-              </Button>
-              <Button variant="ghost" leftIcon={<LogIn size={16} />}>
-                Log in
-              </Button>
-              <Button
-                variant="primary"
-                size="lg"
-                rightIcon={<ArrowRight size={18} />}
-                pulse
-              >
-                Take the exam
-              </Button>
+              <Card variant="glass" pattern glow="pink" size="lg">
+                <span className="type-label" style={{ color: "var(--pink-400)" }}>
+                  Pattern + glow
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Faint hex-grid overlay and a soft radial pink glow, mimicking
+                  the poster's textured hero panels.
+                </p>
+              </Card>
+
+              <Card variant="glass" glow="cyan" size="lg" accent="cyan">
+                <span className="type-label" style={{ color: "var(--cyan-400)" }}>
+                  Cyan accent
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Cyan glow with a subtle outer halo — for active states and
+                  success surfaces.
+                </p>
+              </Card>
+
+              <Card variant="glass" pattern glow="orange" size="lg" accent="orange">
+                <span className="type-label" style={{ color: "var(--orange-500)" }}>
+                  Orange heat
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Warmth from the top-right corner of the poster's gradient.
+                </p>
+              </Card>
             </div>
           </div>
         </section>
 
-        {/* --- States --- */}
+        {/* --- Interactive --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              States
+              Interactive &amp; hoverable
             </h2>
 
             <div
               style={{
-                display: "flex",
-                gap: "var(--space-4)",
-                flexWrap: "wrap",
-                alignItems: "center",
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
+                gap: "var(--space-5)",
               }}
             >
-              <Button
-                variant="primary"
-                loading={loading}
-                onClick={simulate}
-                leftIcon={<Download size={16} />}
+              <Card variant="glass" hoverable>
+                <span className="type-label" style={{ color: "var(--text-secondary)" }}>
+                  Hoverable
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Hover me — I lift 3px and my shadow deepens.
+                </p>
+              </Card>
+
+              <Card
+                variant="glass"
+                clickable
+                hoverable
+                onClick={() => alert("Card clicked — this is the FAQ pattern.")}
               >
-                {loading ? "Submitting…" : "Simulate loading"}
-              </Button>
+                <span className="type-label" style={{ color: "var(--cyan-400)" }}>
+                  Clickable
+                </span>
+                <p className="type-body" style={{ marginTop: "var(--space-2)" }}>
+                  Renders as a real button. Tab to me — cyan focus ring.
+                </p>
+              </Card>
 
-              <Button variant="primary" disabled>
-                Disabled
-              </Button>
-
-              <Button variant="secondary" disabled>
-                Disabled secondary
-              </Button>
-
-              <Button variant="icon" aria-label="Close" disabled>
-                <X size={18} />
-              </Button>
+              <Card variant="gradient" clickable hoverable>
+                <span className="type-label" style={{ color: "var(--white)" }}>
+                  Gradient CTA card
+                </span>
+                <p
+                  className="type-body"
+                  style={{ marginTop: "var(--space-2)", color: "var(--white)" }}
+                >
+                  For the final call-to-action on the landing page.
+                </p>
+                <div style={{ marginTop: "var(--space-4)" }}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    rightIcon={<ArrowRight size={14} />}
+                  >
+                    Register
+                  </Button>
+                </div>
+              </Card>
             </div>
           </div>
         </section>
 
-        {/* --- Anchor mode --- */}
+        {/* --- Real-world composition preview --- */}
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <h2
               className="type-h3"
               style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
             >
-              As link (href)
+              Preview: Mission, Vision, Who is it for?
             </h2>
 
-            <div style={{ display: "flex", gap: "var(--space-4)", flexWrap: "wrap" }}>
-              <Button href="https://example.com" variant="primary" rightIcon={<ArrowRight size={16} />}>
-                External link
-              </Button>
-              <Button href="https://example.com" variant="ghost" aria-disabled="true">
-                Disabled link
-              </Button>
-            </div>
-          </div>
-        </section>
+            <div style={{ display: "grid", gap: "var(--space-4)" }}>
+              <Card variant="glass" size="md" pattern glow="pink">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
+                    marginBottom: "var(--space-3)",
+                  }}
+                >
+                  <Sparkles size={16} className="icon-gradient" />
+                  <span className="type-label" style={{ color: "var(--pink-400)" }}>
+                    Mission
+                  </span>
+                </div>
+                <p className="type-body">
+                  To give students who are already proficient in programming a
+                  guild through which to build and apply artificial intelligence
+                  to their academic fields of study, and to use it as a practical
+                  tool for solving real problems within those fields.
+                </p>
+              </Card>
 
-        {/* --- Full width --- */}
-        <section className="section" style={{ paddingTop: 0 }}>
-          <div className="container-narrow">
-            <h2
-              className="type-h3"
-              style={{ color: "var(--white)", marginBottom: "var(--space-5)" }}
-            >
-              Full width (forms)
-            </h2>
+              <Card variant="glass" size="md" pattern glow="cyan">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
+                    marginBottom: "var(--space-3)",
+                  }}
+                >
+                  <Sparkles size={16} className="icon-gradient-cyan" />
+                  <span className="type-label" style={{ color: "var(--cyan-400)" }}>
+                    Vision
+                  </span>
+                </div>
+                <p className="type-body">
+                  To build a community of students who can build and apply
+                  artificial intelligence to their respective academic fields.
+                </p>
+              </Card>
 
-            <div style={{ display: "grid", gap: "var(--space-3)" }}>
-              <Button variant="primary" size="lg" fullWidth>
-                Create account
-              </Button>
-              <Button variant="secondary" size="lg" fullWidth>
-                I already have an account
-              </Button>
+              <Card variant="glass" size="md" pattern glow="orange" accent="orange">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
+                    marginBottom: "var(--space-3)",
+                  }}
+                >
+                  <ShieldCheck size={16} className="icon-gradient" />
+                  <span className="type-label" style={{ color: "var(--orange-500)" }}>
+                    Who is the lab for?
+                  </span>
+                </div>
+                <p className="type-body">
+                  The AI Foundation Lab is <strong>not</strong> an entry point
+                  for beginners. It is a guild for students who already have
+                  working programming ability and are looking for a structured
+                  opportunity to direct that skill towards building and applying
+                  AI within their own academic discipline.
+                </p>
+              </Card>
             </div>
           </div>
         </section>
