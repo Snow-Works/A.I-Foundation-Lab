@@ -1,0 +1,77 @@
+/* ============================================================
+   LANDING PAGE
+   Section wrapper, rhythm, and shared utilities.
+   ============================================================ */
+
+.landing-section {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+}
+
+/* Background variants */
+.landing-section--bg-gradient {
+  background: var(--gradient-signature);
+}
+
+.landing-section--bg-glass {
+  background: rgba(20, 10, 92, 0.35);
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+/* ============================================================
+   PLACEHOLDER BLOCK
+   Used during Phase 2 skeleton development.
+   Will be deleted once every section is real.
+   ============================================================ */
+
+.placeholder-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-6);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.placeholder-block__tag {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--pink-400);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 63, 164, 0.12);
+}
+
+.placeholder-block__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-3xl);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+  color: var(--white);
+  line-height: var(--lh-snug);
+}
+
+.placeholder-block__desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--text-muted);
+  max-width: 60ch;
+  line-height: var(--lh-relaxed);
+}
+
+.placeholder-block__id {
+  font-family: "SF Mono", ui-monospace, monospace;
+  font-size: var(--fs-xs);
+  color: var(--cyan-400);
+  padding: 2px 8px;
+  background: rgba(46, 200, 255, 0.08);
+  border-radius: var(--radius-xs);
+}
