@@ -1,0 +1,473 @@
+/* FORM KIT */
+/* Field, Input, PasswordInput, PhoneInput, Textarea, Checkbox */
+
+/*  FIELD WRAPPER */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+}
+
+.field__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-sm);
+    color: var(--silver);
+    letter-spacing: 0.005em;
+}
+
+.field__required {
+    color: var(--pink-400);
+    font-weight: var(--fw-semibold);
+}
+
+.field__hint {
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+}
+
+.field__error {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    color: var(--alert-red);
+    line-height: var(--lh-normal);
+}
+
+.field__error svg {
+    flex-shrink: 0;
+}
+
+/* INPUT BASE  */
+.input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-regular);
+    color: var(--white);
+    background: rgba(10, 6, 48, 0.55);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    min-height: 46px;
+    transition:
+        background var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out),
+        box-shadow var(--dur-fast) var(--ease-out);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.75;
+}
+
+.input:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.input:focus,
+.input:focus-visible {
+    outline: none;
+    border-color: var(--cyan-400);
+    background: rgba(10, 6, 48, 0.75);
+    box-shadow: 0 0 0 4px rgba(46, 200, 255, 0.15), var(--glow-cyan);
+}
+
+.input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: rgba(10, 6, 48, 0.35);
+}
+
+/* Sizes */
+.input--sm {
+    padding: 8px 12px;
+    min-height: 38px;
+    font-size: var(--fs-sm);
+    border-radius: var(--radius-sm);
+}
+
+.input--lg {
+    padding: 16px 20px;
+    min-height: 54px;
+    font-size: var(--fs-lg);
+}
+
+/* ICON SLOTS  */
+.input__icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    color: var(--text-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+}
+
+.input__icon--left {
+    left: 14px;
+}
+
+.input__icon--right {
+    right: 14px;
+}
+
+.input-wrap:focus-within .input__icon {
+    color: var(--cyan-400);
+}
+
+/* Padding shifts when icons are present */
+.input-wrap--left-icon .input {
+    padding-left: 44px;
+}
+
+.input-wrap--right-icon .input {
+    padding-right: 44px;
+}
+
+/* Icon-only button (e.g., show/hide password) — must be clickable */
+.input__button {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-xs);
+    color: var(--text-muted);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    pointer-events: auto;
+    transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.input__button:hover {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.input__button:focus-visible {
+    outline: 2px solid var(--accent-focus);
+    outline-offset: 2px;
+}
+
+/*  STATE VARIANTS */
+.input-wrap--error .input {
+    border-color: var(--alert-red);
+    background: rgba(225, 6, 0, 0.06);
+}
+
+.input-wrap--error .input:focus {
+    border-color: var(--alert-red);
+    box-shadow: 0 0 0 4px rgba(225, 6, 0, 0.18), 0 0 20px rgba(225, 6, 0, 0.35);
+}
+
+.input-wrap--error .input__icon {
+    color: var(--alert-red);
+}
+
+.input-wrap--success .input {
+    border-color: var(--cyan-400);
+}
+
+.input-wrap--success .input__icon {
+    color: var(--cyan-400);
+}
+
+/*  PASSWORD STRENGTH  */
+.strength {
+    display: flex;
+    gap: 4px;
+    margin-top: var(--space-2);
+}
+
+.strength__bar {
+    flex: 1;
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.10);
+    transition: background var(--dur-normal) var(--ease-out);
+}
+
+.strength__bar--active-weak {
+    background: var(--alert-red);
+}
+
+.strength__bar--active-medium {
+    background: var(--orange-500);
+}
+
+.strength__bar--active-strong {
+    background: var(--cyan-400);
+}
+
+.strength__bar--active-very-strong {
+    background: linear-gradient(90deg, var(--cyan-400), var(--violet-600));
+}
+
+.strength__label {
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    margin-top: var(--space-1);
+}
+
+/*  PHONE INPUT */
+.phone-group {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: rgba(10, 6, 48, 0.55);
+    transition:
+        border-color var(--dur-fast) var(--ease-out),
+        box-shadow var(--dur-fast) var(--ease-out);
+    overflow: hidden;
+}
+
+.phone-group:focus-within {
+    border-color: var(--cyan-400);
+    background: rgba(10, 6, 48, 0.75);
+    box-shadow: 0 0 0 4px rgba(46, 200, 255, 0.15), var(--glow-cyan);
+}
+
+.phone-group__prefix {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px;
+    border-right: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.03);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-base);
+    color: var(--silver);
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--dur-fast) var(--ease-out);
+}
+
+.phone-group__prefix:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.phone-group__flag {
+    font-size: 1.15em;
+    line-height: 1;
+}
+
+.phone-group__input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    color: var(--white);
+    min-height: 46px;
+    min-width: 0;
+    outline: none;
+}
+
+.phone-group__input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.75;
+}
+
+.phone-group--error {
+    border-color: var(--alert-red);
+    background: rgba(225, 6, 0, 0.06);
+}
+
+/*  TEXTAREA  */
+.textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    color: var(--white);
+    background: rgba(10, 6, 48, 0.55);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    min-height: 110px;
+    resize: vertical;
+    transition:
+        background var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out),
+        box-shadow var(--dur-fast) var(--ease-out);
+    font-family: var(--font-body);
+    line-height: var(--lh-relaxed);
+}
+
+.textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.75;
+}
+
+.textarea:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--cyan-400);
+    background: rgba(10, 6, 48, 0.75);
+    box-shadow: 0 0 0 4px rgba(46, 200, 255, 0.15), var(--glow-cyan);
+}
+
+.textarea:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.textarea--error {
+    border-color: var(--alert-red);
+    background: rgba(225, 6, 0, 0.06);
+}
+
+/* Counter under the textarea */
+.textarea-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    margin-top: var(--space-1);
+}
+
+.textarea-counter--warn {
+    color: var(--orange-500);
+}
+
+.textarea-counter--limit {
+    color: var(--alert-red);
+}
+
+/*  CHECKBOX  */
+.checkbox {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    cursor: pointer;
+    user-select: none;
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    color: var(--silver);
+    line-height: var(--lh-normal);
+    padding: 4px 0;
+}
+
+.checkbox input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.checkbox__box {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-xs);
+    background: rgba(10, 6, 48, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition:
+        background var(--dur-fast) var(--ease-out),
+        border-color var(--dur-fast) var(--ease-out),
+        color var(--dur-fast) var(--ease-out);
+    margin-top: 1px;
+}
+
+.checkbox:hover .checkbox__box {
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.checkbox input:focus-visible+.checkbox__box {
+    outline: 2px solid var(--accent-focus);
+    outline-offset: 2px;
+    box-shadow: var(--glow-cyan);
+}
+
+.checkbox input:checked+.checkbox__box {
+    background: var(--gradient-button);
+    border-color: transparent;
+    color: var(--white);
+}
+
+.checkbox input:disabled+.checkbox__box {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.checkbox--error .checkbox__box {
+    border-color: var(--alert-red);
+}
+
+/*  TINY SCREEN ADJUSTMENTS  */
+@media (max-width: 359px) {
+    .input {
+        padding: 10px 12px;
+        min-height: 42px;
+        font-size: var(--fs-sm);
+    }
+
+    .input__icon--left {
+        left: 12px;
+    }
+
+    .input__icon--right {
+        right: 12px;
+    }
+
+    .input-wrap--left-icon .input {
+        padding-left: 38px;
+    }
+
+    .input-wrap--right-icon .input {
+        padding-right: 38px;
+    }
+
+    .phone-group__prefix {
+        padding: 10px 10px;
+        font-size: var(--fs-sm);
+    }
+
+    .phone-group__input {
+        padding: 10px 12px;
+        min-height: 42px;
+        font-size: var(--fs-sm);
+    }
+
+    .input__button {
+        right: 8px;
+        width: 24px;
+        height: 24px;
+    }
+}
