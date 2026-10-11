@@ -5,13 +5,16 @@ import Footer from "./Footer.jsx";
 import "./RootLayout.css";
 
 export default function RootLayout() {
-    return (
-        <div className="app-shell">
-            <Navbar />
-            <main className="app-main">
-                <Outlet />
-            </main>
-            <Footer />
-        </div>
-    );
+  return (
+    <div className="app-shell">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      <Navbar />
+      <main id="main-content" className="app-main">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
 }

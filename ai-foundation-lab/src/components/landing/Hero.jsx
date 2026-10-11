@@ -26,7 +26,7 @@ export default function Hero() {
           <HeroVisual />
         </div>
 
-        <Stagger staggerDelay={0.14} className="hero__content">
+        <Stagger staggerDelay={0.10} className="hero__content">
           <StaggerItem>
             <Wordmark
               width={520}

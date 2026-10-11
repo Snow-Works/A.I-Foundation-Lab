@@ -18,6 +18,11 @@ export default function FinalCTA() {
 
   return (
     <section id="final-cta" className="final-cta">
+        <section id="final-cta" className="final-cta">
+  <h2 className="sr-only">Ready to join the AI Foundation Lab</h2>
+
+  {/* ... rest unchanged ... */}
+</section>
       {/* Layered background — mirrors the hero */}
       <div className="final-cta__bg" aria-hidden="true">
         <div className="final-cta__gradient" />
@@ -51,7 +56,7 @@ export default function FinalCTA() {
       </div>
 
       {/* Content */}
-      <div className="final-cta__content container">
+      <div className="final-cta__content">
         <Reveal variant="fadeUp">
           <div className="final-cta__wordmark-wrap">
             <Wordmark

@@ -10,7 +10,7 @@ export default function GlowPulse({
     children,
     color = "rgba(255, 63, 164, 0.45)", // pink default
     maxOpacity = 0.45,
-    duration = 2.4,
+    duration = 3.2,
     scale = false,
     className = "",
     style = {},
