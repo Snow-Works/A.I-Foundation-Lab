@@ -1,0 +1,218 @@
+/* ============================================================
+   HERO SECTION
+   Poster-inspired layout: founder left, wordmark right.
+   Same composition at every screen size.
+   ============================================================ */
+
+.hero {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+  overflow: hidden;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: flex;
+  align-items: center;
+
+  padding-top: 64px;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  gap: var(--space-8);
+  align-items: center;
+  padding-block: var(--space-8);
+}
+
+/* Desktop — founder slightly wider than content */
+@media (min-width: 1024px) {
+  .hero__inner {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: center;
+  }
+}
+
+/* ---------- VISUAL COLUMN (left) ---------- */
+.hero__visual-col {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* ---------- CONTENT COLUMN (right) ---------- */
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  max-width: 620px;
+  min-width: 0;
+}
+
+.hero__wordmark {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+}
+
+.hero__tagline {
+  font-family: var(--font-body);
+  font-size: clamp(0.9375rem, 0.85rem + 0.45vw, 1.375rem);
+  line-height: var(--lh-relaxed);
+  color: var(--white);
+  max-width: 46ch;
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+
+.hero__ctas {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.hero__trust {
+  font-family: var(--font-body);
+  font-size: clamp(0.6875rem, 0.65rem + 0.15vw, 0.875rem);
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+
+/* ============================================================
+   RESPONSIVE — same two-column composition at every size.
+   Founder left, wordmark right — desktop DNA preserved.
+   ============================================================ */
+
+/* Tablet and below — still two columns, tighter gaps */
+@media (max-width: 1023px) {
+  .hero {
+    min-height: auto;
+    padding-block: var(--space-6);
+  }
+
+  .hero__inner {
+    padding-block: var(--space-5);
+    gap: var(--space-4);
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: center;
+  }
+
+  .hero__content {
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--space-3);
+    margin-inline: 0;
+    max-width: none;
+  }
+
+  .hero__ctas {
+    justify-content: flex-start;
+  }
+
+  .hero__tagline {
+    margin-inline: 0;
+  }
+
+  .hero__wordmark {
+    max-width: 100%;
+  }
+}
+
+/* Small mobile — tighten further */
+@media (max-width: 639px) {
+  .hero {
+    padding-top: 56px;
+  }
+
+  .hero__inner {
+    padding-block: var(--space-4);
+    gap: var(--space-3);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .hero__content {
+    gap: var(--space-2);
+  }
+
+  /* Shrink buttons so they fit the narrow column */
+  .hero__ctas .btn {
+    padding: 8px 12px;
+    font-size: var(--fs-xs);
+    min-height: 36px;
+    gap: 6px;
+  }
+
+  .hero__ctas .btn__icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .hero__trust {
+    font-size: 0.6875rem;
+  }
+}
+
+/* Tiny — stack the buttons, minimal gaps */
+@media (max-width: 479px) {
+  .hero__inner {
+    gap: var(--space-2);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .hero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .hero__ctas .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 7px 10px;
+    font-size: 0.6875rem;
+    min-height: 32px;
+  }
+}
+
+/* Smallest — 220px to 359px */
+@media (max-width: 359px) {
+  .hero {
+    padding-top: 52px;
+  }
+
+  .hero__inner {
+    padding-block: var(--space-3);
+    gap: var(--space-2);
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  }
+
+  .hero__content {
+    gap: 6px;
+  }
+
+  .hero__tagline {
+    font-size: 0.6875rem;
+    line-height: 1.45;
+  }
+
+  .hero__trust {
+    display: none; /* No room — trust is stated in Who-is-it-for section */
+  }
+
+  .hero__ctas .btn {
+    font-size: 0.625rem;
+    padding: 6px 8px;
+    min-height: 28px;
+  }
+}

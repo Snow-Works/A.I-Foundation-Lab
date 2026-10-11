@@ -44,31 +44,21 @@ const Button = forwardRef(function Button(
 
     const content = isIcon ? (
         loading ? (
-            <Loader2
-                size={spinnerSize}
-                className="btn__spinner"
-                aria-hidden="true"
-            />
+            <Loader2 size={spinnerSize} className="btn__spinner" aria-hidden="true" />
         ) : (
             children
         )
     ) : (
         <>
             {loading ? (
-                <Loader2
-                    size={spinnerSize}
-                    className="btn__spinner"
-                    aria-hidden="true"
-                />
+                <Loader2 size={spinnerSize} className="btn__spinner" aria-hidden="true" />
             ) : (
                 leftIcon && <span className="btn__icon">{leftIcon}</span>
             )}
 
             <span className="btn__label">{children}</span>
 
-            {!loading && rightIcon && (
-                <span className="btn__icon">{rightIcon}</span>
-            )}
+            {!loading && rightIcon && <span className="btn__icon">{rightIcon}</span>}
         </>
     );
 
@@ -80,6 +70,24 @@ const Button = forwardRef(function Button(
             transition: { duration: 0.15, ease: [0.22, 1, 0.36, 1] },
         };
 
+    /*  Case 1: `as` is a custom component (e.g., <Link>)  */
+    if (as && typeof as !== "string") {
+        const Tag = as;
+        return (
+            <Tag
+                ref={ref}
+                className={classes}
+                aria-disabled={isDisabled || undefined}
+                aria-busy={loading || undefined}
+                onClick={onClick}
+                {...rest}
+            >
+                {content}
+            </Tag>
+        );
+    }
+
+    /*  Case 2: native anchor (as="a" or href)  */
     const isLink = as === "a" || !!href;
 
     if (isLink) {
@@ -99,6 +107,7 @@ const Button = forwardRef(function Button(
         );
     }
 
+    /*  Case 3: default <button>  */
     return (
         <motion.button
             ref={ref}

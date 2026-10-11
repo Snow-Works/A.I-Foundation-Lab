@@ -1,0 +1,118 @@
+/* ============================================================
+   HERO BACKGROUND
+   Deep base + radial heat in the top-right corner.
+   ============================================================ */
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ---------- 1. BASE GRADIENT ---------- */
+/* ---------- 1. BASE GRADIENT ---------- */
+.hero-bg__gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    /* Single radial from the top-right corner */
+    radial-gradient(
+      ellipse 185% 95% at 100% 0%,
+      #F2511F 0%,
+      #C4162E 15%,
+      #8A2FD0 40%,
+      #2A1B9B 65%,
+      #140A5C 85%,
+      #0A0630 100%
+    );
+}
+
+/* ---------- 2. OPTIONAL SOFT GLOW (subtle, not shouty) ---------- */
+.hero-bg__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.hero-bg__glow--pink {
+  top: -20%;
+  right: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 63, 164, 0.30) 0%,
+    transparent 70%
+  );
+  animation: hero-glow-pink-drift 22s ease-in-out infinite alternate;
+}
+
+.hero-bg__glow--cyan {
+  bottom: -25%;
+  left: -20%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(
+    circle,
+    rgba(46, 200, 255, 0.16) 0%,
+    transparent 70%
+  );
+  animation: hero-glow-cyan-drift 26s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes hero-glow-pink-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-3%, 4%) scale(1.06); }
+}
+
+@keyframes hero-glow-cyan-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(4%, -3%) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg__glow {
+    animation: none;
+  }
+}
+
+/* ---------- 3. HEX DOT PATTERN ---------- */
+.hero-bg__pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--white);
+  opacity: 0.10;
+  pointer-events: none;
+}
+
+/* ---------- 4. EDGE FADE ---------- */
+.hero-bg__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(10, 6, 48, 0.65) 55%,
+    var(--ink-950) 100%
+  );
+  pointer-events: none;
+}
+
+/* ---------- TINY SCREEN ---------- */
+@media (max-width: 479px) {
+  .hero-bg__glow {
+    filter: blur(70px);
+  }
+  .hero-bg__pattern {
+    opacity: 0.08;
+  }
+}
