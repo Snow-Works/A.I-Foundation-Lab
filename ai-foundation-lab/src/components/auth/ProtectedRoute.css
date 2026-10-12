@@ -1,0 +1,41 @@
+/* ============================================================
+   PROTECTED ROUTE LOADER
+   ============================================================ */
+
+.protected-loader {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.protected-loader__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pink-400);
+  animation: protected-dot 1.2s ease-in-out infinite;
+}
+
+.protected-loader__dot:nth-child(2) {
+  animation-delay: 0.15s;
+  background: var(--magenta-500);
+}
+
+.protected-loader__dot:nth-child(3) {
+  animation-delay: 0.3s;
+  background: var(--cyan-400);
+}
+
+@keyframes protected-dot {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(-6px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .protected-loader__dot {
+    animation: none;
+    opacity: 0.8;
+  }
+}
