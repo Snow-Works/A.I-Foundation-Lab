@@ -48,7 +48,7 @@ export default function Navbar() {
 
                     <AuthDebug />
 
-                    <Button variant="primary" size="sm" as={Link} to="/style-guide">
+                    <Button variant="primary" size="sm" as={Link} to="/register">
                         Register
                     </Button>
                 </nav>
@@ -82,7 +82,7 @@ export default function Navbar() {
                             size="lg"
                             fullWidth
                             as={Link}
-                            to="/style-guide"
+                            to="/register"
                             onClick={() => setMobileOpen(false)}
                         >
                             Register

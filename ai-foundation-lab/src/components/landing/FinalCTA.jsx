@@ -89,7 +89,7 @@ export default function FinalCTA() {
                 size="lg"
                 rightIcon={<ArrowRight size={18} />}
                 as={Link}
-                to="/style-guide"
+                to="/register"
                 className="final-cta__register-btn"
               >
                 Register

@@ -4,7 +4,11 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import RootLayout from "./components/layout/RootLayout.jsx";
 import Landing from "./pages/Landing.jsx";
+import Register from "./pages/Register.jsx";
+import VerifyPending from "./pages/VerifyPending.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import AuthVerified from "./pages/AuthVerified.jsx";
+import Login from "./pages/Login.jsx";
 
 const StyleGuideLayout = lazy(() =>
   import("./pages/style-guide/StyleGuideLayout.jsx")
@@ -47,6 +51,11 @@ export default function App() {
         <Routes>
           <Route element={<RootLayout />}>
             <Route index element={<Landing />} />
+            <Route path="register" element={<Register />} />
+            <Route path="verify-pending" element={<VerifyPending />} />
+
+            <Route path="auth/verified" element={<AuthVerified />} />
+            <Route path="login" element={<Login />} />
 
             <Route
               path="style-guide"
