@@ -26,3 +26,8 @@ dist-ssr
 
 # PocketBase (whole folder — binary, data, docs)
 pocketbase/
+
+
+# Local env
+.env
+.env.local
