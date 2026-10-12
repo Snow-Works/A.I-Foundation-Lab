@@ -29,7 +29,7 @@ export async function uploadProfilePhoto(id, file) {
 }
 
 /* ---------- Compute full photo URL ---------- */
-export function photoUrl(record) {
+export function photoUrl(record, thumb = null) {
   if (!record || !record.photo) return null;
-  return pb.files.getUrl(record, record.photo);
+  return pb.files.getUrl(record, record.photo, thumb ? { thumb } : {});
 }

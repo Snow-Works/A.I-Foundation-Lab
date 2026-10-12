@@ -3,10 +3,9 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, ArrowRight, Info, AlertCircle } from "lucide-react";
+import { Mail, ArrowRight, AlertCircle } from "lucide-react";
 import { loginSchema } from "../lib/validation.js";
 import { authService } from "../services";
-import { useAuth } from "../context/AuthContext.jsx";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -16,11 +15,9 @@ import "./Register.css";
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { refresh } = useAuth();
 
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
-  const [needsVerification, setNeedsVerification] = useState(false);
 
   const {
     register,
@@ -30,43 +27,37 @@ export default function Login() {
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (values) => {
     setSubmitting(true);
     setFormError(null);
-    setNeedsVerification(false);
+    console.log("[login] submitting with:", { email: values.email });
 
     try {
-      await authService.login(values.email, values.password);
-      // Refresh auth context so the navbar re-renders
-      await refresh();
+      const auth = await authService.login(values.email, values.password);
+      console.log("[login] success:", auth);
 
-      // Where to send the user? Default to home for now.
-      // Step 3.10 will wire this to /profile.
-      const from = location.state?.from || "/";
+      // No refresh() call needed.
+      // authWithPassword already populated pb.authStore,
+      // and AuthContext's onChange listener will fire immediately.
+
+      const from = location.state?.from || "/profile";
       navigate(from, { replace: true });
     } catch (err) {
-      const message = err?.response?.message || err?.message || "";
+      console.error("[login] error object:", err);
+      console.error("[login] err.response:", err?.response);
+      console.error("[login] err.response.data:", err?.response?.data);
 
-      // PocketBase returns a specific message when the email isn't verified
-      if (message.toLowerCase().includes("verif")) {
-        setNeedsVerification(true);
-        setFormError(
-          "Your email isn't verified yet. Check your inbox for the verification link, or request a new one below."
-        );
-      } else if (
-        message.toLowerCase().includes("invalid") ||
-        message.toLowerCase().includes("credentials")
-      ) {
-        setFormError("Email or password is incorrect.");
-      } else {
-        setFormError(message || "Something went wrong. Please try again.");
-      }
+      const pbData = err?.response?.data || {};
+      let message = "";
+      if (pbData.email?.message) message = pbData.email.message;
+      else if (pbData.password?.message) message = pbData.password.message;
+      else if (err?.response?.message) message = err.response.message;
+      else if (err?.message) message = err.message;
+
+      setFormError(message || "Login failed. Open the console for details.");
     } finally {
       setSubmitting(false);
     }
@@ -92,26 +83,18 @@ export default function Login() {
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
-            <Field
-              label="Email"
-              required
-              error={errors.email?.message}
-            >
+            <Field label="Email" required error={errors.email?.message}>
               <Input
                 type="email"
                 placeholder="you@example.com"
                 leftIcon={<Mail size={16} />}
-                autoComplete="email"
+                autoComplete="off"
                 error={!!errors.email}
                 {...register("email")}
               />
             </Field>
 
-            <Field
-              label="Password"
-              required
-              error={errors.password?.message}
-            >
+            <Field label="Password" required error={errors.password?.message}>
               <Controller
                 name="password"
                 control={control}
@@ -120,7 +103,7 @@ export default function Login() {
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                     placeholder="Your password"
-                    autoComplete="current-password"
+                    autoComplete="off"
                     error={!!errors.password}
                   />
                 )}
@@ -130,21 +113,7 @@ export default function Login() {
             {formError && (
               <div className="register__form-error" role="alert">
                 <AlertCircle size={16} aria-hidden="true" />
-                <div>
-                  <span>{formError}</span>
-                  {needsVerification && (
-                    <div style={{ marginTop: 8 }}>
-                      <Link
-                        to={`/verify-pending?email=${encodeURIComponent(
-                          control._formValues.email || ""
-                        )}`}
-                        className="register__footer-link"
-                      >
-                        Resend verification email
-                      </Link>
-                    </div>
-                  )}
-                </div>
+                <span>{formError}</span>
               </div>
             )}
 
@@ -164,10 +133,6 @@ export default function Login() {
                 <Link to="/register" className="register__footer-link">
                   Create an account
                 </Link>
-              </p>
-              <p style={{ margin: 0 }}>
-                Forgot your password?{" "}
-                <span style={{ color: "var(--text-muted)" }}>Coming soon</span>
               </p>
             </div>
           </form>

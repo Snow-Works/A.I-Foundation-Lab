@@ -3,12 +3,15 @@ import { lazy, Suspense } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import RootLayout from "./components/layout/RootLayout.jsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import Landing from "./pages/Landing.jsx";
 import Register from "./pages/Register.jsx";
 import VerifyPending from "./pages/VerifyPending.jsx";
-import NotFound from "./pages/NotFound.jsx";
 import AuthVerified from "./pages/AuthVerified.jsx";
 import Login from "./pages/Login.jsx";
+import Profile from "./pages/Profile.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import PhotoUpload from "./pages/PhotoUpload.jsx";
 
 const StyleGuideLayout = lazy(() =>
   import("./pages/style-guide/StyleGuideLayout.jsx")
@@ -53,9 +56,18 @@ export default function App() {
             <Route index element={<Landing />} />
             <Route path="register" element={<Register />} />
             <Route path="verify-pending" element={<VerifyPending />} />
-
             <Route path="auth/verified" element={<AuthVerified />} />
             <Route path="login" element={<Login />} />
+
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                  <PhotoUpload />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="style-guide"
