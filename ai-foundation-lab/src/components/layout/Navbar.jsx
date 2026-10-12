@@ -4,6 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Menu, X as CloseIcon } from "lucide-react";
 import LogoMark from "../ui/LogoMark.jsx";
 import Button from "../ui/Button.jsx";
+import AuthDebug from "./AuthDebug.jsx";
 import "./RootLayout.css";
 
 export default function Navbar() {
@@ -42,8 +43,11 @@ export default function Navbar() {
                             `navbar__link type-ui ${isActive ? "navbar__link--active" : ""}`
                         }
                     >
-                        Style guide
+                        Lab guide
                     </NavLink>
+
+                    <AuthDebug />
+
                     <Button variant="primary" size="sm" as={Link} to="/style-guide">
                         Register
                     </Button>
