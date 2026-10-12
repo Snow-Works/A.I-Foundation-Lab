@@ -17,11 +17,11 @@ export function AuthProvider({ children }) {
      --------------------------------------------- */
   useEffect(() => {
     const unsubscribe = pb.authStore.onChange((_token, model) => {
+      console.log("[auth] store changed:", model?.email || "logged out");
       setUser(model || null);
     });
 
-    // Mark the initial bootstrap as done — we've read pb.authStore
-    // synchronously above, so the state is already accurate.
+    // Bootstrap done — we've read pb.authStore synchronously
     setLoading(false);
 
     return () => unsubscribe();
@@ -36,9 +36,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   /* ---------------------------------------------
-     Refresh — re-validates the current session
-     against the backend. Useful after a status
-     change (e.g., admin approved your account).
+     Refresh — re-validates the current session.
+     Only clears the store on real auth failures (401/403).
+     Transient errors (rate limit, network) leave the session intact.
      --------------------------------------------- */
   const refresh = useCallback(async () => {
     if (!pb.authStore.isValid) {
@@ -49,10 +49,16 @@ export function AuthProvider({ children }) {
       const auth = await pb.collection("profiles").authRefresh();
       setUser(auth.model);
       return auth.model;
-    } catch {
-      pb.authStore.clear();
-      setUser(null);
-      return null;
+    } catch (err) {
+      const status = err?.status || err?.response?.code;
+      // Only nuke the session if the server explicitly says we're not auth'd
+      if (status === 401 || status === 403) {
+        pb.authStore.clear();
+        setUser(null);
+        return null;
+      }
+      // Transient error (rate limit, server hiccup, network) — keep the session
+      return pb.authStore.model;
     }
   }, []);
 
