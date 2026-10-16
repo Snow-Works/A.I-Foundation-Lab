@@ -66,7 +66,7 @@ export async function confirmIdentityAndClaimToken({
  *   - validates eligibility
  *   - picks random questions
  *   - creates the attempt
- *   - returns { attempt, questions }
+ *   - returns { attempt, questions, drafts }
  *
  * Throws ClientResponseError on failure.
  *   - err.status === 409 → already have an attempt in progress
@@ -75,5 +75,28 @@ export async function confirmIdentityAndClaimToken({
  */
 export async function startExam() {
   const res = await pb.send("/api/exam/start", { method: "POST" });
+  return res;
+}
+
+/**
+ * Resume the current in-progress attempt.
+ * Returns { attempt, questions, drafts }.
+ * Throws ClientResponseError(404) if no attempt is in progress.
+ */
+export async function resumeExam() {
+  const res = await pb.send("/api/exam/resume", { method: "GET" });
+  return res;
+}
+
+
+/**
+ * Submit the given attempt. Finalizes all drafts server-side.
+ * Returns { attempt_id, submitted_at, answers_finalized, already_submitted? }.
+ */
+export async function submitExam(attemptId) {
+  const res = await pb.send("/api/exam/submit", {
+    method: "POST",
+    body: { attempt: attemptId },
+  });
   return res;
 }

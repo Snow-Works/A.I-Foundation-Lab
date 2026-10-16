@@ -2,18 +2,30 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 
-/**
- * CodeEditor — thin wrapper around CodeMirror configured for Python.
- * Controlled component: `value` and `onChange` are required.
- */
 export default function CodeEditor({
   value = "",
   onChange,
   disabled = false,
   placeholder = "Write your Python solution here…",
 }) {
+  // These prevent default copy/paste/cut/drop inside the editor.
+  // The proctoring hook also listens at the document level for
+  // logging — this just blocks the actual data transfer.
+  const stop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <div className="code-editor">
+    <div
+      className="code-editor"
+      onCopy={stop}
+      onCut={stop}
+      onPaste={stop}
+      onDrop={stop}
+      onDragStart={stop}
+      onContextMenu={stop}
+    >
       <CodeMirror
         value={value}
         onChange={onChange}
