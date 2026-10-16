@@ -10,8 +10,11 @@ import VerifyPending from "./pages/VerifyPending.jsx";
 import AuthVerified from "./pages/AuthVerified.jsx";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
-import NotFound from "./pages/NotFound.jsx";
 import PhotoUpload from "./pages/PhotoUpload.jsx";
+import ExamGate from "./pages/ExamGate.jsx";
+import ExamIntro from "./pages/ExamIntro.jsx";
+import ExamSession from "./pages/ExamSession.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 const StyleGuideLayout = lazy(() =>
   import("./pages/style-guide/StyleGuideLayout.jsx")
@@ -58,13 +61,37 @@ export default function App() {
             <Route path="verify-pending" element={<VerifyPending />} />
             <Route path="auth/verified" element={<AuthVerified />} />
             <Route path="login" element={<Login />} />
+            <Route path="exam-gate" element={<ExamGate />} />
 
             <Route
               path="profile"
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile/photo"
+              element={
+                <ProtectedRoute>
                   <PhotoUpload />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam/intro"
+              element={
+                <ProtectedRoute>
+                  <ExamIntro />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam/session/:attemptId"
+              element={
+                <ProtectedRoute>
+                  <ExamSession />
                 </ProtectedRoute>
               }
             />
