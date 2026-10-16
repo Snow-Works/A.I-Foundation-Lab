@@ -1,44 +1,45 @@
 // src/pages/ExamSession.jsx
-import { useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
+import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
-import Button from "../components/ui/Button.jsx";
+import ExamToolbar from "../components/exam/ExamToolbar.jsx";
+import QuestionNav from "../components/exam/QuestionNav.jsx";
+import QuestionPanel from "../components/exam/QuestionPanel.jsx";
 import "./ExamSession.css";
 
-export default function ExamSession() {
+export default function ExamSession({ location }) {
+  // location prop is injected below via the wrapper in App.jsx? No —
+  // we use useLocation here for the standard path. Kept flexible.
+  return <ExamSessionInner location={location} />;
+}
+
+import { useLocation } from "react-router-dom";
+
+function ExamSessionInner() {
   const location = useLocation();
-  const params = useParams();
-  const attemptId = params.attemptId;
+  const attempt = location.state?.attempt;
+  const questions = location.state?.questions;
 
-  const state = location.state;
-  const attempt = state?.attempt;
-  const questions = state?.questions;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState({});
 
-  // Fullscreen request on mount — keeps the session going if the user reloads
-  useEffect(() => {
-    if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-  }, []);
-
-  if (!attempt || !questions) {
+  /* ---------- No session ---------- */
+  if (!attempt || !questions || questions.length === 0) {
     return (
-      <section className="exam-session section">
+      <section className="exam-session-empty section">
         <div className="container-narrow">
           <Card variant="glass" size="lg" withTab tone="danger">
             <PillTab floating position="center" variant="default">
               No session
             </PillTab>
-            <div className="exam-session__center">
-              <div className="exam-session__icon exam-session__icon--error">
+            <div className="exam-session-empty__center">
+              <div className="exam-session-empty__icon">
                 <AlertCircle size={28} />
               </div>
-              <h1
-                className="type-h3"
-                style={{ color: "var(--white)", margin: 0 }}
-              >
+              <h1 className="type-h3" style={{ color: "var(--white)", margin: 0 }}>
                 No active session found
               </h1>
               <p className="type-body" style={{ maxWidth: "46ch", margin: 0 }}>
@@ -55,77 +56,85 @@ export default function ExamSession() {
     );
   }
 
+  /* ---------- Handlers ---------- */
+  const currentQuestion = questions[currentIndex];
+
+  const handleAnswerChange = (questionId, value) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((i) => Math.min(i + 1, questions.length - 1));
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((i) => Math.max(i - 1, 0));
+  };
+
+  const handleJump = (index) => {
+    setCurrentIndex(index);
+  };
+
+  const handleSubmit = () => {
+    alert(
+      "Submission arrives in the next build step (5.10). For now, your answers stay in memory."
+    );
+  };
+
+  const answeredCount = Object.values(answers).filter(
+    (v) => v && v.trim().length > 0
+  ).length;
+
   return (
-    <section className="exam-session section">
-      <div className="container-narrow">
-        <Card variant="glass" size="lg" withTab glow="cyan">
-          <PillTab floating position="center" variant="cyan">
-            Session active
-          </PillTab>
+    <div className="exam-session-shell">
+      <ExamToolbar
+        attempt={attempt}
+        answeredCount={answeredCount}
+        totalCount={questions.length}
+        currentIndex={currentIndex}
+        onSubmit={handleSubmit}
+      />
 
-          <div className="exam-session__center">
-            <div className="exam-session__icon exam-session__icon--success">
-              <CheckCircle2 size={28} />
-            </div>
-            <h1
-              className="type-h3"
-              style={{ color: "var(--white)", margin: 0 }}
+      <div className="exam-session-body">
+        <QuestionNav
+          questions={questions}
+          answers={answers}
+          currentIndex={currentIndex}
+          onJump={handleJump}
+        />
+
+        <main className="exam-session-main">
+          {currentQuestion && (
+            <QuestionPanel
+              key={currentQuestion.id}
+              question={currentQuestion}
+              index={currentIndex}
+              total={questions.length}
+              value={answers[currentQuestion.id] || ""}
+              onChange={(val) => handleAnswerChange(currentQuestion.id, val)}
+            />
+          )}
+
+          <div className="exam-session-nav-buttons">
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
             >
-              Your exam has started
-            </h1>
-            <p className="type-body" style={{ maxWidth: "48ch", margin: 0 }}>
-              {questions.length} questions assigned at random from the bank.
-              The code editor arrives in the next build step.
-            </p>
-          </div>
-
-          <div className="exam-session__meta">
-            <div className="exam-session__meta-row">
-              <span className="exam-session__meta-label">Attempt ID</span>
-              <code className="exam-session__meta-value">{attempt.id}</code>
-            </div>
-            <div className="exam-session__meta-row">
-              <span className="exam-session__meta-label">
-                <Clock size={12} /> Started
-              </span>
-              <span className="exam-session__meta-value">
-                {new Date(attempt.started_at).toLocaleString()}
-              </span>
-            </div>
-            <div className="exam-session__meta-row">
-              <span className="exam-session__meta-label">
-                <Clock size={12} /> Deadline
-              </span>
-              <span className="exam-session__meta-value">
-                {new Date(attempt.deadline_at).toLocaleString()}
-              </span>
-            </div>
-          </div>
-
-          <div className="exam-session__questions">
-            <h2 className="exam-intro__section-title">
-              Assigned questions
-            </h2>
-            <ol className="exam-session__list">
-              {questions.map((q) => (
-                <li key={q.id}>
-                  <span className="exam-session__qtitle">{q.title}</span>
-                  <span className="exam-session__qmeta">
-                    {q.difficulty}
-                    {q.topic ? ` · ${q.topic}` : ""}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div style={{ marginTop: "var(--space-6)" }}>
-            <Button variant="secondary" size="lg" fullWidth as={Link} to="/profile">
-              Back to profile
+              ← Previous
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleNext}
+              disabled={currentIndex === questions.length - 1}
+            >
+              Next →
             </Button>
           </div>
-        </Card>
+        </main>
       </div>
-    </section>
+    </div>
   );
 }
