@@ -42,6 +42,15 @@
   padding-top: 0; /* hero handles its own top spacing */
 }
 
+/* Full-bleed layout for pages that take over the viewport */
+.app-shell--full {
+  min-height: 100dvh;
+}
+
+.app-main--full {
+  padding-top: 0;
+}
+
 /* ============================================================
    NAVBAR
    ============================================================ */

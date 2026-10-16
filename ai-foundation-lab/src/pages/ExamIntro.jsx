@@ -14,6 +14,7 @@ import {
 import { useAuth } from "../context/AuthContext.jsx";
 import { getAppSettings } from "../services/settingsService.js";
 import { startExam } from "../services/examService.js";
+import pb from "../lib/pocketbase";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -24,6 +25,7 @@ export default function ExamIntro() {
   const { user } = useAuth();
 
   const [settings, setSettings] = useState(null);
+  const [questionCount, setQuestionCount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
@@ -32,11 +34,27 @@ export default function ExamIntro() {
     let cancelled = false;
 
     (async () => {
+      // Load settings
       try {
         const s = await getAppSettings({ force: true });
         if (!cancelled) setSettings(s);
       } catch (err) {
         console.error("[exam-intro] settings load error:", err);
+      }
+
+      // Load active blueprint for question count
+      try {
+        const bp = await pb
+          .collection("exam_blueprints")
+          .getFirstListItem("is_active = true");
+        const total =
+          (bp.easy_count || 0) +
+          (bp.medium_count || 0) +
+          (bp.hard_count || 0);
+        if (!cancelled) setQuestionCount(total || 15);
+      } catch (err) {
+        console.warn("[exam-intro] blueprint load failed, defaulting to 15");
+        if (!cancelled) setQuestionCount(15);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -47,7 +65,7 @@ export default function ExamIntro() {
     };
   }, []);
 
-  const durationMinutes = settings?.exam_duration_minutes || 60;
+  const durationMinutes = settings?.exam_duration_minutes || 105;
   const attemptsRemaining = user?.attempts_remaining ?? 0;
   const attemptLimit = settings?.attempt_limit || 2;
 
@@ -55,8 +73,6 @@ export default function ExamIntro() {
     setError("");
     setStarting(true);
 
-    // Request fullscreen first. If the browser blocks it, we still proceed —
-    // the proctoring layer (Step 5.8) will re-request it inside the session.
     try {
       const el = document.documentElement;
       if (el.requestFullscreen && !document.fullscreenElement) {
@@ -68,7 +84,6 @@ export default function ExamIntro() {
 
     try {
       const result = await startExam();
-      // result = { attempt: {...}, questions: [...] }
       navigate(`/exam/session/${result.attempt.id}`, {
         replace: true,
         state: result,
@@ -76,13 +91,10 @@ export default function ExamIntro() {
     } catch (err) {
       console.error("[exam-intro] start exam error:", err);
 
-      // If a previous attempt is in progress, jump straight to it
       if (err?.status === 409) {
         const pbData = err?.response?.data || err?.response || {};
         const attemptId = pbData.attemptId;
         if (attemptId) {
-          // Still navigate — the session page will complain if it can't
-          // find the state. For now, we send them back to intro.
           setError(
             "You already have an exam in progress. Please wait for the current attempt to finish or contact an admin."
           );
@@ -158,7 +170,7 @@ export default function ExamIntro() {
               <div>
                 <span className="exam-intro__stat-label">Questions</span>
                 <span className="exam-intro__stat-value">
-                  15 coding problems
+                  {questionCount} coding problems
                 </span>
               </div>
             </div>

@@ -1,21 +1,52 @@
 // src/components/exam/ExamToolbar.jsx
-import { Clock, Save, Send } from "lucide-react";
+import { Clock, Send, Check, Cloud, Loader2 } from "lucide-react";
 import Button from "../ui/Button.jsx";
 
-/**
- * ExamToolbar — top bar with timer, progress, and submit.
- *
- * The timer is a static placeholder for now; the real countdown
- * arrives in Step 5.9.
- */
+function SaveIndicator({ status }) {
+  if (status === "saving") {
+    return (
+      <span className="exam-toolbar__save exam-toolbar__save--saving">
+        <Loader2 size={12} className="exam-toolbar__save-spinner" />
+        Saving…
+      </span>
+    );
+  }
+  if (status === "saved") {
+    return (
+      <span className="exam-toolbar__save exam-toolbar__save--saved">
+        <Check size={12} />
+        Saved
+      </span>
+    );
+  }
+  if (status === "offline") {
+    return (
+      <span className="exam-toolbar__save exam-toolbar__save--offline">
+        <Cloud size={12} />
+        Offline — retrying
+      </span>
+    );
+  }
+  return null;
+}
+
 export default function ExamToolbar({
   attempt,
   answeredCount,
   totalCount,
   currentIndex,
+  saveStatus,
+  timer,
   onSubmit,
 }) {
-  // Format the deadline as HH:MM:SS placeholder
+  const timerClass = [
+    "exam-toolbar__timer",
+    timer?.isUrgent && "exam-toolbar__timer--urgent",
+    timer?.isCritical && "exam-toolbar__timer--critical",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const deadlineLabel = attempt?.deadline_at
     ? new Date(attempt.deadline_at).toLocaleTimeString([], {
         hour: "2-digit",
@@ -27,14 +58,15 @@ export default function ExamToolbar({
     <header className="exam-toolbar">
       <div className="exam-toolbar__left">
         <span className="exam-toolbar__badge">Exam in progress</span>
+        <SaveIndicator status={saveStatus} />
       </div>
 
       <div className="exam-toolbar__center">
         <Clock size={16} className="exam-toolbar__icon" />
-        <span className="exam-toolbar__timer">--:--</span>
-        <span className="exam-toolbar__deadline">
-          Ends {deadlineLabel}
+        <span className={timerClass}>
+          {timer?.formatted || "--:--"}
         </span>
+        <span className="exam-toolbar__deadline">Ends {deadlineLabel}</span>
       </div>
 
       <div className="exam-toolbar__right">

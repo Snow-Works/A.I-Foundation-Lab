@@ -1,6 +1,6 @@
 // src/pages/Profile.jsx
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   LogOut,
   Mail,
@@ -10,7 +10,7 @@ import {
   ExternalLink,
   CheckCircle2,
   Image as ImageIcon,
-  Loader2,
+  ShieldAlert,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { photoUrl } from "../services/profileService.js";
@@ -24,6 +24,8 @@ import "./Profile.css";
 export default function Profile() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [searchParams] = useSearchParams();
+  const wasTerminated = searchParams.get("terminated") === "1";
 
   const [openingCommunity, setOpeningCommunity] = useState(false);
   const [communityError, setCommunityError] = useState("");
@@ -59,8 +61,6 @@ export default function Profile() {
         return;
       }
 
-      // Open in a new tab. The URL is fetched and used immediately —
-      // it never enters the DOM.
       const opened = window.open(url, "_blank", "noopener,noreferrer");
       if (!opened) {
         setCommunityError(
@@ -78,6 +78,23 @@ export default function Profile() {
   return (
     <section className="profile section">
       <div className="container profile__container">
+        {/* ---------- TERMINATED BANNER (top of page) ---------- */}
+        {wasTerminated && (
+          <div className="profile__terminated-banner" role="alert">
+            <ShieldAlert size={20} aria-hidden="true" />
+            <div>
+              <p className="profile__terminated-title">
+                Your exam was terminated
+              </p>
+              <p className="profile__terminated-desc">
+                A proctoring rule was broken twice, or fullscreen was exited.
+                Your drafts were saved. You can start a fresh attempt below if
+                you have attempts remaining.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* ---------- HEADER ---------- */}
         <header className="profile__header">
           <div className="profile__identity">
@@ -114,7 +131,12 @@ export default function Profile() {
         </header>
 
         {/* ---------- PROGRESS ---------- */}
-        <Card variant="glass" size="lg" withTab className="profile__progress-card">
+        <Card
+          variant="glass"
+          size="lg"
+          withTab
+          className="profile__progress-card"
+        >
           <PillTab floating position="center" variant="default">
             Your Progress
           </PillTab>
@@ -202,13 +224,9 @@ export default function Profile() {
                     fullWidth
                     onClick={handleOpenCommunity}
                     loading={openingCommunity}
-                    rightIcon={
-                      !openingCommunity && <ExternalLink size={16} />
-                    }
+                    rightIcon={!openingCommunity && <ExternalLink size={16} />}
                   >
-                    {openingCommunity
-                      ? "Opening…"
-                      : "Open Telegram group"}
+                    {openingCommunity ? "Opening…" : "Open Telegram group"}
                   </Button>
                 </div>
 
@@ -274,9 +292,15 @@ export default function Profile() {
         {/* ---------- WHAT'S NEXT ---------- */}
         <Card variant="outline" size="md">
           <div className="profile__next">
-            <ExternalLink size={16} className="icon-gradient" aria-hidden="true" />
+            <ExternalLink
+              size={16}
+              className="icon-gradient"
+              aria-hidden="true"
+            />
             <p className="type-body-sm" style={{ margin: 0 }}>
-              <strong style={{ color: "var(--white)" }}>What happens next:</strong>{" "}
+              <strong style={{ color: "var(--white)" }}>
+                What happens next:
+              </strong>{" "}
               {user.photo_verified
                 ? "Join the Telegram group for orientation. Admins will release the Exam Gate link when a window opens."
                 : "An admin reviews your registration. Once approved, you'll upload a profile photo, unlock the Telegram community, and receive your Exam Gate link when a window opens."}

@@ -29,3 +29,42 @@
   user-select: none;
   -webkit-touch-callout: none;
 }
+
+
+
+/* ============================================================
+   TERMINATED BANNER
+   ============================================================ */
+
+.profile__terminated-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.40);
+  color: var(--silver);
+}
+
+.profile__terminated-banner svg {
+  flex-shrink: 0;
+  color: #FF6B6B;
+  margin-top: 2px;
+}
+
+.profile__terminated-title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-base);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.profile__terminated-desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+  margin: 0;
+}

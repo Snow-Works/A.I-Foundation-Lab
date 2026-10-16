@@ -1,0 +1,100 @@
+/* ============================================================
+   VIOLATION MODAL
+   ============================================================ */
+
+.violation-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(5, 3, 24, 0.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.violation-modal {
+  width: 100%;
+  max-width: 460px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: rgba(20, 10, 92, 0.96);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+}
+
+.violation-modal--warning {
+  border-color: rgba(242, 81, 31, 0.55);
+}
+
+.violation-modal--terminated {
+  border-color: rgba(225, 6, 0, 0.55);
+}
+
+.violation-modal__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.violation-modal--warning .violation-modal__icon {
+  background: rgba(242, 81, 31, 0.12);
+  border: 1px solid rgba(242, 81, 31, 0.45);
+  color: var(--orange-500);
+}
+
+.violation-modal--terminated .violation-modal__icon {
+  background: rgba(225, 6, 0, 0.12);
+  border: 1px solid rgba(225, 6, 0, 0.45);
+  color: #FF6B6B;
+}
+
+.violation-modal__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-2xl);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+  color: var(--white);
+  margin: 0;
+}
+
+.violation-modal__desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+  margin: 0;
+}
+
+.violation-modal__note {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  color: var(--text-muted);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  width: 100%;
+}
+
+.violation-modal__note strong {
+  color: var(--white);
+}
+
+.violation-modal__actions {
+  width: 100%;
+  margin-top: var(--space-2);
+}
