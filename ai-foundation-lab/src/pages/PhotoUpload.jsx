@@ -1,6 +1,6 @@
 // src/pages/PhotoUpload.jsx
-import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Upload,
@@ -8,82 +8,155 @@ import {
   Info,
   CheckCircle2,
   XCircle,
-  Loader2,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { detectFacesInFile } from "../lib/faceDetector.js";
+import { compressImage } from "../lib/imageCompressor.js";
+import { uploadProfilePhoto } from "../services/profileService.js";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
 import Button from "../components/ui/Button.jsx";
 import "./PhotoUpload.css";
 
-/* ------------------------------------------------------------
-   Status of the current photo
-   ------------------------------------------------------------ */
 const STATUS = {
   IDLE: "idle",
   ANALYZING: "analyzing",
+  COMPRESSING: "compressing",
   VALID: "valid",
   NO_FACE: "no_face",
   MULTIPLE_FACES: "multiple_faces",
   ERROR: "error",
 };
 
+function formatBytes(bytes) {
+  if (!bytes) return "0 B";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 export default function PhotoUpload() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const fileInputRef = useRef(null);
+  const previousUrlRef = useRef(null);
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [compressedFile, setCompressedFile] = useState(null);
   const [faceCount, setFaceCount] = useState(0);
+  const [stats, setStats] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (previousUrlRef.current) {
+        URL.revokeObjectURL(previousUrlRef.current);
+      }
+    };
+  }, []);
+
+  const swapPreview = (newUrl) => {
+    if (previousUrlRef.current && previousUrlRef.current !== newUrl) {
+      URL.revokeObjectURL(previousUrlRef.current);
+    }
+    previousUrlRef.current = newUrl;
+    setPreviewUrl(newUrl);
+  };
+
   const openFilePicker = () => {
+    if (saving) return;
     fileInputRef.current?.click();
+  };
+
+  const resetAll = () => {
+    swapPreview(null);
+    setCompressedFile(null);
+    setFaceCount(0);
+    setStats(null);
+    setErrorMessage("");
+    setSaveError("");
+    setStatus(STATUS.IDLE);
   };
 
   const handleFilePicked = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Reset previous state
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(URL.createObjectURL(file));
-    setFaceCount(0);
-    setErrorMessage("");
+    resetAll();
+    swapPreview(URL.createObjectURL(file));
     setStatus(STATUS.ANALYZING);
 
     try {
       const { count } = await detectFacesInFile(file);
-
       setFaceCount(count);
 
       if (count === 0) {
         setStatus(STATUS.NO_FACE);
-      } else if (count > 1) {
-        setStatus(STATUS.MULTIPLE_FACES);
-      } else {
-        setStatus(STATUS.VALID);
+        return;
       }
+      if (count > 1) {
+        setStatus(STATUS.MULTIPLE_FACES);
+        return;
+      }
+
+      setStatus(STATUS.COMPRESSING);
+      const result = await compressImage(file);
+
+      swapPreview(URL.createObjectURL(result.blob));
+      setCompressedFile(result.blob);
+      setStats({
+        originalSize: result.originalSize,
+        size: result.size,
+        width: result.width,
+        height: result.height,
+      });
+
+      setStatus(STATUS.VALID);
     } catch (err) {
-      console.error("[photo-upload] detection error:", err);
+      console.error("[photo-upload] error:", err);
       setStatus(STATUS.ERROR);
-      setErrorMessage(err?.message || "Face detection failed.");
+      setErrorMessage(err?.message || "Could not process this image.");
     } finally {
-      // Allow the same file to be picked again
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   const retake = () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(null);
-    setFaceCount(0);
-    setErrorMessage("");
-    setStatus(STATUS.IDLE);
-    fileInputRef.current?.click();
+    if (saving) return;
+    resetAll();
+    setTimeout(() => fileInputRef.current?.click(), 0);
   };
+
+  const handleSave = async () => {
+    if (!compressedFile || !user) return;
+    if (status !== STATUS.VALID) return;
+
+    setSaving(true);
+    setSaveError("");
+
+    try {
+      await uploadProfilePhoto(user.id, compressedFile, user.status);
+      navigate("/profile", { replace: true });
+    } catch (err) {
+      console.error("[photo-upload] save error:", err);
+      const pbData = err?.response?.data || {};
+      const message =
+        pbData.photo?.message ||
+        err?.response?.message ||
+        err?.message ||
+        "Could not save your photo. Please try again.";
+      setSaveError(message);
+      setSaving(false);
+    }
+  };
+
+  const isBusy = status === STATUS.ANALYZING || status === STATUS.COMPRESSING;
 
   return (
     <section className="photo-upload section">
@@ -109,7 +182,9 @@ export default function PhotoUpload() {
           </header>
 
           {/* ---------- PREVIEW ---------- */}
-          <div className={`photo-upload__preview photo-upload__preview--${status}`}>
+          <div
+            className={`photo-upload__preview photo-upload__preview--${status}`}
+          >
             {previewUrl ? (
               <img
                 src={previewUrl}
@@ -128,11 +203,17 @@ export default function PhotoUpload() {
               </div>
             )}
 
-            {/* Status overlay */}
             {status === STATUS.ANALYZING && (
               <div className="photo-upload__overlay photo-upload__overlay--info">
                 <Loader2 size={20} className="photo-upload__spinner" />
                 <span>Checking for a face…</span>
+              </div>
+            )}
+
+            {status === STATUS.COMPRESSING && (
+              <div className="photo-upload__overlay photo-upload__overlay--info">
+                <Loader2 size={20} className="photo-upload__spinner" />
+                <span>Compressing…</span>
               </div>
             )}
 
@@ -165,6 +246,29 @@ export default function PhotoUpload() {
             )}
           </div>
 
+          {/* ---------- STATS ---------- */}
+          {status === STATUS.VALID && stats && (
+            <div className="photo-upload__stats">
+              <span className="photo-upload__stats-item">
+                {formatBytes(stats.originalSize)}
+                {" → "}
+                <strong>{formatBytes(stats.size)}</strong>
+              </span>
+              <span className="photo-upload__stats-divider" aria-hidden="true" />
+              <span className="photo-upload__stats-item">
+                {stats.width} × {stats.height}
+              </span>
+            </div>
+          )}
+
+          {/* ---------- SAVE ERROR ---------- */}
+          {saveError && (
+            <div className="photo-upload__save-error" role="alert">
+              <XCircle size={16} />
+              <span>{saveError}</span>
+            </div>
+          )}
+
           {/* ---------- ACTIONS ---------- */}
           <div className="photo-upload__actions">
             <input
@@ -183,6 +287,7 @@ export default function PhotoUpload() {
                   fullWidth
                   leftIcon={<Upload size={18} />}
                   onClick={openFilePicker}
+                  disabled={saving}
                 >
                   Upload a photo
                 </Button>
@@ -192,6 +297,7 @@ export default function PhotoUpload() {
                   fullWidth
                   leftIcon={<Camera size={18} />}
                   onClick={openFilePicker}
+                  disabled={saving}
                 >
                   Take a photo
                 </Button>
@@ -203,7 +309,7 @@ export default function PhotoUpload() {
                   size="lg"
                   fullWidth
                   onClick={retake}
-                  disabled={status === STATUS.ANALYZING}
+                  disabled={isBusy || saving}
                 >
                   Try a different photo
                 </Button>
@@ -212,9 +318,11 @@ export default function PhotoUpload() {
                   variant="primary"
                   size="lg"
                   fullWidth
+                  onClick={handleSave}
+                  loading={saving}
                   disabled={status !== STATUS.VALID}
                 >
-                  Save this photo
+                  {saving ? "Saving…" : "Save this photo"}
                 </Button>
               </>
             )}

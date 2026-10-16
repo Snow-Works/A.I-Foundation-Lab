@@ -213,7 +213,7 @@
   right: var(--space-3);
   bottom: var(--space-3);
   padding: 10px 14px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -264,4 +264,80 @@
   .photo-upload__overlay {
     animation: none;
   }
+}
+
+
+
+
+/* ============================================================
+   COMPRESSION STATS BADGE
+   ============================================================ */
+
+.photo-upload__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px 16px;
+  margin: calc(-1 * var(--space-3)) auto var(--space-5);
+  border-radius: var(--radius-md);
+  background: rgba(46, 200, 255, 0.08);
+  border: 1px solid rgba(46, 200, 255, 0.28);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+  width: fit-content;
+  animation: photo-stats-in 0.25s var(--ease-out);
+}
+
+@keyframes photo-stats-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.photo-upload__stats-item {
+  white-space: nowrap;
+}
+
+.photo-upload__stats-item strong {
+  color: var(--cyan-400);
+  font-weight: var(--fw-semibold);
+}
+
+.photo-upload__stats-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-upload__stats {
+    animation: none;
+  }
+}
+
+
+
+/* ============================================================
+   SAVE ERROR
+   ============================================================ */
+
+.photo-upload__save-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  color: var(--silver);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+
+.photo-upload__save-error svg {
+  flex-shrink: 0;
+  color: #FF6B6B;
+  margin-top: 2px;
 }

@@ -1,7 +1,20 @@
 // src/pages/Profile.jsx
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LogOut, Mail, Phone, User, Lock, ExternalLink } from "lucide-react";
+import {
+  LogOut,
+  Mail,
+  Phone,
+  User,
+  Lock,
+  ExternalLink,
+  CheckCircle2,
+  Image as ImageIcon,
+  Loader2,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { photoUrl } from "../services/profileService.js";
+import { getCommunityLink } from "../services/settingsService.js";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -12,15 +25,54 @@ export default function Profile() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  const [openingCommunity, setOpeningCommunity] = useState(false);
+  const [communityError, setCommunityError] = useState("");
+
   if (!user) return null;
 
   const fullName = [user.first_name, user.middle_name, user.surname]
     .filter(Boolean)
     .join(" ");
 
+  const photoThumb = photoUrl(user, "256x256");
+  const initials =
+    (user.first_name?.[0]?.toUpperCase() || "?") +
+    (user.surname?.[0]?.toUpperCase() || "");
+
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
+  };
+
+  const handleOpenCommunity = async () => {
+    if (openingCommunity) return;
+    setOpeningCommunity(true);
+    setCommunityError("");
+
+    try {
+      const { url, enabled } = await getCommunityLink();
+
+      if (!enabled || !url) {
+        setCommunityError(
+          "The community link isn't ready yet. Check back soon."
+        );
+        return;
+      }
+
+      // Open in a new tab. The URL is fetched and used immediately —
+      // it never enters the DOM.
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        setCommunityError(
+          "Your browser blocked the new tab. Allow pop-ups for this site and try again."
+        );
+      }
+    } catch (err) {
+      console.error("[profile] community error:", err);
+      setCommunityError("Couldn't open the community link. Try again.");
+    } finally {
+      setOpeningCommunity(false);
+    }
   };
 
   return (
@@ -29,10 +81,19 @@ export default function Profile() {
         {/* ---------- HEADER ---------- */}
         <header className="profile__header">
           <div className="profile__identity">
-            <div className="profile__avatar" aria-hidden="true">
-              {user.first_name?.[0]?.toUpperCase() || "?"}
-              {user.surname?.[0]?.toUpperCase() || ""}
-            </div>
+            {photoThumb ? (
+              <div
+                className="profile__avatar profile__avatar--with-photo"
+                aria-hidden="true"
+              >
+                <img src={photoThumb} alt="" />
+              </div>
+            ) : (
+              <div className="profile__avatar" aria-hidden="true">
+                {initials}
+              </div>
+            )}
+
             <div>
               <p className="type-caption" style={{ marginBottom: 4 }}>
                 Welcome back
@@ -109,44 +170,104 @@ export default function Profile() {
             </p>
           </Card>
 
-          {/* Community link */}
+          {/* Community card */}
           <Card variant="glass" size="lg" withTab glow="pink">
             <PillTab floating position="left" variant="default">
               Community
             </PillTab>
 
-            <div className="profile__locked">
-              <div className="profile__locked-icon" aria-hidden="true">
-                <Lock size={22} />
-              </div>
-
-              <h3 className="profile__locked-title">
-                Join the AI Foundation Lab Telegram group
-              </h3>
-
-              <p className="profile__locked-desc">
-                Once your photo is verified, the group link unlocks here.
-                Upload a clear photo of your face from your profile to
-                continue.
-              </p>
-
-              <div className="profile__locked-cta">
-                <Button
-                  variant="primary"
-                  size="md"
-                  fullWidth
-                  as={Link}
-                  to="/profile/photo"
-                  rightIcon={<ExternalLink size={16} />}
+            {user.photo_verified ? (
+              <div className="profile__community-live no-select">
+                <div
+                  className="profile__locked-icon profile__locked-icon--success"
+                  aria-hidden="true"
                 >
-                  Upload your photo
-                </Button>
-              </div>
+                  <CheckCircle2 size={22} />
+                </div>
 
-              <p className="profile__locked-note">
-                Photo verification arrives in the next phase of the build.
-              </p>
-            </div>
+                <h3 className="profile__locked-title">
+                  Join the AI Foundation Lab Telegram group
+                </h3>
+
+                <p className="profile__locked-desc">
+                  Your face is verified. Tap below to open the group in a new
+                  tab. The link is fetched fresh each time and never stored on
+                  this page.
+                </p>
+
+                <div className="profile__locked-cta">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    onClick={handleOpenCommunity}
+                    loading={openingCommunity}
+                    rightIcon={
+                      !openingCommunity && <ExternalLink size={16} />
+                    }
+                  >
+                    {openingCommunity
+                      ? "Opening…"
+                      : "Open Telegram group"}
+                  </Button>
+                </div>
+
+                {communityError && (
+                  <p className="profile__community-error" role="alert">
+                    {communityError}
+                  </p>
+                )}
+
+                <div className="profile__photo-preview">
+                  <img src={photoThumb} alt="Your verified photo" />
+                </div>
+
+                <div className="profile__locked-cta">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    fullWidth
+                    as={Link}
+                    to="/profile/photo"
+                    leftIcon={<ImageIcon size={14} />}
+                  >
+                    Replace photo
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="profile__locked">
+                <div className="profile__locked-icon" aria-hidden="true">
+                  <Lock size={22} />
+                </div>
+
+                <h3 className="profile__locked-title">
+                  Join the AI Foundation Lab Telegram group
+                </h3>
+
+                <p className="profile__locked-desc">
+                  Once your photo is verified, the group link unlocks here.
+                  Upload a clear photo of your face to continue.
+                </p>
+
+                <div className="profile__locked-cta">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    fullWidth
+                    as={Link}
+                    to="/profile/photo"
+                    rightIcon={<ExternalLink size={16} />}
+                  >
+                    Upload your photo
+                  </Button>
+                </div>
+
+                <p className="profile__locked-note">
+                  One face, well lit, no filters.
+                </p>
+              </div>
+            )}
           </Card>
         </div>
 
@@ -156,9 +277,9 @@ export default function Profile() {
             <ExternalLink size={16} className="icon-gradient" aria-hidden="true" />
             <p className="type-body-sm" style={{ margin: 0 }}>
               <strong style={{ color: "var(--white)" }}>What happens next:</strong>{" "}
-              An admin reviews your registration. Once approved, you'll upload
-              a profile photo, unlock the Telegram community, and receive your
-              Exam Gate link when a window opens.
+              {user.photo_verified
+                ? "Join the Telegram group for orientation. Admins will release the Exam Gate link when a window opens."
+                : "An admin reviews your registration. Once approved, you'll upload a profile photo, unlock the Telegram community, and receive your Exam Gate link when a window opens."}
             </p>
           </div>
         </Card>

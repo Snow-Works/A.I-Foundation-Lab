@@ -1,163 +1,8 @@
 /* ============================================================
-   PROFILE PAGE
+   LIVE COMMUNITY CARD
    ============================================================ */
 
-.profile {
-  padding-top: var(--space-7);
-  padding-bottom: var(--space-9);
-}
-
-.profile__container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  max-width: 1080px;
-}
-
-/* ---------- HEADER ---------- */
-.profile__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-@media (min-width: 640px) {
-  .profile__header {
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-.profile__identity {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  min-width: 0;
-}
-
-.profile__avatar {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--gradient-button);
-  color: var(--white);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: var(--fw-black);
-  font-size: var(--fs-lg);
-  letter-spacing: 0.02em;
-  box-shadow: 0 6px 20px rgba(255, 63, 164, 0.30);
-}
-
-.profile__name {
-  font-family: var(--font-display);
-  font-weight: var(--fw-black);
-  font-size: var(--fs-2xl);
-  color: var(--white);
-  letter-spacing: var(--tracking-tight);
-  margin: 0;
-  line-height: var(--lh-snug);
-}
-
-.profile__email {
-  color: var(--text-muted);
-  margin: 4px 0 0;
-  word-break: break-all;
-}
-
-/* ---------- PROGRESS CARD ---------- */
-.profile__progress-card {
-  margin-top: var(--space-3); /* room for pill floating above */
-}
-
-/* ---------- GRID ---------- */
-.profile__grid {
-  display: grid;
-  gap: var(--space-6);
-  margin-top: var(--space-3);
-}
-
-@media (min-width: 900px) {
-  .profile__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
-  }
-}
-
-/* ---------- DETAILS ---------- */
-.profile__details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  margin: 0;
-  padding-top: var(--space-2);
-}
-
-.profile__detail {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.profile__detail dt {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-display);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-xs);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
-  color: var(--text-muted);
-}
-
-.profile__detail dt svg {
-  color: var(--cyan-400);
-}
-
-.profile__detail dd {
-  font-family: var(--font-body);
-  font-size: var(--fs-base);
-  color: var(--white);
-  margin: 0;
-  word-break: break-word;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.profile__verified-tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  background: rgba(46, 200, 255, 0.12);
-  border: 1px solid rgba(46, 200, 255, 0.35);
-  color: var(--cyan-400);
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-medium);
-  letter-spacing: 0.02em;
-}
-
-.profile__hint {
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
-  line-height: var(--lh-relaxed);
-  margin: var(--space-5) 0 0;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--glass-border);
-}
-
-/* ---------- LOCKED COMMUNITY ---------- */
-.profile__locked {
+.profile__community-live {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -165,114 +10,22 @@
   padding-top: var(--space-2);
 }
 
-.profile__locked-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 63, 164, 0.10);
-  border: 1px solid rgba(255, 63, 164, 0.35);
-  color: var(--pink-400);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.profile__locked-title {
-  font-family: var(--font-display);
-  font-weight: var(--fw-black);
-  font-size: var(--fs-lg);
-  color: var(--white);
-  line-height: var(--lh-snug);
-  letter-spacing: var(--tracking-tight);
-  margin: 0;
-}
-
-.profile__locked-desc {
+.profile__community-error {
   font-family: var(--font-body);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-relaxed);
-  color: var(--silver);
+  font-size: var(--fs-xs);
+  color: #FF6B6B;
   margin: 0;
-}
-
-.profile__locked-cta {
-  margin-top: var(--space-2);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.35);
   width: 100%;
 }
 
-.profile__locked-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  padding: 12px 22px;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-  color: var(--text-muted);
-  font-family: var(--font-ui);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  cursor: not-allowed;
+/* Prevent text selection, drag, and touch-callout on the community card.
+   These are UX preventions — the URL isn't in the DOM anyway. */
+.no-select {
+  -webkit-user-select: none;
   user-select: none;
-}
-
-.profile__locked-note {
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
-  margin: 0;
-  text-align: center;
-  width: 100%;
-}
-
-/* ---------- WHAT'S NEXT ---------- */
-.profile__next {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-}
-
-.profile__next svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 639px) {
-  .profile {
-    padding-top: var(--space-5);
-    padding-bottom: var(--space-7);
-  }
-
-  .profile__container {
-    gap: var(--space-5);
-  }
-
-  .profile__avatar {
-    width: 52px;
-    height: 52px;
-    font-size: var(--fs-base);
-  }
-
-  .profile__name {
-    font-size: var(--fs-xl);
-  }
-}
-
-@media (max-width: 359px) {
-  .profile__avatar {
-    width: 44px;
-    height: 44px;
-    font-size: var(--fs-sm);
-  }
-
-  .profile__name {
-    font-size: var(--fs-lg);
-  }
-
-  .profile__email {
-    font-size: var(--fs-xs);
-  }
+  -webkit-touch-callout: none;
 }

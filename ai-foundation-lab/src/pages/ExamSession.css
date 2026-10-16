@@ -1,0 +1,133 @@
+/* ============================================================
+   EXAM SESSION (placeholder for 5.5)
+   ============================================================ */
+
+.exam-session {
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-9);
+}
+
+.exam-session__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0 var(--space-6);
+}
+
+.exam-session__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exam-session__icon--success {
+  background: rgba(46, 200, 255, 0.10);
+  border: 1px solid rgba(46, 200, 255, 0.35);
+  color: var(--cyan-400);
+}
+
+.exam-session__icon--error {
+  background: rgba(225, 6, 0, 0.10);
+  border: 1px solid rgba(225, 6, 0, 0.40);
+  color: #FF6B6B;
+}
+
+.exam-session__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  margin-bottom: var(--space-6);
+}
+
+.exam-session__meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.exam-session__meta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+}
+
+.exam-session__meta-value {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--white);
+  word-break: break-all;
+}
+
+.exam-session__meta-value code {
+  font-family: ui-monospace, monospace;
+  font-size: var(--fs-xs);
+  color: var(--cyan-400);
+  background: rgba(46, 200, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+}
+
+.exam-session__questions {
+  margin-top: var(--space-4);
+}
+
+.exam-session__list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-3) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  counter-reset: qnum;
+}
+
+.exam-session__list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  counter-increment: qnum;
+}
+
+.exam-session__list li::before {
+  content: "Q" counter(qnum);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-widest);
+  color: var(--pink-400);
+}
+
+.exam-session__qtitle {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-base);
+  color: var(--white);
+}
+
+.exam-session__qmeta {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: capitalize;
+}

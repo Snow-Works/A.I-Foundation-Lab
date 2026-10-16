@@ -13,19 +13,32 @@ export async function updateProfile(id, data) {
   return pb.collection(COLLECTION).update(id, data);
 }
 
-/* ---------- Upload profile photo ---------- */
-/**
- * Upload the verified profile photo. The photo must already be
- * compressed to WebP before calling this. PocketBase handles
- * storage and returns the record with an updated photo URL.
- *
- * @param {string} id          - profile id
- * @param {File|Blob} file     - the compressed photo
- */
-export async function uploadProfilePhoto(id, file) {
+/* ------------------------------------------------------------
+   Upload the profile photo and mark the user as photo-verified.
+   Automatically bumps the status to PHOTO_VERIFIED if the user
+   is at an earlier stage. Syncs the auth store so the UI
+   reflects the change without a manual refresh.
+   ------------------------------------------------------------ */
+const PRIOR_STATES = ["REGISTERED", "EMAIL_VERIFIED", "APPROVED"];
+
+export async function uploadProfilePhoto(id, file, currentStatus) {
   const form = new FormData();
-  form.append("photo", file);
-  return pb.collection(COLLECTION).update(id, form);
+  form.append("photo", file, "profile.webp");
+  form.append("photo_verified", "true");
+  form.append("photo_verified_at", new Date().toISOString());
+
+  if (PRIOR_STATES.includes(currentStatus)) {
+    form.append("status", "PHOTO_VERIFIED");
+  }
+
+  const updated = await pb.collection(COLLECTION).update(id, form);
+
+  // If this record is the current user, sync the auth store
+  if (pb.authStore.model?.id === id) {
+    pb.authStore.save(pb.authStore.token, updated);
+  }
+
+  return updated;
 }
 
 /* ---------- Compute full photo URL ---------- */

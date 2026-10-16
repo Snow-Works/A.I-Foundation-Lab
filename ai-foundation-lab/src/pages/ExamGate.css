@@ -1,0 +1,110 @@
+/* ============================================================
+   EXAM GATE
+   ============================================================ */
+
+.exam-gate {
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-9);
+}
+
+.exam-gate__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-5);
+  padding-top: var(--space-3);
+}
+
+.exam-gate__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exam-gate__icon--info {
+  background: rgba(46, 200, 255, 0.10);
+  border: 1px solid rgba(46, 200, 255, 0.35);
+  color: var(--cyan-400);
+}
+
+.exam-gate__icon--error {
+  background: rgba(225, 6, 0, 0.10);
+  border: 1px solid rgba(225, 6, 0, 0.40);
+  color: #FF6B6B;
+}
+
+.exam-gate__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.exam-gate__title {
+  color: var(--white);
+  margin: 0;
+}
+
+.exam-gate__subtitle {
+  color: var(--silver);
+  margin: 0;
+  max-width: 46ch;
+}
+
+.exam-gate__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.exam-gate__form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  color: var(--silver);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+
+.exam-gate__form-error svg {
+  flex-shrink: 0;
+  color: #FF6B6B;
+  margin-top: 2px;
+}
+
+.exam-gate__note {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-align: center;
+  margin: var(--space-5) 0 0;
+  line-height: var(--lh-relaxed);
+  max-width: 46ch;
+  margin-inline: auto;
+}
+
+.exam-gate__spinner {
+  color: var(--cyan-400);
+  animation: exam-gate-spin 900ms linear infinite;
+}
+
+@keyframes exam-gate-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exam-gate__spinner {
+    animation: none;
+  }
+}
