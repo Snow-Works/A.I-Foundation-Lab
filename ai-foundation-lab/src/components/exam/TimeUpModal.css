@@ -77,3 +77,32 @@
   width: 100%;
   margin-top: var(--space-2);
 }
+
+
+
+
+.time-up-modal__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(46, 200, 255, 0.08);
+  border: 1px solid rgba(46, 200, 255, 0.30);
+  color: var(--cyan-400);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+}
+
+.time-up-modal__spinner {
+  animation: time-up-spin 900ms linear infinite;
+}
+
+@keyframes time-up-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .time-up-modal__spinner { animation: none; }
+}

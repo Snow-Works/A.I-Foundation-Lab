@@ -56,9 +56,8 @@ export default function ExamSubmitted() {
                 <span>Under review</span>
               </div>
               <p className="exam-submitted__status-desc">
-                A human admin will mark your answers against a rubric. Your
-                result is released when marking is complete — you'll see it on
-                your profile.
+                AI Foundation Lab team will mark your answers against a rubric. Your
+                result is released when marking is complete, and admission will be sent if you passed.
               </p>
             </div>
 

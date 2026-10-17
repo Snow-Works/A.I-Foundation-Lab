@@ -14,6 +14,7 @@ import PhotoUpload from "./pages/PhotoUpload.jsx";
 import ExamGate from "./pages/ExamGate.jsx";
 import ExamIntro from "./pages/ExamIntro.jsx";
 import ExamSession from "./pages/ExamSession.jsx";
+import ExamSubmitted from "./pages/ExamSubmitted.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 const StyleGuideLayout = lazy(() =>
@@ -92,6 +93,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <ExamSession />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam/submitted"
+              element={
+                <ProtectedRoute>
+                  <ExamSubmitted />
                 </ProtectedRoute>
               }
             />
