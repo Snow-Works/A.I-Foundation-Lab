@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { resumeExam } from "../services/examService.js";
+import { resumeExam, submitExam } from "../services/examService.js";
 import { useAutosave } from "../hooks/useAutosave.js";
 import { useProctoring } from "../hooks/useProctoring.js";
 import { useExamTimer } from "../hooks/useExamTimer.js";
@@ -15,6 +15,7 @@ import QuestionNav from "../components/exam/QuestionNav.jsx";
 import QuestionPanel from "../components/exam/QuestionPanel.jsx";
 import ViolationModal from "../components/exam/ViolationModal.jsx";
 import TimeUpModal from "../components/exam/TimeUpModal.jsx";
+import SubmitModal from "../components/exam/SubmitModal.jsx";
 import ExamWatermark from "../components/exam/ExamWatermark.jsx";
 import "./ExamSession.css";
 
@@ -45,10 +46,16 @@ export default function ExamSession() {
   const [loading, setLoading] = useState(!initialAttempt);
   const [error, setError] = useState("");
 
+  // Violation state
   const [violation, setViolation] = useState(null);
   const [modalMode, setModalMode] = useState(null);
   const [terminating, setTerminating] = useState(false);
+
+  // Time up + submit state
   const [timeUp, setTimeUp] = useState(false);
+  const [submitModalOpen, setSubmitModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   /* ---------- Resume on mount if no state came from the router ---------- */
   useEffect(() => {
@@ -93,27 +100,71 @@ export default function ExamSession() {
     setAnswerIds,
   });
 
-  /* ---------- Timer expiry ---------- */
+  /* ---------- Go to submitted screen ---------- */
+  const goToSubmitted = useCallback(
+    (reason, answeredCount) => {
+      const at = new Date().toISOString();
+      navigate(
+        `/exam/submitted?reason=${reason}&attempted=${answeredCount}&at=${encodeURIComponent(at)}`,
+        { replace: true }
+      );
+    },
+    [navigate]
+  );
+
+  /* ---------- Submit ---------- */
+  const performSubmit = useCallback(
+    async (reason) => {
+      if (!attempt?.id) return;
+      setSubmitting(true);
+      setSubmitError("");
+
+      try {
+        // Save any pending drafts first
+        try {
+          await flushNow(true);
+        } catch (err) {
+          console.warn("[exam-session] pre-submit flush warning:", err);
+        }
+
+        await submitExam(attempt.id);
+
+        // Exit fullscreen
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          }
+        } catch (_) {}
+
+        const answered = Object.values(answers).filter(
+          (v) => v && v.trim().length > 0
+        ).length;
+
+        goToSubmitted(reason, answered);
+      } catch (err) {
+        console.error("[exam-session] submit error:", err);
+        setSubmitError(
+          err?.response?.message ||
+            err?.message ||
+            "Could not submit. Please try again."
+        );
+        setSubmitting(false);
+      }
+    },
+    [attempt, answers, flushNow, goToSubmitted]
+  );
+
+  /* ---------- Timer expiry → auto-submit ---------- */
   const handleTimeUp = useCallback(async () => {
     setTimeUp(true);
-    // Persist any pending edits
-    try {
-      await flushNow(true);
-    } catch (err) {
-      console.error("[exam-session] time-up flush failed:", err);
-    }
-    // Exit fullscreen
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-    } catch (_) {}
-  }, [flushNow]);
+    // Auto-submit
+    await performSubmit("time_up");
+  }, [performSubmit]);
 
   const timer = useExamTimer({
     deadlineAt: attempt?.deadline_at,
     onExpire: handleTimeUp,
-    enabled: !!attempt && !modalMode && !timeUp,
+    enabled: !!attempt && !modalMode && !timeUp && !submitModalOpen,
   });
 
   /* ---------- Violation handlers ---------- */
@@ -137,7 +188,7 @@ export default function ExamSession() {
 
   const { report } = useProctoring({
     attemptId: attempt?.id,
-    enabled: !!attempt && !modalMode && !timeUp,
+    enabled: !!attempt && !modalMode && !timeUp && !submitModalOpen,
     onWarning: handleWarning,
     onTerminate: handleTerminate,
   });
@@ -177,14 +228,17 @@ export default function ExamSession() {
     navigate("/profile?terminated=1", { replace: true });
   };
 
-  const goToProfileAfterTimeUp = async () => {
-    setTerminating(true);
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-    } catch (_) {}
-    navigate("/profile", { replace: true });
+  const openSubmitModal = () => {
+    setSubmitError("");
+    setSubmitModalOpen(true);
+  };
+
+  const cancelSubmit = () => {
+    setSubmitModalOpen(false);
+  };
+
+  const confirmSubmit = () => {
+    performSubmit("manual");
   };
 
   /* ---------- Render branches ---------- */
@@ -248,12 +302,6 @@ export default function ExamSession() {
   const handlePrev = () => setCurrentIndex((i) => Math.max(i - 1, 0));
   const handleJump = (index) => setCurrentIndex(index);
 
-  const handleSubmit = () => {
-    alert(
-      "Submission arrives in the next build step (5.10). Your answers are saved to the server."
-    );
-  };
-
   const answeredCount = Object.values(answers).filter(
     (v) => v && v.trim().length > 0
   ).length;
@@ -268,7 +316,7 @@ export default function ExamSession() {
           currentIndex={currentIndex}
           saveStatus={saveStatus}
           timer={timer}
-          onSubmit={handleSubmit}
+          onSubmit={openSubmitModal}
         />
 
         <div className="exam-session-body">
@@ -326,10 +374,16 @@ export default function ExamSession() {
         pending={terminating}
       />
 
-      <TimeUpModal
-        open={timeUp}
-        onGoToProfile={goToProfileAfterTimeUp}
-        pending={terminating}
+      <TimeUpModal open={timeUp && !submitModalOpen} />
+
+      <SubmitModal
+        open={submitModalOpen}
+        answeredCount={answeredCount}
+        totalCount={questions.length}
+        onCancel={cancelSubmit}
+        onConfirm={confirmSubmit}
+        pending={submitting}
+        error={submitError}
       />
     </>
   );

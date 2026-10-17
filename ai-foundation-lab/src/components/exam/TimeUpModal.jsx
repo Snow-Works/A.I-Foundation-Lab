@@ -1,9 +1,8 @@
 // src/components/exam/TimeUpModal.jsx
-import { Clock } from "lucide-react";
-import Button from "../ui/Button.jsx";
+import { Clock, Loader2 } from "lucide-react";
 import "./TimeUpModal.css";
 
-export default function TimeUpModal({ open, onGoToProfile, pending = false }) {
+export default function TimeUpModal({ open }) {
   if (!open) return null;
 
   return (
@@ -23,24 +22,12 @@ export default function TimeUpModal({ open, onGoToProfile, pending = false }) {
         </h2>
 
         <p className="time-up-modal__desc">
-          The exam time has ended. Your answers have been saved to the server.
+          The exam time has ended. We're saving your answers now.
         </p>
 
-        <p className="time-up-modal__note">
-          Submission confirmation arrives in the next build step (5.10). For
-          now, you'll be returned to your profile.
-        </p>
-
-        <div className="time-up-modal__actions">
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={onGoToProfile}
-            loading={pending}
-          >
-            {pending ? "Ending session…" : "Return to profile"}
-          </Button>
+        <div className="time-up-modal__loading">
+          <Loader2 size={20} className="time-up-modal__spinner" />
+          <span>Submitting…</span>
         </div>
       </div>
     </div>
