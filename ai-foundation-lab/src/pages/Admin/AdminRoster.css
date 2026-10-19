@@ -1,0 +1,454 @@
+/* ============================================================
+   ADMIN ROSTER
+   ============================================================ */
+
+.admin-roster {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.admin-roster__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.admin-roster__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-2xl);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.admin-roster__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 60ch;
+  line-height: var(--lh-relaxed);
+}
+
+/* ---------- UPLOAD CARD ---------- */
+.admin-roster__upload-card {
+  margin-top: var(--space-2);
+}
+
+.admin-roster__upload-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.admin-roster__upload-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(46, 200, 255, 0.10);
+  border: 1px solid rgba(46, 200, 255, 0.35);
+  color: var(--cyan-400);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-roster__upload-title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-lg);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.admin-roster__upload-desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: var(--lh-relaxed);
+}
+
+.admin-roster__upload-desc code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.8125rem;
+  color: var(--cyan-400);
+  background: rgba(46, 200, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+}
+
+.admin-roster__upload-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.admin-roster__filename {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+}
+
+/* ---------- PARSE ERRORS ---------- */
+.admin-roster__parse-errors {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(242, 81, 31, 0.08);
+  border: 1px solid rgba(242, 81, 31, 0.35);
+  color: var(--silver);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-roster__parse-errors svg {
+  color: var(--orange-500);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.admin-roster__parse-errors ul {
+  margin: 4px 0 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.admin-roster__parse-errors li {
+  font-size: var(--fs-xs);
+  color: var(--silver);
+}
+
+/* ---------- PREVIEW ---------- */
+.admin-roster__preview {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(46, 200, 255, 0.04);
+  border: 1px solid rgba(46, 200, 255, 0.25);
+}
+
+.admin-roster__preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  color: var(--white);
+}
+
+.admin-roster__cancel {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-roster__cancel:hover {
+  color: var(--white);
+}
+
+.admin-roster__preview-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-roster__preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+}
+
+.admin-roster__preview-table th {
+  text-align: left;
+  padding: 6px 8px;
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.admin-roster__preview-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--silver);
+}
+
+.admin-roster__preview-more {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+.admin-roster__preview-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------- UPLOAD RESULT ---------- */
+.admin-roster__upload-result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(46, 200, 255, 0.08);
+  border: 1px solid rgba(46, 200, 255, 0.35);
+  color: var(--silver);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-roster__upload-result svg {
+  color: var(--cyan-400);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.admin-roster__upload-result p {
+  margin: 2px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--silver);
+}
+
+/* ---------- LIST ---------- */
+.admin-roster__list-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.admin-roster__list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.admin-roster__list-title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-lg);
+  color: var(--white);
+  margin: 0;
+}
+
+.admin-roster__search {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+}
+
+.admin-roster__search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.admin-roster__search-input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border-radius: var(--radius-md);
+  background: rgba(10, 6, 48, 0.55);
+  border: 1px solid var(--glass-border);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  outline: none;
+}
+
+.admin-roster__search-input:focus {
+  border-color: var(--cyan-400);
+}
+
+.admin-roster__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  color: var(--silver);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-roster__error svg {
+  color: #FF6B6B;
+}
+
+.admin-roster__list-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.admin-roster__loading,
+.admin-roster__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-7) var(--space-4);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-roster__spinner {
+  color: var(--cyan-400);
+  animation: admin-roster-spin 900ms linear infinite;
+}
+
+@keyframes admin-roster-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-roster__spinner { animation: none; }
+}
+
+.admin-roster__table-wrap {
+  overflow-x: auto;
+}
+
+.admin-roster__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.admin-roster__table thead {
+  background: rgba(10, 6, 48, 0.55);
+}
+
+.admin-roster__table th {
+  text-align: left;
+  padding: 10px var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.admin-roster__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+}
+
+.admin-roster__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-roster__name {
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  color: var(--white);
+}
+
+.admin-roster__notes {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-roster__delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  transition: color var(--dur-fast), background var(--dur-fast);
+}
+
+.admin-roster__delete-btn:hover {
+  color: #FF6B6B;
+  background: rgba(225, 6, 0, 0.10);
+}
+
+/* ---------- PAGINATION ---------- */
+.admin-roster__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.admin-roster__pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-roster__pagination-buttons button {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  color: var(--silver);
+  cursor: pointer;
+}
+
+.admin-roster__pagination-buttons button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 639px) {
+  .admin-roster__title {
+    font-size: var(--fs-xl);
+  }
+
+  .admin-roster__list-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-roster__search {
+    max-width: 100%;
+  }
+}
