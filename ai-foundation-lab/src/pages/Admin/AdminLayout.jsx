@@ -11,6 +11,7 @@ import {
   X,
   ShieldAlert,
   ChevronRight,
+  UserCheck,
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import LogoMark from "../../components/ui/LogoMark.jsx";
@@ -19,6 +20,7 @@ import "./AdminLayout.css";
 const NAV_ITEMS = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
   { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/roster", label: "Roster", icon: UserCheck },
   { to: "/admin/submissions", label: "Submissions", icon: FileText },
   { to: "/admin/questions", label: "Questions", icon: FileText },
   { to: "/admin/violations", label: "Violations", icon: ShieldAlert },
@@ -46,7 +48,9 @@ export default function AdminLayout() {
       )}
 
       {/* Sidebar */}
-      <aside className={`admin-sidebar ${sidebarOpen ? "admin-sidebar--open" : ""}`}>
+      <aside
+        className={`admin-sidebar ${sidebarOpen ? "admin-sidebar--open" : ""}`}
+      >
         <div className="admin-sidebar__header">
           <Link to="/admin" className="admin-sidebar__brand">
             <LogoMark size={28} style={{ color: "var(--white)" }} />
@@ -104,11 +108,9 @@ export default function AdminLayout() {
           >
             <Menu size={24} />
           </button>
-          <div className="admin-topbar__breadcrumb">
-            Admin Dashboard
-          </div>
+          <div className="admin-topbar__breadcrumb">Admin Dashboard</div>
         </header>
-        
+
         <div className="admin-content">
           <Outlet />
         </div>
