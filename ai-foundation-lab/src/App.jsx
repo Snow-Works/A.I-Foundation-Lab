@@ -22,6 +22,7 @@ import AdminLayout from "./pages/admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminUsers from "./pages/admin/AdminUsers.jsx";
 import AdminRoster from "./pages/admin/AdminRoster.jsx";
+import AdminSettings from "./pages/admin/AdminSettings.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 const StyleGuideLayout = lazy(() => import("./pages/style-guide/StyleGuideLayout.jsx"));
@@ -60,7 +61,7 @@ export default function App() {
               <Route path="submissions" element={<div className="admin-placeholder">Submissions coming soon</div>} />
               <Route path="questions" element={<div className="admin-placeholder">Question bank coming soon</div>} />
               <Route path="violations" element={<div className="admin-placeholder">Violations coming soon</div>} />
-              <Route path="settings" element={<div className="admin-placeholder">Settings coming soon</div>} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
 
             {/* --- Student Routes --- */}
