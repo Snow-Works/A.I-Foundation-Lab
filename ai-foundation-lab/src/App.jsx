@@ -24,6 +24,10 @@ import AdminUsers from "./pages/admin/AdminUsers.jsx";
 import AdminRoster from "./pages/admin/AdminRoster.jsx";
 import AdminSettings from "./pages/admin/AdminSettings.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import AdminQuestions from "./pages/admin/AdminQuestions.jsx";
+
+
+
 
 const StyleGuideLayout = lazy(() => import("./pages/style-guide/StyleGuideLayout.jsx"));
 const StyleGuideIndex = lazy(() => import("./pages/style-guide/StyleGuideIndex.jsx"));
@@ -59,7 +63,7 @@ export default function App() {
               <Route path="users" element={<AdminUsers />} />
               <Route path="roster" element={<AdminRoster />} />
               <Route path="submissions" element={<div className="admin-placeholder">Submissions coming soon</div>} />
-              <Route path="questions" element={<div className="admin-placeholder">Question bank coming soon</div>} />
+              <Route path="questions" element={<AdminQuestions />} />
               <Route path="violations" element={<div className="admin-placeholder">Violations coming soon</div>} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
