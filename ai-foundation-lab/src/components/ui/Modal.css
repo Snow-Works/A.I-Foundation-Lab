@@ -17,22 +17,17 @@
 }
 
 .modal {
-    position: relative;
-    width: 100%;
-    max-width: 520px;
-    max-height: calc(100dvh - 32px);
-    display: flex;
-    flex-direction: column;
-    background: var(--glass-bg-strong);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    box-shadow:
-        0 24px 80px rgba(0, 0, 0, 0.65),
-        inset 0 1px 0 rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    overflow: hidden;
-    outline: none;
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90dvh; /* Limits height to 90% of dynamic viewport */
+  display: flex;
+  flex-direction: column;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
 }
 
 /*  SIZES  */
@@ -173,15 +168,22 @@
 
 /*  BODY  */
 .modal__body {
-    padding: var(--space-3) var(--space-6);
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-    color: var(--text-secondary);
-    font-family: var(--font-body);
-    font-size: var(--fs-base);
-    line-height: var(--lh-relaxed);
+  padding: var(--space-3) var(--space-6);
+  overflow-y: auto; /* Enables scrolling inside the modal */
+  flex: 1;
+  min-height: 0;
 }
+
+@media (max-width: 639px) {
+  .modal {
+    max-height: 95dvh;
+    border-radius: var(--radius-md);
+  }
+  .modal__body {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
 
 .modal__body>*+* {
     margin-top: var(--space-3);
