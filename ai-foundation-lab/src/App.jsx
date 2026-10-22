@@ -26,8 +26,9 @@ import AdminUsers from "./pages/admin/AdminUsers.jsx";
 import AdminRoster from "./pages/admin/AdminRoster.jsx";
 import AdminSettings from "./pages/admin/AdminSettings.jsx";
 import AdminQuestions from "./pages/admin/AdminQuestions.jsx";
-import AdminSubmissions from "./pages/admin/AdminSubmissions.jsx"; // Added
-import AdminMarking from "./pages/admin/AdminMarking.jsx"; // Added
+import AdminSubmissions from "./pages/admin/AdminSubmissions.jsx";
+import AdminMarking from "./pages/admin/AdminMarking.jsx";
+import AdminViolations from "./pages/admin/AdminViolations.jsx"; // Added
 
 import NotFound from "./pages/NotFound.jsx";
 
@@ -65,12 +66,14 @@ export default function App() {
               <Route path="users" element={<AdminUsers />} />
               <Route path="roster" element={<AdminRoster />} />
               
-              {/* Updated Submissions Routes */}
               <Route path="submissions" element={<AdminSubmissions />} />
               <Route path="submissions/:attemptId" element={<AdminMarking />} />
               
               <Route path="questions" element={<AdminQuestions />} />
-              <Route path="violations" element={<div className="admin-placeholder">Violations coming soon</div>} />
+              
+              {/* Replaced the placeholder with the real component */}
+              <Route path="violations" element={<AdminViolations />} />
+              
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 
