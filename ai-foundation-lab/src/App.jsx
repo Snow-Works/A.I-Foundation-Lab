@@ -17,17 +17,19 @@ import ExamGate from "./pages/ExamGate.jsx";
 import ExamIntro from "./pages/ExamIntro.jsx";
 import ExamSession from "./pages/ExamSession.jsx";
 import ExamSubmitted from "./pages/ExamSubmitted.jsx";
+
+// Admin Imports
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminUsers from "./pages/admin/AdminUsers.jsx";
 import AdminRoster from "./pages/admin/AdminRoster.jsx";
 import AdminSettings from "./pages/admin/AdminSettings.jsx";
-import NotFound from "./pages/NotFound.jsx";
 import AdminQuestions from "./pages/admin/AdminQuestions.jsx";
+import AdminSubmissions from "./pages/admin/AdminSubmissions.jsx"; // Added
+import AdminMarking from "./pages/admin/AdminMarking.jsx"; // Added
 
-
-
+import NotFound from "./pages/NotFound.jsx";
 
 const StyleGuideLayout = lazy(() => import("./pages/style-guide/StyleGuideLayout.jsx"));
 const StyleGuideIndex = lazy(() => import("./pages/style-guide/StyleGuideIndex.jsx"));
@@ -62,7 +64,11 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="roster" element={<AdminRoster />} />
-              <Route path="submissions" element={<div className="admin-placeholder">Submissions coming soon</div>} />
+              
+              {/* Updated Submissions Routes */}
+              <Route path="submissions" element={<AdminSubmissions />} />
+              <Route path="submissions/:attemptId" element={<AdminMarking />} />
+              
               <Route path="questions" element={<AdminQuestions />} />
               <Route path="violations" element={<div className="admin-placeholder">Violations coming soon</div>} />
               <Route path="settings" element={<AdminSettings />} />
