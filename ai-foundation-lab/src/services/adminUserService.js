@@ -1,5 +1,6 @@
 // src/services/adminUserService.js
 import pbAdmin from "../lib/pocketbaseAdmin";
+import { logAdminAction } from "./adminAuditService.js";
 
 const PROFILES = "profiles";
 const ADMINS = "admins";
@@ -48,23 +49,33 @@ export async function getUser(id) {
    Approve a student. Sets status to APPROVED.
    ------------------------------------------------------------ */
 export async function approveUser(id, adminId) {
-  return pbAdmin.collection(PROFILES).update(id, {
+  const updated = await pbAdmin.collection(PROFILES).update(id, {
     status: "APPROVED",
     approved_by: adminId,
     approved_at: new Date().toISOString(),
   });
+
+  // Log the action
+  await logAdminAction("approved_user", "profile", id, { email: updated.email });
+  
+  return updated;
 }
 
 /* ------------------------------------------------------------
    Reject a student. Sets status to REJECTED with optional note.
    ------------------------------------------------------------ */
 export async function rejectUser(id, adminId, reason = "") {
-  return pbAdmin.collection(PROFILES).update(id, {
+  const updated = await pbAdmin.collection(PROFILES).update(id, {
     status: "REJECTED",
     approved_by: adminId,
     approved_at: new Date().toISOString(),
     notes: reason,
   });
+
+  // Log the action
+  await logAdminAction("rejected_user", "profile", id, { email: updated.email, reason });
+  
+  return updated;
 }
 
 /* ------------------------------------------------------------

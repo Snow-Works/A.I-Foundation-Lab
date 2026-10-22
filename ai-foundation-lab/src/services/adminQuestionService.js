@@ -1,5 +1,6 @@
 // src/services/adminQuestionService.js
 import pbAdmin from "../lib/pocketbaseAdmin";
+import { logAdminAction } from "./adminAuditService.js";
 
 const COLLECTION = "questions";
 
@@ -33,7 +34,12 @@ export async function getQuestion(id) {
 }
 
 export async function createQuestion(data) {
-  return pbAdmin.collection(COLLECTION).create(data);
+  const record = await pbAdmin.collection(COLLECTION).create(data);
+  
+  // Log the action
+  await logAdminAction("created_question", "question", record.id, { title: record.title });
+  
+  return record;
 }
 
 export async function updateQuestion(id, data) {
@@ -41,7 +47,13 @@ export async function updateQuestion(id, data) {
 }
 
 export async function deleteQuestion(id) {
-  return pbAdmin.collection(COLLECTION).delete(id);
+  // Get the title before deleting so we can log it
+  const record = await pbAdmin.collection(COLLECTION).getOne(id);
+  
+  await pbAdmin.collection(COLLECTION).delete(id);
+  
+  // Log the action
+  await logAdminAction("deleted_question", "question", id, { title: record.title });
 }
 
 export async function toggleQuestionActive(id, active) {

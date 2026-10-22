@@ -1,5 +1,6 @@
 // src/services/adminMarkingService.js
 import pbAdmin from "../lib/pocketbaseAdmin";
+import { logAdminAction } from "./adminAuditService.js";
 
 export async function listSubmissions({ page = 1, perPage = 20, status = "submitted" } = {}) {
   const filters = [];
@@ -15,29 +16,24 @@ export async function listSubmissions({ page = 1, perPage = 20, status = "submit
 }
 
 export async function getSubmissionDetails(attemptId) {
-  // 1. Get attempt + student
   const attempt = await pbAdmin.collection("attempts").getOne(attemptId, {
     expand: "student",
   });
 
-  // 2. Get the assigned questions for this attempt
   const attemptQuestions = await pbAdmin.collection("attempt_questions").getFullList({
     filter: `attempt = "${attemptId}"`,
     sort: "order",
     expand: "question",
   });
 
-  // 3. Get the student's answers
   const answers = await pbAdmin.collection("answers").getFullList({
     filter: `attempt = "${attemptId}"`,
   });
 
-  // 4. Get existing marks (if any)
   const marks = await pbAdmin.collection("marks").getFullList({
     filter: `attempt_question.attempt = "${attemptId}"`,
   });
 
-  // 5. Combine them
   const questionsWithAnswersAndMarks = attemptQuestions.map((aq) => {
     const answer = answers.find((a) => a.question === aq.question);
     const mark = marks.find((m) => m.attempt_question === aq.id);
@@ -58,7 +54,6 @@ export async function getSubmissionDetails(attemptId) {
 }
 
 export async function saveMark({ attemptQuestionId, adminId, score, maxScore, comment }) {
-  // Check if mark already exists
   let existingMark = null;
   try {
     const list = await pbAdmin.collection("marks").getList(1, 1, {
@@ -87,13 +82,14 @@ export async function saveMark({ attemptQuestionId, adminId, score, maxScore, co
 }
 
 export async function releaseResults(attemptId, studentId) {
-  // 1. Update attempt status
   await pbAdmin.collection("attempts").update(attemptId, {
     status: "released",
   });
 
-  // 2. Update student profile status
   await pbAdmin.collection("profiles").update(studentId, {
     status: "MARKED",
   });
+
+  // Log the action
+  await logAdminAction("released_results", "attempt", attemptId, { studentId });
 }
