@@ -1,6 +1,6 @@
 // src/pages/admin/AdminLayout.jsx
 import { useState } from "react";
-import { Outlet, NavLink, useNavigate, Link } from "react-router-dom";
+import { Outlet, NavLink, useNavigate, Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -30,7 +30,11 @@ const NAV_ITEMS = [
 export default function AdminLayout() {
   const { admin, logout } = useAdminAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Detect if we are in the marking screen (e.g. /admin/submissions/abc123)
+  const isMarkingPage = /^\/admin\/submissions\/.+/.test(location.pathname);
 
   const handleLogout = () => {
     logout();
@@ -39,7 +43,6 @@ export default function AdminLayout() {
 
   return (
     <div className="admin-shell">
-      {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
           className="admin-sidebar-backdrop"
@@ -47,7 +50,6 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`admin-sidebar ${sidebarOpen ? "admin-sidebar--open" : ""}`}
       >
@@ -99,21 +101,28 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="admin-main">
-        <header className="admin-topbar">
-          <button
-            className="admin-menu-btn"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu size={24} />
-          </button>
-          <div className="admin-topbar__breadcrumb">Admin Dashboard</div>
-        </header>
-
-        <div className="admin-content">
-          <Outlet />
-        </div>
+        {/* Hide the topbar and padding if we are marking an exam */}
+        {!isMarkingPage ? (
+          <>
+            <header className="admin-topbar">
+              <button
+                className="admin-menu-btn"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu size={24} />
+              </button>
+              <div className="admin-topbar__breadcrumb">Admin Dashboard</div>
+            </header>
+            <div className="admin-content">
+              <Outlet />
+            </div>
+          </>
+        ) : (
+          <div style={{ flex: 1, minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+             <Outlet />
+          </div>
+        )}
       </main>
     </div>
   );

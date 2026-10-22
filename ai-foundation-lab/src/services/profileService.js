@@ -3,22 +3,14 @@ import pb from "../lib/pocketbase";
 
 const COLLECTION = "profiles";
 
-/* ---------- Get a single profile ---------- */
 export async function getProfile(id) {
   return pb.collection(COLLECTION).getOne(id);
 }
 
-/* ---------- Update ---------- */
 export async function updateProfile(id, data) {
   return pb.collection(COLLECTION).update(id, data);
 }
 
-/* ------------------------------------------------------------
-   Upload the profile photo and mark the user as photo-verified.
-   Automatically bumps the status to PHOTO_VERIFIED if the user
-   is at an earlier stage. Syncs the auth store so the UI
-   reflects the change without a manual refresh.
-   ------------------------------------------------------------ */
 const PRIOR_STATES = ["REGISTERED", "EMAIL_VERIFIED", "APPROVED"];
 
 export async function uploadProfilePhoto(id, file, currentStatus) {
@@ -33,7 +25,6 @@ export async function uploadProfilePhoto(id, file, currentStatus) {
 
   const updated = await pb.collection(COLLECTION).update(id, form);
 
-  // If this record is the current user, sync the auth store
   if (pb.authStore.model?.id === id) {
     pb.authStore.save(pb.authStore.token, updated);
   }
@@ -41,8 +32,47 @@ export async function uploadProfilePhoto(id, file, currentStatus) {
   return updated;
 }
 
-/* ---------- Compute full photo URL ---------- */
 export function photoUrl(record, thumb = null) {
   if (!record || !record.photo) return null;
   return pb.files.getUrl(record, record.photo, thumb ? { thumb } : {});
+}
+
+/* ------------------------------------------------------------
+   Fetch the student's released exam result.
+   Returns { attempt, totalScore, maxScore } or null.
+   ------------------------------------------------------------ */
+export async function getReleasedExamResult(studentId) {
+  try {
+    // 1. Get the latest released attempt
+    const attempts = await pb.collection("attempts").getList(1, 1, {
+      filter: `student = "${studentId}" && status = "released"`,
+      sort: "-updated",
+    });
+
+    if (attempts.items.length === 0) return null;
+    const attempt = attempts.items[0];
+
+    // 2. Get all marks for this attempt
+    const marks = await pb.collection("marks").getFullList({
+      filter: `attempt_question.attempt = "${attempt.id}"`,
+    });
+
+    // 3. Calculate total score
+    let totalScore = 0;
+    let maxScore = 0;
+    
+    for (const mark of marks) {
+      totalScore += Number(mark.score) || 0;
+      maxScore += Number(mark.max_score) || 0;
+    }
+
+    return {
+      attempt,
+      totalScore,
+      maxScore,
+    };
+  } catch (err) {
+    console.error("[profile] get exam result error:", err);
+    return null;
+  }
 }
