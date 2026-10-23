@@ -28,7 +28,8 @@ import AdminSettings from "./pages/admin/AdminSettings.jsx";
 import AdminQuestions from "./pages/admin/AdminQuestions.jsx";
 import AdminSubmissions from "./pages/admin/AdminSubmissions.jsx";
 import AdminMarking from "./pages/admin/AdminMarking.jsx";
-import AdminViolations from "./pages/admin/AdminViolations.jsx"; // Added
+import AdminViolations from "./pages/admin/AdminViolations.jsx";
+import AdminAudit from "./pages/admin/AdminAudit.jsx"; // Added
 
 import NotFound from "./pages/NotFound.jsx";
 
@@ -70,10 +71,8 @@ export default function App() {
               <Route path="submissions/:attemptId" element={<AdminMarking />} />
               
               <Route path="questions" element={<AdminQuestions />} />
-              
-              {/* Replaced the placeholder with the real component */}
               <Route path="violations" element={<AdminViolations />} />
-              
+              <Route path="audit" element={<AdminAudit />} /> {/* Added */}
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 
