@@ -1,0 +1,40 @@
+/* src/styles/admin-tables.css */
+
+/* Universal fix for all admin data tables on mobile */
+.admin-users__table-wrap,
+.admin-questions__table-wrap,
+.admin-roster__table-wrap,
+.admin-submissions__table-wrap,
+.admin-violations__table-wrap,
+.admin-audit__table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  padding-bottom: var(--space-2); /* Gives breathing room for the scrollbar */
+}
+
+/* Add a subtle gradient fade on the right edge to indicate more content */
+.admin-users__table-wrap::after,
+.admin-questions__table-wrap::after,
+.admin-roster__table-wrap::after,
+.admin-submissions__table-wrap::after,
+.admin-violations__table-wrap::after,
+.admin-audit__table-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, rgba(10, 6, 48, 0.8));
+  pointer-events: none;
+}
+
+/* Ensure all tables have a sensible minimum width so they don't squish */
+.admin-users__table,
+.admin-questions__table,
+.admin-roster__table,
+.admin-submissions__table,
+.admin-violations__table,
+.admin-audit__table {
+  min-width: 700px;
+}
