@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   LogOut, Mail, Phone, User, Lock, ExternalLink, CheckCircle2,
-  Image as ImageIcon, ShieldAlert, Award, Star, ArrowRight, Loader2
+  Image as ImageIcon, ShieldAlert, Award, Loader2, Users
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { photoUrl, getReleasedExamResult } from "../services/profileService.js";
-import { getCommunityLink } from "../services/settingsService.js";
+import { getCommunityLink, getExamCommunityLink } from "../services/settingsService.js";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
 import Button from "../components/ui/Button.jsx";
@@ -20,8 +20,10 @@ export default function Profile() {
   const [searchParams] = useSearchParams();
   const wasTerminated = searchParams.get("terminated") === "1";
 
-  const [openingCommunity, setOpeningCommunity] = useState(false);
-  const [communityError, setCommunityError] = useState("");
+  const [openingGeneral, setOpeningGeneral] = useState(false);
+  const [openingExam, setOpeningExam] = useState(false);
+  const [generalError, setGeneralError] = useState("");
+  const [examError, setExamError] = useState("");
   
   const [examResult, setExamResult] = useState(null);
   const [loadingResult, setLoadingResult] = useState(true);
@@ -52,26 +54,45 @@ export default function Profile() {
     navigate("/", { replace: true });
   };
 
-  const handleOpenCommunity = async () => {
-    if (openingCommunity) return;
-    setOpeningCommunity(true);
-    setCommunityError("");
+  const handleOpenGeneral = async () => {
+    if (openingGeneral) return;
+    setOpeningGeneral(true);
+    setGeneralError("");
 
     try {
       const { url, enabled } = await getCommunityLink();
       if (!enabled || !url) {
-        setCommunityError("The community link isn't ready yet. Check back soon.");
+        setGeneralError("The general community link isn't ready yet.");
         return;
       }
       const opened = window.open(url, "_blank", "noopener,noreferrer");
-      if (!opened) {
-        setCommunityError("Your browser blocked the new tab. Allow pop-ups and try again.");
-      }
+      if (!opened) setGeneralError("Your browser blocked the new tab. Allow pop-ups and try again.");
     } catch (err) {
-      console.error("[profile] community error:", err);
-      setCommunityError("Couldn't open the community link. Try again.");
+      console.error("[profile] general community error:", err);
+      setGeneralError("Couldn't open the link. Try again.");
     } finally {
-      setOpeningCommunity(false);
+      setOpeningGeneral(false);
+    }
+  };
+
+  const handleOpenExam = async () => {
+    if (openingExam) return;
+    setOpeningExam(true);
+    setExamError("");
+
+    try {
+      const { url, enabled } = await getExamCommunityLink();
+      if (!enabled || !url) {
+        setExamError("The exam community link isn't ready yet.");
+        return;
+      }
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened) setExamError("Your browser blocked the new tab. Allow pop-ups and try again.");
+    } catch (err) {
+      console.error("[profile] exam community error:", err);
+      setExamError("Couldn't open the link. Try again.");
+    } finally {
+      setOpeningExam(false);
     }
   };
 
@@ -145,7 +166,7 @@ export default function Profile() {
           />
         </Card>
 
-        {/* DETAILS GRID */}
+        {/* DETAILS & COMMUNITY */}
         <div className="profile__grid">
           
           {/* Registration details */}
@@ -179,44 +200,82 @@ export default function Profile() {
             </p>
           </Card>
 
-          {/* Community Card */}
-          <Card variant="glass" size="lg" withTab glow="pink">
-            <PillTab floating position="left" variant="default">Community</PillTab>
-            {user.photo_verified ? (
-              <div className="profile__community">
-                <div className="profile__community-header">
-                  <CheckCircle2 size={24} className="profile__community-check" />
-                  <h3 className="profile__community-title">Telegram Group</h3>
+          {/* TWO COMMUNITY CARDS (Option A) */}
+          <div className="profile__community-stack">
+            
+            {/* Card 1: General Community */}
+            <Card variant="glass" size="lg" withTab glow="pink">
+              <PillTab floating position="left" variant="default">General Community</PillTab>
+              {user.photo_verified ? (
+                <div className="profile__community">
+                  <div className="profile__community-header">
+                    <CheckCircle2 size={24} className="profile__community-check" />
+                    <h3 className="profile__community-title">Main Group</h3>
+                  </div>
+                  <p className="profile__community-desc">
+                    Join the general community for orientation and updates.
+                  </p>
+                  <Button
+                    variant="primary" size="lg" fullWidth onClick={handleOpenGeneral}
+                    loading={openingGeneral} rightIcon={!openingGeneral && <ExternalLink size={16} />}
+                  >
+                    {openingGeneral ? "Opening…" : "Join General Group"}
+                  </Button>
+                  {generalError && <p className="profile__community-error">{generalError}</p>}
+                  
+                  <div className="profile__photo-preview-wrap">
+                    <img src={photoThumb} alt="Verified" className="profile__photo-preview" />
+                    <Link to="/profile/photo" className="profile__photo-replace">
+                      <ImageIcon size={14} /> Replace photo
+                    </Link>
+                  </div>
                 </div>
-                <p className="profile__community-desc">
-                  Your face is verified. Click below to open the guild group in a new tab.
-                </p>
-                <Button
-                  variant="primary" size="lg" fullWidth onClick={handleOpenCommunity}
-                  loading={openingCommunity} rightIcon={!openingCommunity && <ExternalLink size={16} />}
-                >
-                  {openingCommunity ? "Opening…" : "Open Telegram"}
-                </Button>
-                {communityError && <p className="profile__community-error">{communityError}</p>}
-                
-                <div className="profile__photo-preview-wrap">
-                  <img src={photoThumb} alt="Verified" className="profile__photo-preview" />
-                  <Link to="/profile/photo" className="profile__photo-replace">
-                    <ImageIcon size={14} /> Replace photo
-                  </Link>
+              ) : (
+                <div className="profile__locked">
+                  <div className="profile__locked-icon"><Lock size={22} /></div>
+                  <h3 className="profile__locked-title">Locked</h3>
+                  <p className="profile__locked-desc">Upload a photo to unlock.</p>
+                  <Button variant="primary" size="md" fullWidth as={Link} to="/profile/photo" rightIcon={<ExternalLink size={16} />}>
+                    Upload Photo
+                  </Button>
                 </div>
-              </div>
-            ) : (
-              <div className="profile__locked">
-                <div className="profile__locked-icon"><Lock size={22} /></div>
-                <h3 className="profile__locked-title">Join the AI Foundation Lab</h3>
-                <p className="profile__locked-desc">Upload a clear photo of your face to unlock the community.</p>
-                <Button variant="primary" size="md" fullWidth as={Link} to="/profile/photo" rightIcon={<ExternalLink size={16} />}>
-                  Upload Photo
-                </Button>
-              </div>
-            )}
-          </Card>
+              )}
+            </Card>
+
+            {/* Card 2: Exam Community */}
+            <Card variant="glass" size="lg" withTab glow="cyan">
+              <PillTab floating position="left" variant="default">Exam Community</PillTab>
+              {user.photo_verified ? (
+                <div className="profile__community">
+                  <div className="profile__community-header">
+                    <Users size={24} className="profile__community-check" style={{ color: "var(--cyan-400)" }} />
+                    <h3 className="profile__community-title">Exam Group</h3>
+                  </div>
+                  <p className="profile__community-desc">
+                    Join the main group to receive the Exam Gate link when a window opens.
+                  </p>
+                  <Button
+                    variant="primary" size="lg" fullWidth onClick={handleOpenExam}
+                    loading={openingExam} rightIcon={!openingExam && <ExternalLink size={16} />}
+                    style={{ background: "var(--gradient-cyan)" }}
+                  >
+                    {openingExam ? "Opening…" : "Join Exam Group"}
+                  </Button>
+                  {examError && <p className="profile__community-error">{examError}</p>}
+                </div>
+              ) : (
+                <div className="profile__locked">
+                  <div className="profile__locked-icon" style={{ borderColor: "rgba(46, 200, 255, 0.35)", color: "var(--cyan-400)" }}><Lock size={22} /></div>
+                  <h3 className="profile__locked-title">Locked</h3>
+                  <p className="profile__locked-desc">Upload a photo to unlock.</p>
+                  <Button variant="primary" size="md" fullWidth as={Link} to="/profile/photo" rightIcon={<ExternalLink size={16} />}>
+                    Upload Photo
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+          </div>
         </div>
 
       </div>

@@ -12,6 +12,8 @@ export default function AdminSettings() {
   const [formData, setFormData] = useState({
     telegram_group_url: "",
     telegram_enabled: false,
+    exam_telegram_group_url: "",
+    exam_telegram_enabled: false,
     require_roster_match: false,
     registration_open: false,
     exam_duration_minutes: 105,
@@ -36,6 +38,8 @@ export default function AdminSettings() {
           setFormData({
             telegram_group_url: record.telegram_group_url || "",
             telegram_enabled: !!record.telegram_enabled,
+            exam_telegram_group_url: record.exam_telegram_group_url || "",
+            exam_telegram_enabled: !!record.exam_telegram_enabled,
             require_roster_match: !!record.require_roster_match,
             registration_open: !!record.registration_open,
             exam_duration_minutes: record.exam_duration_minutes || 105,
@@ -43,7 +47,7 @@ export default function AdminSettings() {
             announcement: record.announcement || "",
           });
         } else {
-          setError("No settings record found in the database. Please create one in PocketBase admin.");
+          setError("No settings record found in the database.");
         }
       } catch (err) {
         console.error("[admin-settings] load error:", err);
@@ -119,13 +123,13 @@ export default function AdminSettings() {
       )}
 
       <form onSubmit={handleSave} className="admin-settings__form">
-        {/* 1. COMMUNITY */}
+        {/* 1. GENERAL COMMUNITY */}
         <Card variant="glass" size="md" className="admin-settings__card">
-          <h2 className="admin-settings__section-title">Community</h2>
+          <h2 className="admin-settings__section-title">General Community</h2>
           <div className="admin-settings__fields">
             <Field
-              label="Telegram Group URL"
-              hint="The link students see when their photo is verified."
+              label="General Telegram Group URL"
+              hint="The link students see first after photo verification."
             >
               <Input
                 type="url"
@@ -136,18 +140,40 @@ export default function AdminSettings() {
             </Field>
             <div className="admin-settings__toggle-row">
               <Checkbox
-                label="Enable Telegram community link"
+                label="Enable General Community link"
                 checked={formData.telegram_enabled}
                 onChange={(e) => handleChange("telegram_enabled", e.target.checked)}
               />
-              <p className="admin-settings__hint">
-                When disabled, the community card on student profiles will show as "not ready".
-              </p>
             </div>
           </div>
         </Card>
 
-        {/* 2. REGISTRATION */}
+        {/* 2. EXAM COMMUNITY */}
+        <Card variant="glass" size="md" className="admin-settings__card">
+          <h2 className="admin-settings__section-title">Exam Community</h2>
+          <div className="admin-settings__fields">
+            <Field
+              label="Exam Telegram Group URL"
+              hint="The main group where exam links are shared."
+            >
+              <Input
+                type="url"
+                placeholder="https://t.me/+..."
+                value={formData.exam_telegram_group_url}
+                onChange={(e) => handleChange("exam_telegram_group_url", e.target.value)}
+              />
+            </Field>
+            <div className="admin-settings__toggle-row">
+              <Checkbox
+                label="Enable Exam Community link"
+                checked={formData.exam_telegram_enabled}
+                onChange={(e) => handleChange("exam_telegram_enabled", e.target.checked)}
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* 3. REGISTRATION */}
         <Card variant="glass" size="md" className="admin-settings__card">
           <h2 className="admin-settings__section-title">Registration</h2>
           <div className="admin-settings__fields">
@@ -157,9 +183,6 @@ export default function AdminSettings() {
                 checked={formData.registration_open}
                 onChange={(e) => handleChange("registration_open", e.target.checked)}
               />
-              <p className="admin-settings__hint">
-                Allow new students to sign up.
-              </p>
             </div>
             <div className="admin-settings__toggle-row">
               <Checkbox
@@ -167,14 +190,11 @@ export default function AdminSettings() {
                 checked={formData.require_roster_match}
                 onChange={(e) => handleChange("require_roster_match", e.target.checked)}
               />
-              <p className="admin-settings__hint">
-                If enabled, students can only register if their first name and surname match an entry in the Roster.
-              </p>
             </div>
           </div>
         </Card>
 
-        {/* 3. EXAM CONFIGURATION */}
+        {/* 4. EXAM CONFIGURATION */}
         <Card variant="glass" size="md" className="admin-settings__card">
           <h2 className="admin-settings__section-title">Exam Configuration</h2>
           <div className="admin-settings__fields admin-settings__fields--grid">
@@ -194,25 +214,6 @@ export default function AdminSettings() {
                 max={10}
                 value={formData.attempt_limit}
                 onChange={(e) => handleChange("attempt_limit", e.target.value)}
-              />
-            </Field>
-          </div>
-        </Card>
-
-        {/* 4. ANNOUNCEMENT */}
-        <Card variant="glass" size="md" className="admin-settings__card">
-          <h2 className="admin-settings__section-title">Announcement</h2>
-          <div className="admin-settings__fields">
-            <Field
-              label="Global banner message"
-              hint="Optional. Shown at the top of the student dashboard."
-            >
-              <Textarea
-                value={formData.announcement}
-                onChange={(e) => handleChange("announcement", e.target.value)}
-                placeholder="e.g., Exam window opens this Friday at 10 AM WAT."
-                maxLength={280}
-                showCounter
               />
             </Field>
           </div>

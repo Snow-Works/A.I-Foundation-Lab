@@ -59,3 +59,30 @@ export async function deleteQuestion(id) {
 export async function toggleQuestionActive(id, active) {
   return pbAdmin.collection(COLLECTION).update(id, { active });
 }
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------------
+   Export all questions to a JSON array for backup.
+   ------------------------------------------------------------ */
+export async function exportQuestions() {
+  const all = await pbAdmin.collection(COLLECTION).getFullList({
+    sort: "created",
+  });
+  
+  // Map to a clean format (omit PocketBase system fields like id, collectionId, etc.)
+  return all.map((q) => ({
+    title: q.title,
+    prompt: q.prompt,
+    difficulty: q.difficulty,
+    topic: q.topic,
+    rubric: q.rubric,
+    sample_solution: q.sample_solution,
+    active: q.active,
+  }));
+}

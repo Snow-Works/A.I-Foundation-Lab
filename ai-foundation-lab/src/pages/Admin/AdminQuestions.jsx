@@ -11,6 +11,7 @@ import {
   FileText,
   RefreshCw,
   Upload,
+  Download,
 } from "lucide-react";
 import {
   listQuestions,
@@ -18,6 +19,7 @@ import {
   updateQuestion,
   deleteQuestion,
   toggleQuestionActive,
+  exportQuestions,
 } from "../../services/adminQuestionService.js";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
@@ -153,16 +155,16 @@ export default function AdminQuestions() {
 
     try {
       const text = await file.text();
-      const questions = JSON.parse(text);
+      const parsedQuestions = JSON.parse(text);
 
-      if (!Array.isArray(questions)) {
+      if (!Array.isArray(parsedQuestions)) {
         throw new Error("JSON file must contain an array of questions.");
       }
 
       let created = 0;
       let failed = 0;
 
-      for (const q of questions) {
+      for (const q of parsedQuestions) {
         try {
           await createQuestion({
             title: q.title,
@@ -191,6 +193,26 @@ export default function AdminQuestions() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const data = await exportQuestions();
+      const jsonStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `questions-export-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("[admin-questions] export error:", err);
+      setError("Failed to export questions.");
+    }
+  };
+
   const startIdx = totalItems === 0 ? 0 : (page - 1) * perPage + 1;
   const endIdx = Math.min(page * perPage, totalItems);
 
@@ -211,6 +233,14 @@ export default function AdminQuestions() {
             onChange={handleBulkImport}
             style={{ display: "none" }}
           />
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<Download size={16} />}
+            onClick={handleExport}
+          >
+            Export JSON
+          </Button>
           <Button
             variant="secondary"
             size="sm"

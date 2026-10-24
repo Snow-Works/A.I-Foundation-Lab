@@ -368,3 +368,12 @@
   color: var(--silver);
   margin: 0;
 }
+
+
+
+/* Stack the two community cards */
+.profile__community-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}

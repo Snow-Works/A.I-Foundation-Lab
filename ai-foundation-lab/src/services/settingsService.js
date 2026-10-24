@@ -25,11 +25,9 @@ export async function getAppSettings({ force = false } = {}) {
 }
 
 /**
- * Fetch the community link. Server-enforced — the API rule on
- * app_settings returns the URL only if the caller is an admin or
- * a photo-verified user.
- *
- * Returns { url, enabled } or null if not eligible / not configured.
+ * Fetch the General Community link.
+ * Server-enforced: returns the URL only if the caller is
+ * an admin or a photo-verified user.
  */
 export async function getCommunityLink() {
   try {
@@ -41,8 +39,29 @@ export async function getCommunityLink() {
 
     return { url, enabled };
   } catch (err) {
-    // A 403/404 here means the API rule blocked the read
-    // (user isn't photo-verified) or the row doesn't exist.
+    const status = err?.status || err?.response?.code;
+    if (status === 403 || status === 404) {
+      return { url: null, enabled: false };
+    }
+    throw err;
+  }
+}
+
+/**
+ * Fetch the Exam Community link.
+ * Server-enforced: returns the URL only if the caller is
+ * an admin or a photo-verified user.
+ */
+export async function getExamCommunityLink() {
+  try {
+    const settings = await getAppSettings({ force: true });
+    if (!settings) return { url: null, enabled: false };
+
+    const enabled = !!settings.exam_telegram_enabled;
+    const url = settings.exam_telegram_group_url || "";
+
+    return { url, enabled };
+  } catch (err) {
     const status = err?.status || err?.response?.code;
     if (status === 403 || status === 404) {
       return { url: null, enabled: false };
