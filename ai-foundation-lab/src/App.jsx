@@ -6,33 +6,37 @@ import { AdminAuthProvider } from "./context/AdminAuthContext.jsx";
 import RootLayout from "./components/layout/RootLayout.jsx";
 import AdminProtectedRoute from "./components/admin/AdminProtectedRoute.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
+
+// --- Eagerly loaded (Core pages) ---
 import Landing from "./pages/Landing.jsx";
 import Register from "./pages/Register.jsx";
 import VerifyPending from "./pages/VerifyPending.jsx";
 import AuthVerified from "./pages/AuthVerified.jsx";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
-import PhotoUpload from "./pages/PhotoUpload.jsx";
-import ExamGate from "./pages/ExamGate.jsx";
-import ExamIntro from "./pages/ExamIntro.jsx";
-import ExamSession from "./pages/ExamSession.jsx";
-import ExamSubmitted from "./pages/ExamSubmitted.jsx";
-
-// Admin Imports
-import AdminLogin from "./pages/admin/AdminLogin.jsx";
-import AdminLayout from "./pages/admin/AdminLayout.jsx";
-import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
-import AdminUsers from "./pages/admin/AdminUsers.jsx";
-import AdminRoster from "./pages/admin/AdminRoster.jsx";
-import AdminSettings from "./pages/admin/AdminSettings.jsx";
-import AdminQuestions from "./pages/admin/AdminQuestions.jsx";
-import AdminSubmissions from "./pages/admin/AdminSubmissions.jsx";
-import AdminMarking from "./pages/admin/AdminMarking.jsx";
-import AdminViolations from "./pages/admin/AdminViolations.jsx";
-import AdminAudit from "./pages/admin/AdminAudit.jsx"; // Added
-
 import NotFound from "./pages/NotFound.jsx";
+import AdminLogin from "./pages/admin/AdminLogin.jsx";
 
+// --- Lazy Loaded (Heavy / Secondary pages) ---
+const PhotoUpload = lazy(() => import("./pages/PhotoUpload.jsx"));
+const ExamGate = lazy(() => import("./pages/ExamGate.jsx"));
+const ExamIntro = lazy(() => import("./pages/ExamIntro.jsx"));
+const ExamSession = lazy(() => import("./pages/ExamSession.jsx"));
+const ExamSubmitted = lazy(() => import("./pages/ExamSubmitted.jsx"));
+
+// --- Lazy Loaded Admin Pages ---
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout.jsx"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard.jsx"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers.jsx"));
+const AdminRoster = lazy(() => import("./pages/admin/AdminRoster.jsx"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.jsx"));
+const AdminQuestions = lazy(() => import("./pages/admin/AdminQuestions.jsx"));
+const AdminSubmissions = lazy(() => import("./pages/admin/AdminSubmissions.jsx"));
+const AdminMarking = lazy(() => import("./pages/admin/AdminMarking.jsx"));
+const AdminViolations = lazy(() => import("./pages/admin/AdminViolations.jsx"));
+const AdminAudit = lazy(() => import("./pages/admin/AdminAudit.jsx"));
+
+// --- Lazy Loaded Style Guide ---
 const StyleGuideLayout = lazy(() => import("./pages/style-guide/StyleGuideLayout.jsx"));
 const StyleGuideIndex = lazy(() => import("./pages/style-guide/StyleGuideIndex.jsx"));
 const Foundations = lazy(() => import("./pages/style-guide/sections/Foundations.jsx"));
@@ -41,7 +45,7 @@ const Patterns = lazy(() => import("./pages/style-guide/sections/Patterns.jsx"))
 
 function RouteFallback() {
   return (
-    <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontFamily: "var(--font-body)", fontSize: "var(--fs-sm)" }}>
+    <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--ink-950)", color: "var(--cyan-400)", fontFamily: "var(--font-body)", fontSize: "var(--fs-sm)" }}>
       Loading…
     </div>
   );
@@ -52,55 +56,55 @@ export default function App() {
     <AuthProvider>
       <AdminAuthProvider>
         <HashRouter>
-          <Routes>
-            {/* --- Admin Routes --- */}
-            <Route path="admin/login" element={<AdminLogin />} />
-            <Route
-              path="admin"
-              element={
-                <AdminProtectedRoute>
-                  <AdminLayout />
-                </AdminProtectedRoute>
-              }
-            >
-              <Route index element={<AdminDashboard />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="roster" element={<AdminRoster />} />
-              
-              <Route path="submissions" element={<AdminSubmissions />} />
-              <Route path="submissions/:attemptId" element={<AdminMarking />} />
-              
-              <Route path="questions" element={<AdminQuestions />} />
-              <Route path="violations" element={<AdminViolations />} />
-              <Route path="audit" element={<AdminAudit />} /> {/* Added */}
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
-
-            {/* --- Student Routes --- */}
-            <Route element={<RootLayout />}>
-              <Route index element={<Landing />} />
-              <Route path="register" element={<Register />} />
-              <Route path="verify-pending" element={<VerifyPending />} />
-              <Route path="auth/verified" element={<AuthVerified />} />
-              <Route path="login" element={<Login />} />
-              <Route path="exam-gate" element={<ExamGate />} />
-
-              <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="profile/photo" element={<ProtectedRoute><PhotoUpload /></ProtectedRoute>} />
-              <Route path="exam/intro" element={<ProtectedRoute><ExamIntro /></ProtectedRoute>} />
-              <Route path="exam/session/:attemptId" element={<ProtectedRoute><ExamSession /></ProtectedRoute>} />
-              <Route path="exam/submitted" element={<ProtectedRoute><ExamSubmitted /></ProtectedRoute>} />
-
-              <Route path="style-guide" element={<Suspense fallback={<RouteFallback />}><StyleGuideLayout /></Suspense>}>
-                <Route index element={<Suspense fallback={<RouteFallback />}><StyleGuideIndex /></Suspense>} />
-                <Route path="foundations" element={<Suspense fallback={<RouteFallback />}><Foundations /></Suspense>} />
-                <Route path="components" element={<Suspense fallback={<RouteFallback />}><Components /></Suspense>} />
-                <Route path="patterns" element={<Suspense fallback={<RouteFallback />}><Patterns /></Suspense>} />
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              {/* --- Admin Routes --- */}
+              <Route path="admin/login" element={<AdminLogin />} />
+              <Route
+                path="admin"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminLayout />
+                  </AdminProtectedRoute>
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="roster" element={<AdminRoster />} />
+                <Route path="submissions" element={<AdminSubmissions />} />
+                <Route path="submissions/:attemptId" element={<AdminMarking />} />
+                <Route path="questions" element={<AdminQuestions />} />
+                <Route path="violations" element={<AdminViolations />} />
+                <Route path="audit" element={<AdminAudit />} />
+                <Route path="settings" element={<AdminSettings />} />
               </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
+              {/* --- Student Routes --- */}
+              <Route element={<RootLayout />}>
+                <Route index element={<Landing />} />
+                <Route path="register" element={<Register />} />
+                <Route path="verify-pending" element={<VerifyPending />} />
+                <Route path="auth/verified" element={<AuthVerified />} />
+                <Route path="login" element={<Login />} />
+                <Route path="exam-gate" element={<ExamGate />} />
+
+                <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="profile/photo" element={<ProtectedRoute><PhotoUpload /></ProtectedRoute>} />
+                <Route path="exam/intro" element={<ProtectedRoute><ExamIntro /></ProtectedRoute>} />
+                <Route path="exam/session/:attemptId" element={<ProtectedRoute><ExamSession /></ProtectedRoute>} />
+                <Route path="exam/submitted" element={<ProtectedRoute><ExamSubmitted /></ProtectedRoute>} />
+
+                <Route path="style-guide" element={<StyleGuideLayout />}>
+                  <Route index element={<StyleGuideIndex />} />
+                  <Route path="foundations" element={<Foundations />} />
+                  <Route path="components" element={<Components />} />
+                  <Route path="patterns" element={<Patterns />} />
+                </Route>
+
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </HashRouter>
       </AdminAuthProvider>
     </AuthProvider>

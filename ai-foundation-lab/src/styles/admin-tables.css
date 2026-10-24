@@ -1,4 +1,6 @@
 /* src/styles/admin-tables.css */
+@import "./styles/global.css";
+@import "./styles/admin-tables.css";
 
 /* Universal fix for all admin data tables on mobile */
 .admin-users__table-wrap,
