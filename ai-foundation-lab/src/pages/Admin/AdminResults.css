@@ -1,0 +1,199 @@
+/* src/pages/admin/AdminResults.css */
+.admin-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.admin-results__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.admin-results__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-2xl);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.admin-results__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Tabs */
+.admin-results__tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: var(--space-2);
+  overflow-x: auto;
+}
+
+.admin-results__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--dur-fast);
+}
+
+.admin-results__tab:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-results__tab--active {
+  background: rgba(46, 200, 255, 0.12);
+  border-color: rgba(46, 200, 255, 0.35);
+  color: var(--cyan-400);
+}
+
+.admin-results__tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.10);
+  font-size: var(--fs-xs);
+}
+
+.admin-results__tab--active .admin-results__tab-count {
+  background: var(--cyan-400);
+  color: var(--ink-950);
+}
+
+/* Table */
+.admin-results__card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.admin-results__loading,
+.admin-results__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-results__spinner {
+  color: var(--cyan-400);
+  animation: admin-res-spin 900ms linear infinite;
+}
+
+@keyframes admin-res-spin { to { transform: rotate(360deg); } }
+
+.admin-results__table-wrap {
+  overflow-x: auto;
+}
+
+.admin-results__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.admin-results__table th {
+  text-align: left;
+  padding: 12px var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(10, 6, 48, 0.55);
+}
+
+.admin-results__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+  vertical-align: middle;
+}
+
+.admin-results__table tbody tr:last-child td { border-bottom: none; }
+
+.admin-res-student {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-res-name {
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  color: var(--white);
+}
+
+.admin-res-email {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-res-score {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.admin-res-score-num {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-lg);
+  color: var(--white);
+}
+
+.admin-res-score-max {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-res-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-res-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--cyan-400);
+  text-decoration: none;
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+}
+
+.admin-res-view-btn:hover {
+  color: var(--white);
+}

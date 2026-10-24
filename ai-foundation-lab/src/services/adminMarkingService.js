@@ -2,17 +2,52 @@
 import pbAdmin from "../lib/pocketbaseAdmin";
 import { logAdminAction } from "./adminAuditService.js";
 
-export async function listSubmissions({ page = 1, perPage = 20, status = "submitted" } = {}) {
-  const filters = [];
-  if (status === "submitted") filters.push(`status = "submitted"`);
-  if (status === "marked") filters.push(`status = "marked"`);
-  if (status === "released") filters.push(`status = "released"`);
+const PASS_MARK = 180; // The threshold for certification
 
+export async function listSubmissions({ page = 1, perPage = 50 } = {}) {
+  // Fetch everything that is no longer in progress
+  const filter = `status != "in_progress"`;
+  
   return pbAdmin.collection("attempts").getList(page, perPage, {
-    filter: filters.join(" && "),
+    filter,
     sort: "-submitted_at",
     expand: "student",
   });
+}
+
+export async function listMarkedResults() {
+  // Fetch only attempts that have been marked and released
+  const attempts = await pbAdmin.collection("attempts").getFullList({
+    filter: `status = "released"`,
+    sort: "-updated",
+    expand: "student",
+  });
+
+  // Calculate scores for each attempt
+  const results = await Promise.all(
+    attempts.map(async (attempt) => {
+      const marks = await pbAdmin.collection("marks").getFullList({
+        filter: `attempt_question.attempt = "${attempt.id}"`,
+      });
+
+      let totalScore = 0;
+      let maxScore = 0;
+
+      marks.forEach((m) => {
+        totalScore += Number(m.score) || 0;
+        maxScore += Number(m.max_score) || 10;
+      });
+
+      return {
+        ...attempt,
+        totalScore,
+        maxScore,
+        passed: totalScore >= PASS_MARK,
+      };
+    })
+  );
+
+  return results;
 }
 
 export async function getSubmissionDetails(attemptId) {
@@ -90,6 +125,5 @@ export async function releaseResults(attemptId, studentId) {
     status: "MARKED",
   });
 
-  // Log the action
   await logAdminAction("released_results", "attempt", attemptId, { studentId });
 }

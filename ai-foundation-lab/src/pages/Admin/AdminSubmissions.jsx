@@ -1,11 +1,18 @@
 // src/pages/admin/AdminSubmissions.jsx
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { FileText, Loader2, RefreshCw, ChevronRight, AlertTriangle, User as UserIcon, Calendar } from "lucide-react";
+import { FileText, Loader2, RefreshCw, ChevronRight, AlertTriangle, Calendar, CheckCircle2, Eye } from "lucide-react";
 import { listSubmissions } from "../../services/adminMarkingService.js";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import "./AdminSubmissions.css";
+
+const STATUS_BADGES = {
+  submitted: { label: "Needs Marking", cls: "badge--orange" },
+  marked: { label: "Marked", cls: "badge--cyan" },
+  released: { label: "Released", cls: "badge--pink" },
+  terminated: { label: "Terminated", cls: "badge--red" },
+};
 
 export default function AdminSubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -16,7 +23,7 @@ export default function AdminSubmissions() {
     setLoading(true);
     setError("");
     try {
-      const result = await listSubmissions({ page: 1, perPage: 50 });
+      const result = await listSubmissions({ page: 1, perPage: 100 });
       setSubmissions(result.items);
     } catch (err) {
       console.error("[admin-submissions] error:", err);
@@ -41,7 +48,7 @@ export default function AdminSubmissions() {
         <div>
           <h1 className="admin-submissions__title">Submissions</h1>
           <p className="admin-submissions__subtitle">
-            Exams waiting to be marked. Click a submission to grade it.
+            Review all student exam attempts.
           </p>
         </div>
         <Button variant="ghost" size="sm" leftIcon={<RefreshCw size={14} />} onClick={fetchSubmissions} disabled={loading}>
@@ -65,7 +72,7 @@ export default function AdminSubmissions() {
         ) : submissions.length === 0 ? (
           <div className="admin-submissions__empty">
             <FileText size={32} />
-            <p>No pending submissions to mark.</p>
+            <p>No submissions found.</p>
           </div>
         ) : (
           <div className="admin-submissions__table-wrap">
@@ -83,6 +90,8 @@ export default function AdminSubmissions() {
                   const student = sub.expand?.student || {};
                   const fullName = [student.first_name, student.surname].filter(Boolean).join(" ") || student.email || "Unknown";
                   const initials = (student.first_name?.[0] || "?") + (student.surname?.[0] || "");
+                  const badge = STATUS_BADGES[sub.status] || { label: sub.status, cls: "badge--silver" };
+                  const isMarked = sub.status === "marked" || sub.status === "released";
 
                   return (
                     <tr key={sub.id}>
@@ -97,15 +106,20 @@ export default function AdminSubmissions() {
                       </td>
                       <td>
                         <span className="admin-sub-date">
-                          <Calendar size={12} /> {formatDate(sub.submitted_at)}
+                          <Calendar size={12} /> {formatDate(sub.submitted_at || sub.created)}
                         </span>
                       </td>
                       <td>
-                        <span className="badge badge--purple">Needs Marking</span>
+                        <span className={`badge ${badge.cls}`}>{badge.label}</span>
                       </td>
                       <td>
-                        <Link to={`/admin/submissions/${sub.id}`} className="admin-sub-mark-btn">
-                          Mark Exam <ChevronRight size={14} />
+                        <Link to={`/admin/submissions/${sub.id}`} className={`admin-sub-mark-btn ${isMarked ? 'admin-sub-mark-btn--view' : ''}`}>
+                          {isMarked ? (
+                            <><Eye size={14} /> View Results</>
+                          ) : (
+                            <><CheckCircle2 size={14} /> Mark Exam</>
+                          )}
+                          <ChevronRight size={14} />
                         </Link>
                       </td>
                     </tr>

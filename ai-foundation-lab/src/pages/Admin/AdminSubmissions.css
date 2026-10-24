@@ -162,3 +162,13 @@
 .admin-sub-mark-btn:hover {
   background: rgba(46, 200, 255, 0.20);
 }
+
+
+.admin-sub-mark-btn--view {
+  background: rgba(46, 200, 255, 0.05);
+  border-color: rgba(46, 200, 255, 0.2);
+  color: var(--cyan-400);
+}
+.admin-sub-mark-btn--view:hover {
+  background: rgba(46, 200, 255, 0.15);
+}

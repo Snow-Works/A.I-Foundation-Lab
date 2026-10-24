@@ -13,6 +13,7 @@ import {
   ChevronRight,
   UserCheck,
   Activity,
+  Award,
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import LogoMark from "../../components/ui/LogoMark.jsx";
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/roster", label: "Roster", icon: UserCheck },
   { to: "/admin/submissions", label: "Submissions", icon: FileText },
+  { to: "/admin/results", label: "Results", icon: Award }, // <-- Added here
   { to: "/admin/questions", label: "Questions", icon: FileText },
   { to: "/admin/violations", label: "Violations", icon: ShieldAlert },
   { to: "/admin/audit", label: "Audit Trail", icon: Activity },
@@ -35,7 +37,6 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Detect if we are in the marking screen (e.g. /admin/submissions/abc123)
   const isMarkingPage = /^\/admin\/submissions\/.+/.test(location.pathname);
 
   const handleLogout = () => {
@@ -104,7 +105,6 @@ export default function AdminLayout() {
       </aside>
 
       <main className="admin-main">
-        {/* Hide the topbar and padding if we are marking an exam */}
         {!isMarkingPage ? (
           <>
             <header className="admin-topbar">

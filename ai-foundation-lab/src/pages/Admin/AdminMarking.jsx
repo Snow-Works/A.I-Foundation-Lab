@@ -1,7 +1,7 @@
 // src/pages/admin/AdminMarking.jsx
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, AlertTriangle, Loader2, Save, Award, Send } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, CheckCircle2, AlertTriangle, Loader2, Save, Send } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import { getSubmissionDetails, saveMark, releaseResults } from "../../services/adminMarkingService.js";
 import Card from "../../components/ui/Card.jsx";
@@ -14,6 +14,7 @@ import "./AdminMarking.css";
 
 export default function AdminMarking() {
   const { attemptId } = useParams();
+  const navigate = useNavigate();
   const { admin } = useAdminAuth();
 
   const [data, setData] = useState(null);
@@ -48,7 +49,6 @@ export default function AdminMarking() {
     return () => { cancelled = true; };
   }, [attemptId]);
 
-  // Update form when switching questions
   useEffect(() => {
     if (!data || !data.questions[activeIdx]) return;
     const q = data.questions[activeIdx];
@@ -76,11 +76,10 @@ export default function AdminMarking() {
         attemptQuestionId: q.attempt_question_id,
         adminId: admin.id,
         score: Number(score),
-        maxScore: 10, // Hardcoded max score for now
+        maxScore: 10,
         comment,
       });
 
-      // Update local state so we don't need to refetch
       const newQuestions = [...data.questions];
       newQuestions[activeIdx].mark = { score: Number(score), comment };
 
@@ -100,8 +99,8 @@ export default function AdminMarking() {
     setReleasing(true);
     try {
       await releaseResults(data.attempt.id, data.student.id);
-      // Redirect back to list
-      window.location.href = "/#/admin/submissions";
+      // Smoothly navigate back to the submissions list without a hard refresh
+      navigate("/admin/submissions", { replace: true });
     } catch (err) {
       console.error("[admin-marking] release error:", err);
       setReleasing(false);
@@ -155,7 +154,6 @@ export default function AdminMarking() {
       </header>
 
       <div className="admin-marking__layout">
-        {/* LEFT: Question List */}
         <aside className="admin-marking__sidebar">
           <h3 className="admin-marking__sidebar-title">Questions</h3>
           <ul className="admin-marking__qlist">
@@ -179,10 +177,8 @@ export default function AdminMarking() {
           </ul>
         </aside>
 
-        {/* MAIN: Content */}
         <main className="admin-marking__main">
           <div className="admin-marking__grid">
-            {/* Question & Rubric */}
             <div className="admin-marking__panel">
               <div className="admin-marking__section-head">
                 <h2 className="admin-marking__section-title">Question {currentQ.order}</h2>
@@ -203,7 +199,6 @@ export default function AdminMarking() {
               </div>
             </div>
 
-            {/* Student Answer & Score */}
             <div className="admin-marking__panel">
               <div className="admin-marking__section-head">
                 <h2 className="admin-marking__section-title">Student Answer</h2>
