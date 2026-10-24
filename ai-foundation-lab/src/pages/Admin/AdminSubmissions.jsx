@@ -113,7 +113,10 @@ export default function AdminSubmissions() {
                         <span className={`badge ${badge.cls}`}>{badge.label}</span>
                       </td>
                       <td>
-                        <Link to={`/admin/submissions/${sub.id}`} className={`admin-sub-mark-btn ${isMarked ? 'admin-sub-mark-btn--view' : ''}`}>
+                        <Link
+                          to={isMarked ? `/admin/results/${sub.id}` : `/admin/submissions/${sub.id}`}
+                          className={`admin-sub-mark-btn ${isMarked ? 'admin-sub-mark-btn--view' : ''}`}
+                        >
                           {isMarked ? (
                             <><Eye size={14} /> View Results</>
                           ) : (

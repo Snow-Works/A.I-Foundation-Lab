@@ -139,7 +139,7 @@ export default function AdminResults() {
                         </span>
                       </td>
                       <td>
-                        <Link to={`/admin/submissions/${r.id}`} className="admin-res-view-btn">
+                        <Link to={`/admin/results/${r.id}`} className="admin-res-view-btn">
                           View Details <ChevronRight size={14} />
                         </Link>
                       </td>

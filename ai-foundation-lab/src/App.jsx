@@ -35,7 +35,8 @@ const AdminSubmissions = lazy(() => import("./pages/admin/AdminSubmissions.jsx")
 const AdminMarking = lazy(() => import("./pages/admin/AdminMarking.jsx"));
 const AdminViolations = lazy(() => import("./pages/admin/AdminViolations.jsx"));
 const AdminAudit = lazy(() => import("./pages/admin/AdminAudit.jsx"));
-const AdminResults = lazy(() => import("./pages/admin/AdminResults.jsx")); // Lazy loaded now
+const AdminResults = lazy(() => import("./pages/admin/AdminResults.jsx"));
+const AdminResultDetail = lazy(() => import("./pages/admin/AdminResultDetail.jsx"));
 
 // --- Lazy Loaded Style Guide ---
 const StyleGuideLayout = lazy(() => import("./pages/style-guide/StyleGuideLayout.jsx"));
@@ -75,6 +76,7 @@ export default function App() {
                 <Route path="submissions" element={<AdminSubmissions />} />
                 <Route path="submissions/:attemptId" element={<AdminMarking />} />
                 <Route path="results" element={<AdminResults />} />
+                <Route path="results/:attemptId" element={<AdminResultDetail />} />
                 <Route path="questions" element={<AdminQuestions />} />
                 <Route path="violations" element={<AdminViolations />} />
                 <Route path="audit" element={<AdminAudit />} />

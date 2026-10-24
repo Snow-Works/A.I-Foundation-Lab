@@ -37,7 +37,7 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const isMarkingPage = /^\/admin\/submissions\/.+/.test(location.pathname);
+  const isMarkingPage = /^\/admin\/(submissions|results)\/.+/.test(location.pathname);
 
   const handleLogout = () => {
     logout();
