@@ -1,0 +1,66 @@
+/* src/components/pdf/pdf-styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Roboto:wght@400;500&family=Mrs+Saint+Delafield&display=swap');
+
+.pdf-page {
+  width: 794px; /* A4 width at 96 DPI */
+  min-height: 1123px; /* A4 height at 96 DPI */
+  background: #ffffff;
+  color: #111;
+  font-family: 'Roboto', sans-serif;
+  position: absolute;
+  left: -9999px; /* Hidden off-screen */
+  top: 0;
+  padding: 60px;
+  box-sizing: border-box;
+}
+
+.pdf-landscape {
+  width: 1123px;
+  min-height: 794px;
+  padding: 40px;
+}
+
+/* Result Sheet */
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid #0A0630;
+  padding-bottom: 10px;
+  margin-bottom: 40px;
+}
+.pdf-brand { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; color: #0A0630; }
+.pdf-doc-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #555; }
+.pdf-student-info h2 { font-family: 'Montserrat', sans-serif; font-size: 28px; margin: 0 0 5px; }
+.pdf-student-info p { font-size: 14px; color: #555; margin: 2px 0; }
+.pdf-score-summary { display: flex; justify-content: space-between; align-items: center; margin: 40px 0; padding: 20px; background: #F4F4F8; border-radius: 8px; }
+.pdf-status { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; padding: 5px 15px; border-radius: 4px; }
+.pdf-status--pass { background: #D1FAE5; color: #065F46; }
+.pdf-status--fail { background: #FEE2E2; color: #991B1B; }
+.pdf-total-score { font-family: 'Montserrat', sans-serif; font-size: 20px; }
+.pdf-total-score strong { font-size: 32px; }
+.pdf-breakdown h3 { font-family: 'Montserrat', sans-serif; font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+.pdf-q-row { margin-bottom: 25px; page-break-inside: avoid; }
+.pdf-q-header { display: flex; justify-content: space-between; font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 8px; }
+.pdf-code { background: #F8F8F8; padding: 12px; border-radius: 4px; font-size: 13px; white-space: pre-wrap; border: 1px solid #eee; }
+.pdf-comment { font-size: 13px; color: #444; margin-top: 8px; padding: 8px; background: #E0F2FE; border-left: 3px solid #0284C7; }
+
+/* Certificates */
+.pdf-border-inner { border: 10px double #0A0630; padding: 60px; text-align: center; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
+.pdf-cert-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 38px; color: #0A0630; margin-bottom: 10px; letter-spacing: 2px; }
+.pdf-cert-subtitle { font-size: 18px; color: #555; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px; }
+.pdf-cert-name { font-family: 'Mrs Saint Delafield', cursive; font-size: 72px; color: #D4249B; margin: 20px 0 40px; }
+.pdf-cert-text { font-size: 16px; line-height: 1.8; color: #333; max-width: 700px; margin: 0 auto 60px; }
+.pdf-cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; }
+.pdf-signature-block { display: flex; flex-direction: column; width: 200px; }
+.pdf-signature-script { font-family: 'Mrs Saint Delafield', cursive; font-size: 36px; color: #111; margin-bottom: 5px; }
+.pdf-signature-line { border-top: 1px solid #555; padding-top: 5px; font-size: 12px; text-transform: uppercase; color: #555; letter-spacing: 1px; }
+.pdf-cert-seal { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #D4249B; display: flex; align-items: center; justify-content: center; color: #D4249B; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 12px; transform: rotate(-15deg); }
+.pdf-cert-date { margin-top: 40px; font-size: 12px; color: #777; }
+
+/* Admission Letter */
+.pdf-letter-body { padding: 40px 0; }
+.pdf-letter-date { text-align: right; color: #555; margin-bottom: 40px; }
+.pdf-letter-body p { font-size: 15px; line-height: 1.8; margin-bottom: 20px; }
+.pdf-letter-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; color: #0A0630; margin: 30px 0; border-bottom: 2px solid #0A0630; display: inline-block; padding-bottom: 5px; }
+.pdf-letter-signature { margin-top: 60px; display: flex; flex-direction: column; width: 250px; }

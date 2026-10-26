@@ -1,17 +1,21 @@
 // src/pages/Profile.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   LogOut, Mail, Phone, User, Lock, ExternalLink, CheckCircle2,
-  Image as ImageIcon, ShieldAlert, Award, Loader2, Users
+  Image as ImageIcon, ShieldAlert, Award, Loader2, Download, FileText, Users
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { photoUrl, getReleasedExamResult } from "../services/profileService.js";
 import { getCommunityLink, getExamCommunityLink } from "../services/settingsService.js";
+import { downloadElementAsPDF } from "../lib/pdfGenerator.js";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
 import Button from "../components/ui/Button.jsx";
 import ProgressTracker from "../components/ui/ProgressTracker.jsx";
+import ResultSheet from "../components/pdf/ResultSheet.jsx";
+import ExamCertificate from "../components/pdf/ExamCertificate.jsx";
+import AdmissionLetter from "../components/pdf/AdmissionLetter.jsx";
 import "./Profile.css";
 
 export default function Profile() {
@@ -27,6 +31,13 @@ export default function Profile() {
   
   const [examResult, setExamResult] = useState(null);
   const [loadingResult, setLoadingResult] = useState(true);
+
+  // Refs for PDF generation
+  const resultSheetRef = useRef(null);
+  const examCertificateRef = useRef(null);
+  const admissionLetterRef = useRef(null);
+
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -52,6 +63,13 @@ export default function Profile() {
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
+  };
+
+  const handleDownloadPDF = async (ref, filename, orientation) => {
+    if (downloading) return;
+    setDownloading(true);
+    await downloadElementAsPDF(ref.current, filename, orientation);
+    setDownloading(false);
   };
 
   const handleOpenGeneral = async () => {
@@ -141,10 +159,12 @@ export default function Profile() {
           <Card variant="gradient" size="lg" className="profile__result-card">
             <div className="profile__result-content">
               <div className="profile__result-icon">
-                <Award size={40} />
+                {examResult.passed ? <Award size={40} /> : <FileText size={40} />}
               </div>
               <div className="profile__result-text">
-                <h2 className="profile__result-title">Exam Complete</h2>
+                <h2 className="profile__result-title">
+                  {examResult.passed ? "Exam Complete — Certified" : "Exam Complete"}
+                </h2>
                 <p className="profile__result-subtitle">
                   Your answers have been marked and released.
                 </p>
@@ -154,6 +174,54 @@ export default function Profile() {
                 <span className="profile__result-max">/ {examResult.maxScore}</span>
               </div>
             </div>
+
+            <div className="profile__result-actions">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                leftIcon={<Download size={14} />} 
+                onClick={() => handleDownloadPDF(resultSheetRef, `Result_${fullName.replace(/\s/g, '_')}.pdf`, "portrait")}
+                loading={downloading}
+              >
+                Download Result Sheet
+              </Button>
+              
+              {examResult.passed && (
+                <>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    leftIcon={<Download size={14} />} 
+                    onClick={() => handleDownloadPDF(examCertificateRef, `Certificate_${fullName.replace(/\s/g, '_')}.pdf`, "landscape")}
+                    loading={downloading}
+                  >
+                    Download Exam Certificate
+                  </Button>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    leftIcon={<Download size={14} />} 
+                    onClick={() => handleDownloadPDF(admissionLetterRef, `Admission_${fullName.replace(/\s/g, '_')}.pdf`, "portrait")}
+                    loading={downloading}
+                  >
+                    Download Admission Letter
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Hidden PDF Templates */}
+            {examResult && (
+              <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+                <ResultSheet ref={resultSheetRef} data={examResult} />
+                {examResult.passed && (
+                  <>
+                    <ExamCertificate ref={examCertificateRef} student={user} date={new Date().toLocaleDateString()} />
+                    <AdmissionLetter ref={admissionLetterRef} student={user} date={new Date().toLocaleDateString()} />
+                  </>
+                )}
+              </div>
+            )}
           </Card>
         )}
 
@@ -200,7 +268,7 @@ export default function Profile() {
             </p>
           </Card>
 
-          {/* TWO COMMUNITY CARDS (Option A) */}
+          {/* TWO COMMUNITY CARDS */}
           <div className="profile__community-stack">
             
             {/* Card 1: General Community */}

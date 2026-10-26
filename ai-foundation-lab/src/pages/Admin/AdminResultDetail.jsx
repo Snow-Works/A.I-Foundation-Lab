@@ -1,8 +1,9 @@
 // src/pages/admin/AdminResultDetail.jsx
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, XCircle, Award, Loader2, AlertTriangle, User, Calendar, Mail } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Award, Loader2, AlertTriangle, Mail, Calendar } from "lucide-react";
 import { getSubmissionDetails } from "../../services/adminMarkingService.js";
+import { adminPhotoUrl } from "../../services/adminUserService.js";
 import Card from "../../components/ui/Card.jsx";
 import "./AdminResultDetail.css";
 
@@ -61,6 +62,7 @@ export default function AdminResultDetail() {
   const PASS_MARK = 180;
   const passed = totalScore >= PASS_MARK;
   const fullName = [student.first_name, student.surname].filter(Boolean).join(" ") || student.email;
+  const photo = adminPhotoUrl(student);
 
   return (
     <div className="admin-result-detail">
@@ -75,9 +77,13 @@ export default function AdminResultDetail() {
         {/* Student Info Card */}
         <Card variant="glass" size="lg" className="admin-result-detail__summary-card">
           <div className="admin-result-detail__student-info">
-            <div className="admin-result-detail__avatar">
-              {student.first_name?.[0]}{student.surname?.[0]}
-            </div>
+            {photo ? (
+              <img src={photo} alt="" className="admin-result-detail__avatar" style={{ objectFit: "cover" }} />
+            ) : (
+              <div className="admin-result-detail__avatar">
+                {student.first_name?.[0]}{student.surname?.[0]}
+              </div>
+            )}
             <div>
               <h2 className="admin-result-detail__name">{fullName}</h2>
               <div className="admin-result-detail__meta">

@@ -117,10 +117,12 @@ export async function saveMark({ attemptQuestionId, adminId, score, maxScore, co
 }
 
 export async function releaseResults(attemptId, studentId) {
+  // 1. Update attempt status
   await pbAdmin.collection("attempts").update(attemptId, {
     status: "released",
   });
 
+  // 2. Update student profile status
   await pbAdmin.collection("profiles").update(studentId, {
     status: "MARKED",
   });
