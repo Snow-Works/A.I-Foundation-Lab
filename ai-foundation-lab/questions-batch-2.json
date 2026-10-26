@@ -1,0 +1,250 @@
+[
+  {
+    "title": "Reduce Accumulation",
+    "topic": "Functional Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Use <code>functools.reduce</code> to calculate the product of all list elements.</p><p>Starting code:</p><pre>from functools import reduce\nnums = [1, 2, 3, 4]\nproduct = reduce(lambda x, y: ___, nums)</pre>",
+    "rubric": "Full marks if the expression is `x * y`.",
+    "sample_solution": "from functools import reduce\nnums = [1, 2, 3, 4]\nproduct = reduce(lambda x, y: x * y, nums)"
+  },
+  {
+    "title": "Partial Functions",
+    "topic": "Functional Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Create a pre-configured function <code>double</code> using <code>functools.partial</code>.</p><p>Starting code:</p><pre>from functools import partial\ndef multiply(a, b):\n    return a * b\ndouble = partial(multiply, ___)</pre>",
+    "rubric": "Full marks if the student passes `2` as the first argument.",
+    "sample_solution": "from functools import partial\ndef multiply(a, b):\n    return a * b\ndouble = partial(multiply, 2)"
+  },
+  {
+    "title": "LRU Cache",
+    "topic": "Functional Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Apply LRU caching to memoize an expensive recursive function.</p><p>Starting code:</p><pre>from functools import ___\n\n@lru_cache(maxsize=None)\ndef fib(n):\n    if n < 2: return n\n    return fib(n-1) + fib(n-2)</pre>",
+    "rubric": "Full marks for importing `lru_cache`.",
+    "sample_solution": "from functools import lru_cache\n\n@lru_cache(maxsize=None)\ndef fib(n):\n    if n < 2: return n\n    return fib(n-1) + fib(n-2)"
+  },
+  {
+    "title": "Any Function",
+    "topic": "Functional Programming",
+    "difficulty": "easy",
+    "prompt": "<p>Check if at least one element in a list evaluates to True.</p><p>Starting code:</p><pre>flags = [False, False, True, False]\nhas_true = ___(flags)</pre>",
+    "rubric": "Full marks if the built-in function is `any`.",
+    "sample_solution": "flags = [False, False, True, False]\nhas_true = any(flags)"
+  },
+  {
+    "title": "All Function",
+    "topic": "Functional Programming",
+    "difficulty": "easy",
+    "prompt": "<p>Ensure every element in a list satisfies a condition.</p><p>Starting code:</p><pre>scores = [85, 90, 92, 88]\nall_passing = ___(score >= 70 for score in scores)</pre>",
+    "rubric": "Full marks if the built-in function is `all`.",
+    "sample_solution": "scores = [85, 90, 92, 88]\nall_passing = all(score >= 70 for score in scores)"
+  },
+  {
+    "title": "Class Initialization",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "easy",
+    "prompt": "<p>Define a class <code>User</code> initializer that assigns instance attributes <code>name</code> and <code>role</code>.</p><p>Starting code:</p><pre>class User:\n    def ___(self, name, role):\n        self.name = name\n        self.role = role</pre>",
+    "rubric": "Full marks for `__init__`.",
+    "sample_solution": "class User:\n    def __init__(self, name, role):\n        self.name = name\n        self.role = role"
+  },
+  {
+    "title": "Inheritance",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Inherit <code>Student</code> from base class <code>Person</code> and call parent constructor.</p><p>Starting code:</p><pre>class Person:\n    def __init__(self, name):\n        self.name = name\n\nclass Student(Person):\n    def __init__(self, name, student_id):\n        ___.__init__(name)\n        self.student_id = student_id</pre>",
+    "rubric": "Full marks for `super()`.",
+    "sample_solution": "class Person:\n    def __init__(self, name):\n        self.name = name\n\nclass Student(Person):\n    def __init__(self, name, student_id):\n        super().__init__(name)\n        self.student_id = student_id"
+  },
+  {
+    "title": "String Representation",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Define unambiguous developer-facing representation for a class instance.</p><p>Starting code:</p><pre>class Book:\n    def __init__(self, title):\n        self.title = title\n    def ___(self):\n        return f\"Book(title={self.title})\"</pre>",
+    "rubric": "Full marks for `__repr__`.",
+    "sample_solution": "class Book:\n    def __init__(self, title):\n        self.title = title\n    def __repr__(self):\n        return f\"Book(title={self.title})\""
+  },
+  {
+    "title": "Class Method",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Implement a factory class method that creates an instance from a date string.</p><p>Starting code:</p><pre>class Date:\n    def __init__(self, year, month, day):\n        self.year, self.month, self.day = year, month, day\n    \n    @___\n    def from_string(cls, date_str):\n        y, m, d = map(int, date_str.split(\"-\"))\n        return cls(y, m, d)</pre>",
+    "rubric": "Full marks for `classmethod`.",
+    "sample_solution": "class Date:\n    def __init__(self, year, month, day):\n        self.year, self.month, self.day = year, month, day\n    \n    @classmethod\n    def from_string(cls, date_str):\n        y, m, d = map(int, date_str.split(\"-\"))\n        return cls(y, m, d)"
+  },
+  {
+    "title": "Static Method",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "easy",
+    "prompt": "<p>Define a utility static method that performs validation independent of instance state.</p><p>Starting code:</p><pre>class MathUtils:\n    @___\n    def is_even(num):\n        return num % 2 == 0</pre>",
+    "rubric": "Full marks for `staticmethod`.",
+    "sample_solution": "class MathUtils:\n    @staticmethod\n    def is_even(num):\n        return num % 2 == 0"
+  },
+  {
+    "title": "Property Decorator",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Expose a private attribute <code>_price</code> through a getter property.</p><p>Starting code:</p><pre>class Product:\n    def __init__(self, price):\n        self._price = price\n\n    @___\n    def price(self):\n        return self._price</pre>",
+    "rubric": "Full marks for `property`.",
+    "sample_solution": "class Product:\n    def __init__(self, price):\n        self._price = price\n\n    @property\n    def price(self):\n        return self._price"
+  },
+  {
+    "title": "Property Setter",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Add a setter to validate value before updating property <code>price</code>.</p><p>Starting code:</p><pre>class Product:\n    @property\n    def price(self):\n        return self._price\n\n    @price.___\n    def price(self, val):\n        if val < 0:\n            raise ValueError()\n        self._price = val</pre>",
+    "rubric": "Full marks for `.setter`.",
+    "sample_solution": "class Product:\n    @property\n    def price(self):\n        return self._price\n\n    @price.setter\n    def price(self, val):\n        if val < 0:\n            raise ValueError()\n        self._price = val"
+  },
+  {
+    "title": "Operator Overloading",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Overload the <code>+</code> operator for vector addition using <code>__add__</code>.</p><p>Starting code:</p><pre>class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    def ___(self, other):\n        return Vector(self.x + other.x, self.y + other.y)</pre>",
+    "rubric": "Full marks for `__add__`.",
+    "sample_solution": "class Vector:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)"
+  },
+  {
+    "title": "Abstract Base Classes",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Define an abstract method <code>area</code> using standard library <code>abc</code>.</p><p>Starting code:</p><pre>from abc import ABC, ___\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass</pre>",
+    "rubric": "Full marks for `abstractmethod`.",
+    "sample_solution": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        pass"
+  },
+  {
+    "title": "Dataclasses",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Create an immutable data transfer class using <code>@dataclass</code>.</p><p>Starting code:</p><pre>from dataclasses import dataclass\n\n@dataclass(___{True})\nclass Point3D:\n    x: float\n    y: float\n    z: float</pre>",
+    "rubric": "Full marks for `frozen=True`.",
+    "sample_solution": "from dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Point3D:\n    x: float\n    y: float\n    z: float"
+  },
+  {
+    "title": "Slot Optimization",
+    "topic": "Object-Oriented Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Restrict dynamic attribute creation to save memory using <code>__slots__</code>.</p><p>Starting code:</p><pre>class Employee:\n    ___ = (\"name\", \"id\")\n    def __init__(self, name, id):\n        self.name = name\n        self.id = id</pre>",
+    "rubric": "Full marks for `__slots__`.",
+    "sample_solution": "class Employee:\n    __slots__ = (\"name\", \"id\")\n    def __init__(self, name, id):\n        self.name = name\n        self.id = id"
+  },
+  {
+    "title": "Basic Decorator",
+    "topic": "Decorators & Generators",
+    "difficulty": "medium",
+    "prompt": "<p>Complete a simple execution logging decorator.</p><p>Starting code:</p><pre>def logger(func):\n    def wrapper(*args, **kwargs):\n        print(\"Executing...\")\n        return ___.___(args, **kwargs)\n    return ___</pre>",
+    "rubric": "Full marks for `func` and `wrapper`.",
+    "sample_solution": "def logger(func):\n    def wrapper(*args, **kwargs):\n        print(\"Executing...\")\n        return func(*args, **kwargs)\n    return wrapper"
+  },
+  {
+    "title": "Preserving Metadata",
+    "topic": "Decorators & Generators",
+    "difficulty": "medium",
+    "prompt": "<p>Use <code>functools.wraps</code> to preserve decorated function docstrings and names.</p><p>Starting code:</p><pre>from functools import ___\n\ndef my_decorator(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper</pre>",
+    "rubric": "Full marks for `wraps`.",
+    "sample_solution": "from functools import wraps\n\ndef my_decorator(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper"
+  },
+  {
+    "title": "Decorator Accepting Arguments",
+    "topic": "Decorators & Generators",
+    "difficulty": "hard",
+    "prompt": "<p>Structure a decorator that takes parameter <code>num_times</code>.</p><p>Starting code:</p><pre>def repeat(num_times):\n    def decorator_out(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(___):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator_out</pre>",
+    "rubric": "Full marks for `num_times`.",
+    "sample_solution": "def repeat(num_times):\n    def decorator_out(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(num_times):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator_out"
+  },
+  {
+    "title": "Basic Generator Function",
+    "topic": "Decorators & Generators",
+    "difficulty": "easy",
+    "prompt": "<p>Create a generator function yielding infinite counting sequence.</p><p>Starting code:</p><pre>def count_up(start=0):\n    while True:\n        ___ start\n        start += 1</pre>",
+    "rubric": "Full marks for `yield`.",
+    "sample_solution": "def count_up(start=0):\n    while True:\n        yield start\n        start += 1"
+  },
+  {
+    "title": "Generator Delegation",
+    "topic": "Decorators & Generators",
+    "difficulty": "medium",
+    "prompt": "<p>Delegate iteration to a sub-generator using <code>yield from</code>.</p><p>Starting code:</p><pre>def inner():\n    yield 1\n    yield 2\n\ndef outer():\n    ___ inner()\n    yield 3</pre>",
+    "rubric": "Full marks for `yield from`.",
+    "sample_solution": "def inner():\n    yield 1\n    yield 2\n\ndef outer():\n    yield from inner()\n    yield 3"
+  },
+  {
+    "title": "Generator Pipeline",
+    "topic": "Decorators & Generators",
+    "difficulty": "medium",
+    "prompt": "<p>Chain generator expressions to compute total sum of squared evens.</p><p>Starting code:</p><pre>evens = (x for x in range(10) if x % 2 == 0)\nsquares = (x**2 for x in ___)\ntotal = sum(squares)</pre>",
+    "rubric": "Full marks for `evens`.",
+    "sample_solution": "evens = (x for x in range(10) if x % 2 == 0)\nsquares = (x**2 for x in evens)\ntotal = sum(squares)"
+  },
+  {
+    "title": "Generator send() Method",
+    "topic": "Decorators & Generators",
+    "difficulty": "hard",
+    "prompt": "<p>Receive value injected externally into a running generator.</p><p>Starting code:</p><pre>def accumulator():\n    total = 0\n    while True:\n        val = ___\n        if val is None:\n            break\n        total += val\n        yield total</pre>",
+    "rubric": "Full marks for `yield`.",
+    "sample_solution": "def accumulator():\n    total = 0\n    while True:\n        val = yield\n        if val is None:\n            break\n        total += val\n        yield total"
+  },
+  {
+    "title": "Class-Based Decorator",
+    "topic": "Decorators & Generators",
+    "difficulty": "hard",
+    "prompt": "<p>Implement a callable decorator state holder class using <code>__call__</code>.</p><p>Starting code:</p><pre>class CountCalls:\n    def __init__(self, func):\n        self.func = func\n        self.num_calls = 0\n    def ___(self, *args, **kwargs):\n        self.num_calls += 1\n        return self.func(*args, **kwargs)</pre>",
+    "rubric": "Full marks for `__call__`.",
+    "sample_solution": "class CountCalls:\n    def __init__(self, func):\n        self.func = func\n        self.num_calls = 0\n    def __call__(self, *args, **kwargs):\n        self.num_calls += 1\n        return self.func(*args, **kwargs)"
+  },
+  {
+    "title": "Primitive Type Hints",
+    "topic": "Type Annotations",
+    "difficulty": "easy",
+    "prompt": "<p>Annotate a function that accepts string and int, returning boolean.</p><p>Starting code:</p><pre>def validate(username: ___, min_len: ___) -> ___: \n    return len(username) == min_len</pre>",
+    "rubric": "Full marks for `str`, `int`, `bool`.",
+    "sample_solution": "def validate(username: str, min_len: int) -> bool: \n    return len(username) == min_len"
+  },
+  {
+    "title": "Optional Types",
+    "topic": "Type Annotations",
+    "difficulty": "medium",
+    "prompt": "<p>Annotate a function parameter that accepts an integer or None.</p><p>Starting code:</p><pre>from typing import ___\n\ndef process(data: ___[int] = None) -> None:\n    pass</pre>",
+    "rubric": "Full marks for `Optional`.",
+    "sample_solution": "from typing import Optional\n\ndef process(data: Optional[int] = None) -> None:\n    pass"
+  },
+  {
+    "title": "Union Types",
+    "topic": "Type Annotations",
+    "difficulty": "medium",
+    "prompt": "<p>Annotate parameter returning either float or int using pipe operator <code>|</code>.</p><p>Starting code:</p><pre>def parse_number(val: str) -> ___:\n    return float(val)</pre>",
+    "rubric": "Full marks for `float | int`.",
+    "sample_solution": "def parse_number(val: str) -> float | int:\n    return float(val)"
+  },
+  {
+    "title": "Type Aliases",
+    "topic": "Type Annotations",
+    "difficulty": "medium",
+    "prompt": "<p>Define a custom type alias <code>Vector2D</code> representing a tuple of two floats.</p><p>Starting code:</p><pre>from typing import Tuple\nVector2D = ___\ndef move(p: Vector2D) -> Vector2D:\n    pass</pre>",
+    "rubric": "Full marks for `Tuple[float, float]`.",
+    "sample_solution": "from typing import Tuple\nVector2D = Tuple[float, float]\ndef move(p: Vector2D) -> Vector2D:\n    pass"
+  },
+  {
+    "title": "Generic Types",
+    "topic": "Type Annotations",
+    "difficulty": "hard",
+    "prompt": "<p>Define a container function returning element from generic list using <code>TypeVar</code>.</p><p>Starting code:</p><pre>from typing import TypeVar, List\nT = ___\ndef get_first(container: List[T]) -> T:\n    return container[0]</pre>",
+    "rubric": "Full marks for `TypeVar('T')`.",
+    "sample_solution": "from typing import TypeVar, List\nT = TypeVar('T')\ndef get_first(container: List[T]) -> T:\n    return container[0]"
+  },
+  {
+    "title": "Callable Annotations",
+    "topic": "Type Annotations",
+    "difficulty": "medium",
+    "prompt": "<p>Annotate higher-order function receiving a callback taking two ints and returning float.</p><p>Starting code:</p><pre>from typing import ___\ndef apply(func: ___[[int, int], float], a: int, b: int) -> float:\n    return func(a, b)</pre>",
+    "rubric": "Full marks for `Callable`.",
+    "sample_solution": "from typing import Callable\ndef apply(func: Callable[[int, int], float], a: int, b: int) -> float:\n    return func(a, b)"
+  },
+  {
+    "title": "TypedDict Usage",
+    "topic": "Type Annotations",
+    "difficulty": "hard",
+    "prompt": "<p>Define precise dictionary structure using <code>TypedDict</code>.</p><p>Starting code:</p><pre>from typing import ___\n\nclass UserPayload(___):\n    id: int\n    username: str</pre>",
+    "rubric": "Full marks for `TypedDict`.",
+    "sample_solution": "from typing import TypedDict\n\nclass UserPayload(TypedDict):\n    id: int\n    username: str"
+  }
+]

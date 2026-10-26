@@ -1,8 +1,10 @@
 // src/pages/admin/AdminResults.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Award, Loader2, RefreshCw, AlertTriangle, Calendar, ChevronRight, CheckCircle2, XCircle } from "lucide-react";
+import { Award, Loader2, RefreshCw, AlertTriangle, Calendar, ChevronRight, CheckCircle2, XCircle, Download } from "lucide-react";
 import { listMarkedResults } from "../../services/adminMarkingService.js";
+import { downloadListAsPDF } from "../../lib/pdfGenerator.js";
+import ResultListPDF from "../../components/pdf/ResultListPDF.jsx";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import "./AdminResults.css";
@@ -18,6 +20,11 @@ export default function AdminResults() {
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // PDF Generation state
+  const [downloading, setDownloading] = useState(null); // "passed" | "failed" | null
+  const passedPdfRef = useRef(null);
+  const failedPdfRef = useRef(null);
 
   const fetchResults = useCallback(async () => {
     setLoading(true);
@@ -37,15 +44,28 @@ export default function AdminResults() {
     fetchResults();
   }, [fetchResults]);
 
-  const filteredResults = results.filter((r) => {
-    if (activeTab === "passed") return r.passed;
-    if (activeTab === "failed") return !r.passed;
-    return true;
-  });
+  const passedResults = results.filter((r) => r.passed);
+  const failedResults = results.filter((r) => !r.passed);
+
+  const filteredResults = activeTab === "passed" ? passedResults : activeTab === "failed" ? failedResults : results;
 
   const formatDate = (iso) => {
     if (!iso) return "—";
     return new Date(iso).toLocaleDateString([], { dateStyle: 'medium' });
+  };
+
+  const handleDownloadPassed = async () => {
+    if (passedResults.length === 0) return;
+    setDownloading("passed");
+    await downloadListAsPDF(passedPdfRef.current, `Passed_Candidates_${new Date().toISOString().split("T")[0]}.pdf`, "portrait");
+    setDownloading(null);
+  };
+
+  const handleDownloadFailed = async () => {
+    if (failedResults.length === 0) return;
+    setDownloading("failed");
+    await downloadListAsPDF(failedPdfRef.current, `Failed_Candidates_${new Date().toISOString().split("T")[0]}.pdf`, "portrait");
+    setDownloading(null);
   };
 
   return (
@@ -57,9 +77,31 @@ export default function AdminResults() {
             Review final exam scores and pass/fail status.
           </p>
         </div>
-        <Button variant="ghost" size="sm" leftIcon={<RefreshCw size={14} />} onClick={fetchResults} disabled={loading}>
-          Refresh
-        </Button>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            leftIcon={<Download size={14} />} 
+            onClick={handleDownloadPassed}
+            disabled={passedResults.length === 0 || downloading !== null}
+            loading={downloading === "passed"}
+          >
+            Export Passed
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            leftIcon={<Download size={14} />} 
+            onClick={handleDownloadFailed}
+            disabled={failedResults.length === 0 || downloading !== null}
+            loading={downloading === "failed"}
+          >
+            Export Failed
+          </Button>
+          <Button variant="ghost" size="sm" leftIcon={<RefreshCw size={14} />} onClick={fetchResults} disabled={loading || downloading !== null}>
+            Refresh
+          </Button>
+        </div>
       </header>
 
       <div className="admin-results__tabs">
@@ -71,7 +113,7 @@ export default function AdminResults() {
           >
             {tab.label}
             <span className="admin-results__tab-count">
-              {tab.id === "all" ? results.length : tab.id === "passed" ? results.filter(r => r.passed).length : results.filter(r => !r.passed).length}
+              {tab.id === "all" ? results.length : tab.id === "passed" ? passedResults.length : failedResults.length}
             </span>
           </button>
         ))}
@@ -151,6 +193,16 @@ export default function AdminResults() {
           </div>
         )}
       </Card>
+
+      {/* Hidden PDF Templates */}
+      <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+        {passedResults.length > 0 && (
+          <ResultListPDF ref={passedPdfRef} students={passedResults} title="Passed Candidates" />
+        )}
+        {failedResults.length > 0 && (
+          <ResultListPDF ref={failedPdfRef} students={failedResults} title="Failed Candidates" />
+        )}
+      </div>
     </div>
   );
 }
