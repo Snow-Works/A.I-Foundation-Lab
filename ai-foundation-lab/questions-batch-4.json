@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Dynamic Attribute Access",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "medium",
+    "prompt": "<p>Get object attribute value using string variable identifier dynamically.</p><p>Starting code:</p><pre>class Config:\n    port = 8080\n\nattr_name = \"port\"\nvalue = ___(Config, attr_name)</pre>",
+    "rubric": "Full marks for `getattr`.",
+    "sample_solution": "class Config:\n    port = 8080\n\nattr_name = \"port\"\nvalue = getattr(Config, attr_name)"
+  },
+  {
+    "title": "Dynamic Attribute Setting",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "medium",
+    "prompt": "<p>Set dynamic property value on object instance.</p><p>Starting code:</p><pre>class Settings:\n    pass\n\ns = Settings()\n___(s, \"debug\", True)</pre>",
+    "rubric": "Full marks for `setattr`.",
+    "sample_solution": "class Settings:\n    pass\n\ns = Settings()\nsetattr(s, \"debug\", True)"
+  },
+  {
+    "title": "Checking Subclass Relationship",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "easy",
+    "prompt": "<p>Check if class B is derivative base inheritance of A.</p><p>Starting code:</p><pre>class A:\n    pass\nclass B(A):\n    pass\n\nis_sub = ___(B, A)</pre>",
+    "rubric": "Full marks for `issubclass`.",
+    "sample_solution": "class A:\n    pass\nclass B(A):\n    pass\n\nis_sub = issubclass(B, A)"
+  },
+  {
+    "title": "Intercepting Missing Attributes",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "hard",
+    "prompt": "<p>Handle dynamic fallback lookup when attribute is absent on instance.</p><p>Starting code:</p><pre>class DynamicProxy:\n    def ___(self, name):\n        return f\"Property {name} not found\"</pre>",
+    "rubric": "Full marks for `__getattr__`.",
+    "sample_solution": "class DynamicProxy:\n    def __getattr__(self, name):\n        return f\"Property {name} not found\""
+  },
+  {
+    "title": "Structural Pattern Matching",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "hard",
+    "prompt": "<p>Match dynamic status code structure using match / case.</p><p>Starting code:</p><pre>status = 404\n___ status:\n    case 200:\n        print(\"OK\")\n    case 404:\n        print(\"Not Found\")</pre>",
+    "rubric": "Full marks for `match`.",
+    "sample_solution": "status = 404\nmatch status:\n    case 200:\n        print(\"OK\")\n    case 404:\n        print(\"Not Found\")"
+  },
+  {
+    "title": "Weak References",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "hard",
+    "prompt": "<p>Create weak reference object preventing automatic Garbage Collection retention.</p><p>Starting code:</p><pre>import weakref\n\nclass Node:\n    pass\n\nn = Node()\nref = weakref.___(n)</pre>",
+    "rubric": "Full marks for `ref`.",
+    "sample_solution": "import weakref\n\nclass Node:\n    pass\n\nn = Node()\nref = weakref.ref(n)"
+  },
+  {
+    "title": "Inspection Module",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "hard",
+    "prompt": "<p>Retrieve signature parameters of callable dynamically.</p><p>Starting code:</p><pre>import inspect\n\ndef calc(a, b=10):\n    pass\n\nsig = inspect.___(calc)</pre>",
+    "rubric": "Full marks for `signature`.",
+    "sample_solution": "import inspect\n\ndef calc(a, b=10):\n    pass\n\nsig = inspect.signature(calc)"
+  },
+  {
+    "title": "Custom Metaclass",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "hard",
+    "prompt": "<p>Define custom metaclass inheriting from base type.</p><p>Starting code:</p><pre>class Meta(___):\n    def __new__(cls, name, bases, dct):\n        return super().__new__(cls, name, bases, dct)</pre>",
+    "rubric": "Full marks for `type`.",
+    "sample_solution": "class Meta(type):\n    def __new__(cls, name, bases, dct):\n        return super().__new__(cls, name, bases, dct)"
+  },
+  {
+    "title": "Module Dynamic Import",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "medium",
+    "prompt": "<p>Import module programmatically via string identifier.</p><p>Starting code:</p><pre>import importlib\n\nmath_module = importlib.___(\"math\")</pre>",
+    "rubric": "Full marks for `import_module`.",
+    "sample_solution": "import importlib\n\nmath_module = importlib.import_module(\"math\")"
+  },
+  {
+    "title": "Memory View Protocol",
+    "topic": "Advanced Metaprogramming",
+    "difficulty": "hard",
+    "prompt": "<p>Access buffer protocol interface memory directly without copying bytes.</p><p>Starting code:</p><pre>data = bytearray(b\"Hello World\")\nmv = ___(data)</pre>",
+    "rubric": "Full marks for `memoryview`.",
+    "sample_solution": "data = bytearray(b\"Hello World\")\nmv = memoryview(data)"
+  },
+  {
+    "title": "String Partitioning",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Split a string at the first occurrence of a separator into a 3-tuple (head, sep, tail).</p><p>Starting code:</p><pre>email_addr = \"user_name@domain_host\"\nuser, sep, domain = email_addr.___(\"@\")</pre>",
+    "rubric": "Full marks for `partition`.",
+    "sample_solution": "email_addr = \"user_name@domain_host\"\nuser, sep, domain = email_addr.partition(\"@\")"
+  },
+  {
+    "title": "Zero-Padding Strings",
+    "topic": "String Manipulation",
+    "difficulty": "easy",
+    "prompt": "<p>Pad a numeric string with leading zeros to a total width of 6 characters.</p><p>Starting code:</p><pre>order_id = \"42\"\npadded = order_id.___(6)</pre>",
+    "rubric": "Full marks for `zfill`.",
+    "sample_solution": "order_id = \"42\"\npadded = order_id.zfill(6)"
+  },
+  {
+    "title": "Character Translation Table",
+    "topic": "String Manipulation",
+    "difficulty": "hard",
+    "prompt": "<p>Create a translation table mapping vowels to digits using str.maketrans.</p><p>Starting code:</p><pre>table = str.___(\"aeiou\", \"12345\")\nresult = \"hello\".translate(table)</pre>",
+    "rubric": "Full marks for `maketrans`.",
+    "sample_solution": "table = str.maketrans(\"aeiou\", \"12345\")\nresult = \"hello\".translate(table)"
+  },
+  {
+    "title": "Removing Prefixes",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Strip the exact prefix \"prefix_\" from a string.</p><p>Starting code:</p><pre>identifier = \"prefix_table_name\"\nclean_id = identifier.___(\"prefix_\")</pre>",
+    "rubric": "Full marks for `removeprefix`.",
+    "sample_solution": "identifier = \"prefix_table_name\"\nclean_id = identifier.removeprefix(\"prefix_\")"
+  },
+  {
+    "title": "Removing Suffixes",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Strip the exact extension \"_backup\" from a string.</p><p>Starting code:</p><pre>filename = \"archive_backup\"\nstem = filename.___(\"_backup\")</pre>",
+    "rubric": "Full marks for `removesuffix`.",
+    "sample_solution": "filename = \"archive_backup\"\nstem = filename.removesuffix(\"_backup\")"
+  },
+  {
+    "title": "Case-Insensitive String Comparison",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Normalize a string for aggressive case-insensitive comparisons using casefold.</p><p>Starting code:</p><pre>s1 = \"Straße\"\ns2 = \"strasse\"\nis_equal = s1.___() == s2.___()</pre>",
+    "rubric": "Full marks for `casefold`.",
+    "sample_solution": "s1 = \"Straße\"\ns2 = \"strasse\"\nis_equal = s1.casefold() == s2.casefold()"
+  },
+  {
+    "title": "Joining Iterable of Strings",
+    "topic": "String Manipulation",
+    "difficulty": "easy",
+    "prompt": "<p>Concatenate a list of words with a hyphen separator.</p><p>Starting code:</p><pre>words = [\"data\", \"science\", \"pipeline\"]\nslug = \"-\".___(words)</pre>",
+    "rubric": "Full marks for `join`.",
+    "sample_solution": "words = [\"data\", \"science\", \"pipeline\"]\nslug = \"-\".join(words)"
+  },
+  {
+    "title": "Checking Alphanumeric Content",
+    "topic": "String Manipulation",
+    "difficulty": "easy",
+    "prompt": "<p>Verify whether a string consists only of alphanumeric characters.</p><p>Starting code:</p><pre>token = \"User123\"\nis_valid = token.___()</pre>",
+    "rubric": "Full marks for `isalnum`.",
+    "sample_solution": "token = \"User123\"\nis_valid = token.isalnum()"
+  },
+  {
+    "title": "Splitting Lines",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Split a multi-line string into a list of lines, discarding line breaks.</p><p>Starting code:</p><pre>text = \"Line 1\\nLine 2\\n\\nLine 3\"\nlines = text.___()</pre>",
+    "rubric": "Full marks for `splitlines`.",
+    "sample_solution": "text = \"Line 1\\nLine 2\\n\\nLine 3\"\nlines = text.splitlines()"
+  },
+  {
+    "title": "Expanding Tabs",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Replace tab characters in a string with 4 spaces.</p><p>Starting code:</p><pre>code = \"def\\tfoo():\"\nexpanded = code.___(4)</pre>",
+    "rubric": "Full marks for `expandtabs`.",
+    "sample_solution": "code = \"def\\tfoo():\"\nexpanded = code.expandtabs(4)"
+  },
+  {
+    "title": "String Centering",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Center a title string within a 20-character field padded with asterisks.</p><p>Starting code:</p><pre>title = \"MENU\"\nbanner = title.___(20, \"*\")</pre>",
+    "rubric": "Full marks for `center`.",
+    "sample_solution": "title = \"MENU\"\nbanner = title.center(20, \"*\")"
+  },
+  {
+    "title": "Template Strings",
+    "topic": "String Manipulation",
+    "difficulty": "hard",
+    "prompt": "<p>Use string.Template for safe variable substitution.</p><p>Starting code:</p><pre>from string import Template\n\nt = Template(\"Hello, $name!\")\nmsg = t.___(name=\"Alice\")</pre>",
+    "rubric": "Full marks for `substitute`.",
+    "sample_solution": "from string import Template\n\nt = Template(\"Hello, $name!\")\nmsg = t.substitute(name=\"Alice\")"
+  },
+  {
+    "title": "Textwrap Dedent",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Remove common leading whitespace from a multi-line docstring.</p><p>Starting code:</p><pre>import textwrap\n\ndoc = \"\"\"\n    Line one\n    Line two\n\"\"\"\nclean = textwrap.___(doc)</pre>",
+    "rubric": "Full marks for `dedent`.",
+    "sample_solution": "import textwrap\n\ndoc = \"\"\"\n    Line one\n    Line two\n\"\"\"\nclean = textwrap.dedent(doc)"
+  },
+  {
+    "title": "Unicode Code Point Conversion",
+    "topic": "String Manipulation",
+    "difficulty": "medium",
+    "prompt": "<p>Convert a character to its Unicode integer code point and back.</p><p>Starting code:</p><pre>code = ___(“A”)\nchar = ___(65)</pre>",
+    "rubric": "Full marks for `ord` and `chr`.",
+    "sample_solution": "code = ord(\"A\")\nchar = chr(65)"
+  },
+  {
+    "title": "Byte String Decoding",
+    "topic": "String Manipulation",
+    "difficulty": "easy",
+    "prompt": "<p>Decode a UTF-8 encoded byte sequence into a standard Python string.</p><p>Starting code:</p><pre>raw_bytes = b\"Hello \\xc3\\x96sterreich\"\ntext = raw_bytes.___(\"utf-8\")</pre>",
+    "rubric": "Full marks for `decode`.",
+    "sample_solution": "raw_bytes = b\"Hello \\xc3\\x96sterreich\"\ntext = raw_bytes.decode(\"utf-8\")"
+  },
+  {
+    "title": "ChainMap Lookup",
+    "topic": "Advanced Collections",
+    "difficulty": "hard",
+    "prompt": "<p>Combine multiple dictionaries into a single view for layered configuration lookup.</p><p>Starting code:</p><pre>from collections import ___\n\ndefaults = {\"theme\": \"dark\", \"port\": 8080}\noverrides = {\"port\": 9000}\nconfig = ChainMap(overrides, defaults)</pre>",
+    "rubric": "Full marks for `ChainMap`.",
+    "sample_solution": "from collections import ChainMap\n\ndefaults = {\"theme\": \"dark\", \"port\": 8080}\noverrides = {\"port\": 9000}\nconfig = ChainMap(overrides, defaults)"
+  },
+  {
+    "title": "Heapq Push and Pop",
+    "topic": "Advanced Collections",
+    "difficulty": "hard",
+    "prompt": "<p>Transform a list into a min-heap, push an item, and pop the smallest item.</p><p>Starting code:</p><pre>import heapq\n\nheap = [3, 1, 4]\nheapq.___(heap)\nheapq.___(heap, 2)\nsmallest = heapq.heappop(heap)</pre>",
+    "rubric": "Full marks for `heapify` and `heappush`.",
+    "sample_solution": "import heapq\n\nheap = [3, 1, 4]\nheapq.heapify(heap)\nheapq.heappush(heap, 2)\nsmallest = heapq.heappop(heap)"
+  },
+  {
+    "title": "Heapq N-Largest",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Retrieve the 3 largest numbers from a dataset using heapq.</p><p>Starting code:</p><pre>import heapq\n\nscores = [45, 89, 12, 99, 67, 92]\ntop_three = heapq.___(3, scores)</pre>",
+    "rubric": "Full marks for `nlargest`.",
+    "sample_solution": "import heapq\n\nscores = [45, 89, 12, 99, 67, 92]\ntop_three = heapq.nlargest(3, scores)"
+  },
+  {
+    "title": "Bisect Insertion Point",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Find the insertion index in a sorted list to maintain order using binary search.</p><p>Starting code:</p><pre>import bisect\n\nsorted_grades = [60, 70, 80, 90]\nidx = bisect.___(sorted_grades, 75)</pre>",
+    "rubric": "Full marks for `bisect_left`.",
+    "sample_solution": "import bisect\n\nsorted_grades = [60, 70, 80, 90]\nidx = bisect.bisect_left(sorted_grades, 75)"
+  },
+  {
+    "title": "Bisect Insert",
+    "topic": "Advanced Collections",
+    "difficulty": "hard",
+    "prompt": "<p>Insert an element into a sorted list while maintaining sorted order automatically.</p><p>Starting code:</p><pre>import bisect\n\nnums = [10, 20, 40, 50]\nbisect.___(nums, 30)</pre>",
+    "rubric": "Full marks for `insort`.",
+    "sample_solution": "import bisect\n\nnums = [10, 20, 40, 50]\nbisect.insort(nums, 30)"
+  }
+]
