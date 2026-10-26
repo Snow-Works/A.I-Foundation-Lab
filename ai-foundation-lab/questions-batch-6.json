@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Equality & Hashing",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Implement value equality and hashability for a custom coordinate class.</p><p>Starting code:</p><pre>class Coord:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    \n    def ___(self, other):\n        return (self.x, self.y) == (other.x, other.y)\n        \n    def __hash__(self):\n        return hash((self.x, self.y))</pre>",
+    "rubric": "Full marks for `__eq__`.",
+    "sample_solution": "class Coord:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    \n    def __eq__(self, other):\n        return (self.x, self.y) == (other.x, other.y)\n        \n    def __hash__(self):\n        return hash((self.x, self.y))"
+  },
+  {
+    "title": "Total Ordering Decorator",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Auto-generate all comparison methods from eq and lt using functools.</p><p>Starting code:</p><pre>from functools import ___\n\n@total_ordering\nclass Version:\n    def __init__(self, major, minor):\n        self.major, self.minor = major, minor\n    def __eq__(self, other):\n        return (self.major, self.minor) == (other.major, other.minor)\n    def __lt__(self, other):\n        return (self.major, self.minor) < (other.major, other.minor)</pre>",
+    "rubric": "Full marks for `total_ordering`.",
+    "sample_solution": "from functools import total_ordering\n\n@total_ordering\nclass Version:\n    def __init__(self, major, minor):\n        self.major, self.minor = major, minor\n    def __eq__(self, other):\n        return (self.major, self.minor) == (other.major, other.minor)\n    def __lt__(self, other):\n        return (self.major, self.minor) < (other.major, other.minor)"
+  },
+  {
+    "title": "Method Resolution Order",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Inspect the method resolution order list of a class hierarchy.</p><p>Starting code:</p><pre>class A:\n    pass\nclass B(A):\n    pass\n\nmro_list = B.___</pre>",
+    "rubric": "Full marks for `__mro__`.",
+    "sample_solution": "class A:\n    pass\nclass B(A):\n    pass\n\nmro_list = B.__mro__"
+  },
+  {
+    "title": "Dataclass Default Factory",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Initialize a mutable list field safely in a dataclass using field(default_factory=...).</p><p>Starting code:</p><pre>from dataclasses import dataclass, field\n\n@dataclass\nclass Team:\n    members: list = field(___=list)</pre>",
+    "rubric": "Full marks for `default_factory`.",
+    "sample_solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Team:\n    members: list = field(default_factory=list)"
+  },
+  {
+    "title": "Dataclass Post-Init Processing",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Compute a derived attribute after dataclass initialization using <code>__post_init__</code>.</p><p>Starting code:</p><pre>from dataclasses import dataclass\n\n@dataclass\nclass Rectangle:\n    width: float\n    height: float\n    area: float = 0.0\n    \n    def ___(self):\n        self.area = self.width * self.height</pre>",
+    "rubric": "Full marks for `__post_init__`.",
+    "sample_solution": "from dataclasses import dataclass\n\n@dataclass\nclass Rectangle:\n    width: float\n    height: float\n    area: float = 0.0\n    \n    def __post_init__(self):\n        self.area = self.width * self.height"
+  },
+  {
+    "title": "Enum Auto-Values",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Define an enumeration with automatic sequential integer values.</p><p>Starting code:</p><pre>from enum import Enum, ___\n\nclass Color(Enum):\n    RED = auto()\n    GREEN = auto()\n    BLUE = auto()</pre>",
+    "rubric": "Full marks for `auto`.",
+    "sample_solution": "from enum import Enum, auto\n\nclass Color(Enum):\n    RED = auto()\n    GREEN = auto()\n    BLUE = auto()"
+  },
+  {
+    "title": "IntFlag Bitwise Enumeration",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Create a bitmask-compatible enumeration using IntFlag.</p><p>Starting code:</p><pre>from enum import ___\n\nclass Permission(IntFlag):\n    READ = 4\n    WRITE = 2\n    EXECUTE = 1\n\nrw = Permission.READ | Permission.WRITE</pre>",
+    "rubric": "Full marks for `IntFlag`.",
+    "sample_solution": "from enum import IntFlag\n\nclass Permission(IntFlag):\n    READ = 4\n    WRITE = 2\n    EXECUTE = 1\n\nrw = Permission.READ | Permission.WRITE"
+  },
+  {
+    "title": "Abstract Property",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Define an abstract read-only property on an ABC.</p><p>Starting code:</p><pre>from abc import ABC, abstractmethod\n\nclass Identifiable(ABC):\n    @property\n    @___\n    def id(self) -> str:\n        pass</pre>",
+    "rubric": "Full marks for `abstractmethod`.",
+    "sample_solution": "from abc import ABC, abstractmethod\n\nclass Identifiable(ABC):\n    @property\n    @abstractmethod\n    def id(self) -> str:\n        pass"
+  },
+  {
+    "title": "Virtual Subclass Registration",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Register an unrelated class as a virtual subclass of an ABC.</p><p>Starting code:</p><pre>from abc import ABC\n\nclass Serializable(ABC):\n    pass\n\nclass ThirdPartyModel:\n    pass\n\nSerializable.___(ThirdPartyModel)</pre>",
+    "rubric": "Full marks for `register`.",
+    "sample_solution": "from abc import ABC\n\nclass Serializable(ABC):\n    pass\n\nclass ThirdPartyModel:\n    pass\n\nSerializable.register(ThirdPartyModel)"
+  },
+  {
+    "title": "Unconditional Attribute Interception",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Intercept every attribute access on an object without causing infinite recursion.</p><p>Starting code:</p><pre>class LoggedAccess:\n    def ___(self, name):\n        print(f\"Accessing {name}\")\n        return super().__getattribute__(name)</pre>",
+    "rubric": "Full marks for `__getattribute__`.",
+    "sample_solution": "class LoggedAccess:\n    def __getattribute__(self, name):\n        print(f\"Accessing {name}\")\n        return super().__getattribute__(name)"
+  },
+  {
+    "title": "Context-Aware Deletion",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Prevent deletion of attributes on an immutable-like object.</p><p>Starting code:</p><pre>class LockedObject:\n    def ___(self, name):\n        raise AttributeError(\"Deletion not allowed\")</pre>",
+    "rubric": "Full marks for `__delattr__`.",
+    "sample_solution": "class LockedObject:\n    def __delattr__(self, name):\n        raise AttributeError(\"Deletion not allowed\")"
+  },
+  {
+    "title": "Custom Membership Test",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Support the <code>in</code> operator on a custom interval class.</p><p>Starting code:</p><pre>class RangeInterval:\n    def __init__(self, low, high):\n        self.low, self.high = low, high\n        \n    def ___(self, val):\n        return self.low <= val <= self.high</pre>",
+    "rubric": "Full marks for `__contains__`.",
+    "sample_solution": "class RangeInterval:\n    def __init__(self, low, high):\n        self.low, self.high = low, high\n        \n    def __contains__(self, val):\n        return self.low <= val <= self.high"
+  },
+  {
+    "title": "Right-Hand Operator Overloading",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Support addition when the custom object is on the right side of <code>+</code> (e.g., 5 + obj).</p><p>Starting code:</p><pre>class Distance:\n    def __init__(self, meters):\n        self.meters = meters\n        \n    def ___(self, other):\n        return Distance(other + self.meters)</pre>",
+    "rubric": "Full marks for `__radd__`.",
+    "sample_solution": "class Distance:\n    def __init__(self, meters):\n        self.meters = meters\n        \n    def __radd__(self, other):\n        return Distance(other + self.meters)"
+  },
+  {
+    "title": "In-Place Operator Overloading",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Overload the <code>+=</code> augmented assignment operator.</p><p>Starting code:</p><pre>class CounterBox:\n    def __init__(self, count=0):\n        self.count = count\n        \n    def ___(self, other):\n        self.count += other\n        return self</pre>",
+    "rubric": "Full marks for `__iadd__`.",
+    "sample_solution": "class CounterBox:\n    def __init__(self, count=0):\n        self.count = count\n        \n    def __iadd__(self, other):\n        self.count += other\n        return self"
+  },
+  {
+    "title": "Custom Boolean Truthiness",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Define when an instance evaluates to False in boolean contexts.</p><p>Starting code:</p><pre>class Account:\n    def __init__(self, balance):\n        self.balance = balance\n        \n    def ___(self):\n        return self.balance > 0</pre>",
+    "rubric": "Full marks for `__bool__`.",
+    "sample_solution": "class Account:\n    def __init__(self, balance):\n        self.balance = balance\n        \n    def __bool__(self):\n        return self.balance > 0"
+  },
+  {
+    "title": "Nonlocal Variable Modification",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Modify a variable in the enclosing closure scope using the nonlocal keyword.</p><p>Starting code:</p><pre>def make_counter():\n    count = 0\n    def increment():\n        ___ count\n        count = count + 1\n        return count\n    return increment</pre>",
+    "rubric": "Full marks for `nonlocal`.",
+    "sample_solution": "def make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count = count + 1\n        return count\n    return increment"
+  },
+  {
+    "title": "Global Variable Modification",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Rebind a module-level variable inside a function using global.</p><p>Starting code:</p><pre>state = \"idle\"\n\ndef activate():\n    ___ state\n    state = \"active\"</pre>",
+    "rubric": "Full marks for `global`.",
+    "sample_solution": "state = \"idle\"\n\ndef activate():\n    global state\n    state = \"active\""
+  },
+  {
+    "title": "Operator Itemgetter",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Sort a list of tuples by the second element using operator.itemgetter.</p><p>Starting code:</p><pre>from operator import ___\n\npairs = [(1,'b'), (2,'a'), (3,'c')]\nsorted_pairs = sorted(pairs, key=___(1))</pre>",
+    "rubric": "Full marks for `itemgetter`.",
+    "sample_solution": "from operator import itemgetter\n\npairs = [(1,'b'), (2,'a'), (3,'c')]\nsorted_pairs = sorted(pairs, key=itemgetter(1))"
+  },
+  {
+    "title": "Operator Attrgetter",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Sort objects by a nested attribute using operator.attrgetter.</p><p>Starting code:</p><pre>from operator import ___\n\nsorted_emp = sorted(employees, key=___(\"department.name\"))</pre>",
+    "rubric": "Full marks for `attrgetter`.",
+    "sample_solution": "from operator import attrgetter\n\nsorted_emp = sorted(employees, key=attrgetter(\"department.name\"))"
+  },
+  {
+    "title": "Operator Methodcaller",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Call the strip() method on a list of strings using operator.methodcaller.</p><p>Starting code:</p><pre>from operator import ___\n\ncleaned = list(map(___(“strip”), strings))</pre>",
+    "rubric": "Full marks for `methodcaller`.",
+    "sample_solution": "from operator import methodcaller\n\ncleaned = list(map(methodcaller(\"strip\"), strings))"
+  },
+  {
+    "title": "Single-Dispatch Generic Functions",
+    "topic": "Closures & Scoping",
+    "difficulty": "hard",
+    "prompt": "<p>Create a function that dispatches based on the type of the first argument.</p><p>Starting code:</p><pre>from functools import ___\n\n@singledispatch\ndef serialize(obj):\n    return str(obj)\n\n@serialize.register(list)\ndef _(obj):\n    return \",\".join(map(str, obj))</pre>",
+    "rubric": "Full marks for `singledispatch`.",
+    "sample_solution": "from functools import singledispatch\n\n@singledispatch\ndef serialize(obj):\n    return str(obj)\n\n@serialize.register(list)\ndef _(obj):\n    return \",\".join(map(str, obj))"
+  },
+  {
+    "title": "Cached Property",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Compute an expensive property once per instance and cache it as an attribute.</p><p>Starting code:</p><pre>from functools import ___\n\nclass Dataset:\n    @cached_property\n    def summary_stats(self):\n        return expensive_calculation()</pre>",
+    "rubric": "Full marks for `cached_property`.",
+    "sample_solution": "from functools import cached_property\n\nclass Dataset:\n    @cached_property\n    def summary_stats(self):\n        return expensive_calculation()"
+  },
+  {
+    "title": "Cmp_to_key Legacy Comparison",
+    "topic": "Closures & Scoping",
+    "difficulty": "hard",
+    "prompt": "<p>Convert an old-style comparison function into a key function for sorting.</p><p>Starting code:</p><pre>from functools import ___\n\ndef compare(a, b):\n    return (a > b) - (a < b)\n\nsorted_items = sorted(items, key=cmp_to_key(compare))</pre>",
+    "rubric": "Full marks for `cmp_to_key`.",
+    "sample_solution": "from functools import cmp_to_key\n\ndef compare(a, b):\n    return (a > b) - (a < b)\n\nsorted_items = sorted(items, key=cmp_to_key(compare))"
+  },
+  {
+    "title": "Inspecting Closure Cell Variables",
+    "topic": "Closures & Scoping",
+    "difficulty": "hard",
+    "prompt": "<p>Access the captured variables of a closure via <code>__closure__</code>.</p><p>Starting code:</p><pre>def outer(x):\n    def inner():\n        return x\n    return inner\n\nfn = outer(42)\ncaptured_val = fn.___[0].cell_contents</pre>",
+    "rubric": "Full marks for `__closure__`.",
+    "sample_solution": "def outer(x):\n    def inner():\n        return x\n    return inner\n\nfn = outer(42)\ncaptured_val = fn.__closure__[0].cell_contents"
+  },
+  {
+    "title": "Late Binding Closure Fix",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Bind loop variable i at function definition time using a default argument.</p><p>Starting code:</p><pre>funcs = [lambda x, ___: x + i for i in range(5)]</pre>",
+    "rubric": "Full marks for `i=i`.",
+    "sample_solution": "funcs = [lambda x, i=i: x + i for i in range(5)]"
+  },
+  {
+    "title": "Positional-Only Parameters",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Restrict parameters a and b to be passed positionally only using <code>/</code>.</p><p>Starting code:</p><pre>def divide(a, b, ___):\n    return a / b</pre>",
+    "rubric": "Full marks for `/`.",
+    "sample_solution": "def divide(a, b, /):\n    return a / b"
+  },
+  {
+    "title": "Keyword-Only Parameters",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Force parameter timeout to be passed by keyword only using <code>*</code>.</p><p>Starting code:</p><pre>def connect(host, ___, timeout=30):\n    pass</pre>",
+    "rubric": "Full marks for `*`.",
+    "sample_solution": "def connect(host, *, timeout=30):\n    pass"
+  },
+  {
+    "title": "Unpacking Dictionary into Keyword Arguments",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Pass a dictionary of options as keyword arguments to a function.</p><p>Starting code:</p><pre>opts = {\"sep\": \"-\", \"end\": \"\\n\"}\nprint(\"Hello\", \"World\", ___opts)</pre>",
+    "rubric": "Full marks for `**`.",
+    "sample_solution": "opts = {\"sep\": \"-\", \"end\": \"\\n\"}\nprint(\"Hello\", \"World\", **opts)"
+  },
+  {
+    "title": "Walrus Operator",
+    "topic": "Closures & Scoping",
+    "difficulty": "easy",
+    "prompt": "<p>Assign and test the length of a list within an if condition using <code>:=</code>.</p><p>Starting code:</p><pre>if (n ___ len(data)) > 10:\n    print(f\"List is too long ({n} elements)\")</pre>",
+    "rubric": "Full marks for `:=`.",
+    "sample_solution": "if (n := len(data)) > 10:\n    print(f\"List is too long ({n} elements)\")"
+  },
+  {
+    "title": "Walrus Operator in While Loop",
+    "topic": "Closures & Scoping",
+    "difficulty": "medium",
+    "prompt": "<p>Read lines until an empty string is returned using an assignment expression.</p><p>Starting code:</p><pre>while (line ___ stream.readline()) != \"\":\n    process(line)</pre>",
+    "rubric": "Full marks for `:=`.",
+    "sample_solution": "while (line := stream.readline()) != \"\":\n    process(line)"
+  }
+]
