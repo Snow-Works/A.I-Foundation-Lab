@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Decimal Exact Arithmetic",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Perform exact base-10 financial arithmetic avoiding binary floating-point rounding errors.</p><p>Starting code:</p><pre>from decimal import ___\n\nprice = Decimal(\"19.99\")\ntax = Decimal(\"0.07\")\ntotal = price * (1 + tax)</pre>",
+    "rubric": "Full marks for `Decimal`.",
+    "sample_solution": "from decimal import Decimal\n\nprice = Decimal(\"19.99\")\ntax = Decimal(\"0.07\")\ntotal = price * (1 + tax)"
+  },
+  {
+    "title": "Fractions Rational Numbers",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Represent and simplify rational fractions exactly using the fractions module.</p><p>Starting code:</p><pre>from fractions import ___\n\nf = Fraction(3, 4) + Fraction(1, 8)</pre>",
+    "rubric": "Full marks for `Fraction`.",
+    "sample_solution": "from fractions import Fraction\n\nf = Fraction(3, 4) + Fraction(1, 8)"
+  },
+  {
+    "title": "Math Isclose",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Compare two floating-point numbers for near-equality within a relative tolerance.</p><p>Starting code:</p><pre>import math\n\nare_equal = math.___(0.1 + 0.2, 0.3, rel_tol=1e-9)</pre>",
+    "rubric": "Full marks for `isclose`.",
+    "sample_solution": "import math\n\nare_equal = math.isclose(0.1 + 0.2, 0.3, rel_tol=1e-9)"
+  },
+  {
+    "title": "Math GCD & LCM",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Compute the greatest common divisor and least common multiple of two integers.</p><p>Starting code:</p><pre>import math\n\ndivisor = math.___(24, 36)\nmultiple = math.___(24, 36)</pre>",
+    "rubric": "Full marks for `gcd` and `lcm`.",
+    "sample_solution": "import math\n\ndivisor = math.gcd(24, 36)\nmultiple = math.lcm(24, 36)"
+  },
+  {
+    "title": "Math Comb",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Calculate the number of ways to choose 5 items from 52 items without repetition.</p><p>Starting code:</p><pre>import math\n\nways = math.___(52, 5)</pre>",
+    "rubric": "Full marks for `comb`.",
+    "sample_solution": "import math\n\nways = math.comb(52, 5)"
+  },
+  {
+    "title": "Statistics Standard Deviation",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Calculate the sample standard deviation of a list of measurements.</p><p>Starting code:</p><pre>import statistics\n\ndata = [2.5, 3.1, 2.8, 3.5, 2.9]\nsd = statistics.___(data)</pre>",
+    "rubric": "Full marks for `stdev`.",
+    "sample_solution": "import statistics\n\ndata = [2.5, 3.1, 2.8, 3.5, 2.9]\nsd = statistics.stdev(data)"
+  },
+  {
+    "title": "Statistics Quantiles",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Divide a dataset into 4 equal-probability quartile cut points.</p><p>Starting code:</p><pre>import statistics\n\ndata = [2.5, 3.1, 2.8, 3.5, 2.9]\nquartiles = statistics.___(data, n=4)</pre>",
+    "rubric": "Full marks for `quantiles`.",
+    "sample_solution": "import statistics\n\ndata = [2.5, 3.1, 2.8, 3.5, 2.9]\nquartiles = statistics.quantiles(data, n=4)"
+  },
+  {
+    "title": "Complex Numbers",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Access the real part, imaginary part, and complex conjugate of a complex number.</p><p>Starting code:</p><pre>z = 3 + 4j\nr = z.___\nim = z.___\nconj = z.___()</pre>",
+    "rubric": "Full marks for `real`, `imag`, and `conjugate`.",
+    "sample_solution": "z = 3 + 4j\nr = z.real\nim = z.imag\nconj = z.conjugate()"
+  },
+  {
+    "title": "Divmod Built-in",
+    "topic": "Math & Statistics",
+    "difficulty": "easy",
+    "prompt": "<p>Compute both the quotient and remainder of integer division in a single call.</p><p>Starting code:</p><pre>minutes, seconds = ___(135, 60)</pre>",
+    "rubric": "Full marks for `divmod`.",
+    "sample_solution": "minutes, seconds = divmod(135, 60)"
+  },
+  {
+    "title": "Modular Exponentiation",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Compute (base ** exp) % mod efficiently using the 3-argument built-in pow.</p><p>Starting code:</p><pre>result = ___(7, 256, 13)</pre>",
+    "rubric": "Full marks for `pow`.",
+    "sample_solution": "result = pow(7, 256, 13)"
+  },
+  {
+    "title": "Bitwise Bit Length",
+    "topic": "Math & Statistics",
+    "difficulty": "easy",
+    "prompt": "<p>Determine the number of bits required to represent an integer in binary.</p><p>Starting code:</p><pre>num = 255\nbits = num.___()</pre>",
+    "rubric": "Full marks for `bit_length`.",
+    "sample_solution": "num = 255\nbits = num.bit_length()"
+  },
+  {
+    "title": "Integer to Bytes Conversion",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Convert a 32-bit integer into a 4-byte big-endian byte string.</p><p>Starting code:</p><pre>n = 1024\nraw = n.___(4, byteorder=\"big\")</pre>",
+    "rubric": "Full marks for `to_bytes`.",
+    "sample_solution": "n = 1024\nraw = n.to_bytes(4, byteorder=\"big\")"
+  },
+  {
+    "title": "Math Prod",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Calculate the product of all elements in an iterable using the math module.</p><p>Starting code:</p><pre>import math\n\nfactors = [2, 3, 5, 7]\ntotal_product = math.___(factors)</pre>",
+    "rubric": "Full marks for `prod`.",
+    "sample_solution": "import math\n\nfactors = [2, 3, 5, 7]\ntotal_product = math.prod(factors)"
+  },
+  {
+    "title": "Math Hypot",
+    "topic": "Math & Statistics",
+    "difficulty": "easy",
+    "prompt": "<p>Compute the Euclidean norm (hypotenuse) accurately.</p><p>Starting code:</p><pre>import math\n\ndist = math.___(3.0, 4.0)</pre>",
+    "rubric": "Full marks for `hypot`.",
+    "sample_solution": "import math\n\ndist = math.hypot(3.0, 4.0)"
+  },
+  {
+    "title": "Random Seed Reproducibility",
+    "topic": "Math & Statistics",
+    "difficulty": "medium",
+    "prompt": "<p>Fix the random number generator seed for deterministic results.</p><p>Starting code:</p><pre>import random\n\nrandom.___(42)</pre>",
+    "rubric": "Full marks for `seed`.",
+    "sample_solution": "import random\n\nrandom.seed(42)"
+  },
+  {
+    "title": "Sys GetSizeOf",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Inspect the shallow memory footprint of a Python object in bytes.</p><p>Starting code:</p><pre>import sys\n\nsize_in_bytes = sys.___([1, 2, 3, 4, 5])</pre>",
+    "rubric": "Full marks for `getsizeof`.",
+    "sample_solution": "import sys\n\nsize_in_bytes = sys.getsizeof([1, 2, 3, 4, 5])"
+  },
+  {
+    "title": "Garbage Collector Control",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Force an immediate full garbage collection cycle manually.</p><p>Starting code:</p><pre>import gc\n\nunreachable_count = gc.___()</pre>",
+    "rubric": "Full marks for `collect`.",
+    "sample_solution": "import gc\n\nunreachable_count = gc.collect()"
+  },
+  {
+    "title": "Sys Interning Strings",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Intern a string in the global string table for fast pointer-equality comparisons.</p><p>Starting code:</p><pre>import sys\n\ns1 = sys.___(\"identifier_key\")\ns2 = sys.___(\"identifier_key\")\nis_same_ptr = s1 is s2</pre>",
+    "rubric": "Full marks for `intern`.",
+    "sample_solution": "import sys\n\ns1 = sys.intern(\"identifier_key\")\ns2 = sys.intern(\"identifier_key\")\nis_same_ptr = s1 is s2"
+  },
+  {
+    "title": "Disassembling Bytecode",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Print the CPython bytecode instructions for a function using the dis module.</p><p>Starting code:</p><pre>import dis\n\ndef add(a, b):\n    return a + b\n\ndis.___(add)</pre>",
+    "rubric": "Full marks for `dis`.",
+    "sample_solution": "import dis\n\ndef add(a, b):\n    return a + b\n\ndis.dis(add)"
+  },
+  {
+    "title": "WeakValueDictionary Cache",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Create a cache dictionary whose values are automatically removed when no longer strongly referenced elsewhere.</p><p>Starting code:</p><pre>import weakref\n\ncache = weakref.___()</pre>",
+    "rubric": "Full marks for `WeakValueDictionary`.",
+    "sample_solution": "import weakref\n\ncache = weakref.WeakValueDictionary()"
+  },
+  {
+    "title": "Weakref Finalizer",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Register a cleanup callback to execute when an object is garbage collected.</p><p>Starting code:</p><pre>import weakref\n\nweakref.___(obj, cleanup_func, arg1)</pre>",
+    "rubric": "Full marks for `finalize`.",
+    "sample_solution": "import weakref\n\nweakref.finalize(obj, cleanup_func, arg1)"
+  },
+  {
+    "title": "Tracemalloc Memory Profiling",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Start tracing Python memory allocations and take a snapshot.</p><p>Starting code:</p><pre>import tracemalloc\n\ntracemalloc.___()\nsnapshot = tracemalloc.take_snapshot()</pre>",
+    "rubric": "Full marks for `start`.",
+    "sample_solution": "import tracemalloc\n\ntracemalloc.start()\nsnapshot = tracemalloc.take_snapshot()"
+  },
+  {
+    "title": "Sys Recursion Limit",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Increase the maximum depth of the Python interpreter call stack.</p><p>Starting code:</p><pre>import sys\n\nsys.___(2000)</pre>",
+    "rubric": "Full marks for `setrecursionlimit`.",
+    "sample_solution": "import sys\n\nsys.setrecursionlimit(2000)"
+  },
+  {
+    "title": "AST Parsing",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Parse Python source code into an Abstract Syntax Tree node hierarchy.</p><p>Starting code:</p><pre>import ast\n\ntree = ast.___(\"x = 1 + 2\")</pre>",
+    "rubric": "Full marks for `parse`.",
+    "sample_solution": "import ast\n\ntree = ast.parse(\"x = 1 + 2\")"
+  },
+  {
+    "title": "Compile Built-in",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Compile a source string into a bytecode code object ready for exec().</p><p>Starting code:</p><pre>code_obj = ___(\"result = a * 2\", \"<string>\", \"exec\")\nnamespace = {\"a\": 21}\nexec(code_obj, namespace)</pre>",
+    "rubric": "Full marks for `compile`.",
+    "sample_solution": "code_obj = compile(\"result = a * 2\", \"<string>\", \"exec\")\nnamespace = {\"a\": 21}\nexec(code_obj, namespace)"
+  },
+  {
+    "title": "Atexit Shutdown Hook",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Register a function to be executed automatically upon normal interpreter termination.</p><p>Starting code:</p><pre>import atexit\n\n@atexit.___\ndef goodbye():\n    print(\"Cleaning up resources...\")</pre>",
+    "rubric": "Full marks for `register`.",
+    "sample_solution": "import atexit\n\n@atexit.register\ndef goodbye():\n    print(\"Cleaning up resources...\")"
+  },
+  {
+    "title": "Signal Handling",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Register a custom handler for the SIGINT (Ctrl+C) interrupt signal.</p><p>Starting code:</p><pre>import signal\n\ndef handler(signum, frame):\n    print(\"Interrupted!\")\n\nsignal.___(signal.SIGINT, handler)</pre>",
+    "rubric": "Full marks for `signal`.",
+    "sample_solution": "import signal\n\ndef handler(signum, frame):\n    print(\"Interrupted!\")\n\nsignal.signal(signal.SIGINT, handler)"
+  },
+  {
+    "title": "Exception Notes",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Enrich an exception with additional contextual information before re-raising.</p><p>Starting code:</p><pre>try:\n    process_batch(batch_id)\nexcept ValueError as err:\n    err.___(f\"Failed on batch_id={batch_id}\")\n    raise</pre>",
+    "rubric": "Full marks for `add_note`.",
+    "sample_solution": "try:\n    process_batch(batch_id)\nexcept ValueError as err:\n    err.add_note(f\"Failed on batch_id={batch_id}\")\n    raise"
+  },
+  {
+    "title": "Exception Groups",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Handle specific exception types from an ExceptionGroup using except*.</p><p>Starting code:</p><pre>try:\n    raise ExceptionGroup(\"errors\", [ValueError(\"bad val\"), TypeError(\"bad type\")])\nexcept* ___ as eg:\n    print(\"Handled ValueErrors:\", eg.exceptions)</pre>",
+    "rubric": "Full marks for `ValueError`.",
+    "sample_solution": "try:\n    raise ExceptionGroup(\"errors\", [ValueError(\"bad val\"), TypeError(\"bad type\")])\nexcept* ValueError as eg:\n    print(\"Handled ValueErrors:\", eg.exceptions)"
+  },
+  {
+    "title": "Dataclass KW_ONLY",
+    "topic": "Python Internals",
+    "difficulty": "hard",
+    "prompt": "<p>Mark all subsequent fields in a dataclass as keyword-only during initialization.</p><p>Starting code:</p><pre>from dataclasses import dataclass, ___\n\n@dataclass\nclass Config:\n    name: str\n    _: KW_ONLY\n    debug: bool = False\n    timeout: int = 30</pre>",
+    "rubric": "Full marks for `KW_ONLY`.",
+    "sample_solution": "from dataclasses import dataclass, KW_ONLY\n\n@dataclass\nclass Config:\n    name: str\n    _: KW_ONLY\n    debug: bool = False\n    timeout: int = 30"
+  }
+]
