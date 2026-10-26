@@ -1,17 +1,15 @@
 // src/components/exam/QuestionPanel.jsx
-import { BookOpen } from "lucide-react";
+import { BookOpen, Play, Trash2, Loader2 } from "lucide-react";
 import CodeEditor from "./CodeEditor.jsx";
+import Button from "../ui/Button.jsx";
 
-/**
- * QuestionPanel — displays the prompt for one question and
- * provides a CodeMirror editor for the student's answer.
- */
 export default function QuestionPanel({
   question,
   index,
   total,
   value,
   onChange,
+  pythonRunner,
 }) {
   return (
     <article className="question-panel">
@@ -50,7 +48,46 @@ export default function QuestionPanel({
           onChange={onChange}
           placeholder="Write your Python solution here…"
         />
+        
+        {/* Editor Actions */}
+        <div className="question-panel__editor-actions">
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={
+              pythonRunner.status === "loading" || pythonRunner.status === "running" ? (
+                <Loader2 size={14} className="admin-settings__spinner" />
+              ) : (
+                <Play size={14} />
+              )
+            }
+            onClick={() => pythonRunner.runCode(value)}
+            disabled={pythonRunner.status === "loading" || pythonRunner.status === "running"}
+          >
+            {pythonRunner.status === "loading" ? "Loading Python..." : 
+             pythonRunner.status === "running" ? "Running..." : "Run Code"}
+          </Button>
+        </div>
       </div>
+
+      {/* Output Console */}
+      {(pythonRunner.output || pythonRunner.error) && (
+        <div className="question-panel__terminal">
+          <div className="question-panel__terminal-header">
+            <span>Terminal Output</span>
+            <button 
+              type="button" 
+              onClick={pythonRunner.clearOutput}
+              className="question-panel__terminal-clear"
+            >
+              <Trash2 size={12} /> Clear
+            </button>
+          </div>
+          <pre className={`question-panel__terminal-body ${pythonRunner.error ? "question-panel__terminal-body--error" : ""}`}>
+            {pythonRunner.error || pythonRunner.output}
+          </pre>
+        </div>
+      )}
     </article>
   );
 }
