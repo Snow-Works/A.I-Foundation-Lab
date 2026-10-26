@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Protocol Structural Subtyping",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Define a structural interface <code>Renderable</code> using <code>typing.Protocol</code>.</p><p>Starting code:</p><pre>from typing import ___\n\nclass Renderable(Protocol):\n    def render(self) -> str:\n        ...</pre>",
+    "rubric": "Full marks for `Protocol`.",
+    "sample_solution": "from typing import Protocol\n\nclass Renderable(Protocol):\n    def render(self) -> str:\n        ..."
+  },
+  {
+    "title": "Runtime Checkable Protocol",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Allow <code>isinstance()</code> checks against a Protocol class.</p><p>Starting code:</p><pre>from typing import Protocol, ___\n\n@runtime_checkable\nclass Closable(Protocol):\n    def close(self) -> None:\n        ...</pre>",
+    "rubric": "Full marks for `runtime_checkable`.",
+    "sample_solution": "from typing import Protocol, runtime_checkable\n\n@runtime_checkable\nclass Closable(Protocol):\n    def close(self) -> None:\n        ..."
+  },
+  {
+    "title": "Generic Class Definition",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Define a generic <code>Stack</code> class parameterized by type variable T.</p><p>Starting code:</p><pre>from typing import TypeVar, ___\n\nT = TypeVar(\"T\")\nclass Stack(Generic[T]):\n    def push(self, item: T) -> None:\n        ...</pre>",
+    "rubric": "Full marks for `Generic`.",
+    "sample_solution": "from typing import TypeVar, Generic\n\nT = TypeVar(\"T\")\nclass Stack(Generic[T]):\n    def push(self, item: T) -> None:\n        ..."
+  },
+  {
+    "title": "Bounded TypeVar",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Constrain a TypeVar to be upper-bounded by float.</p><p>Starting code:</p><pre>from typing import TypeVar\n\nT = TypeVar(\"T\", ___=float)</pre>",
+    "rubric": "Full marks for `bound`.",
+    "sample_solution": "from typing import TypeVar\n\nT = TypeVar(\"T\", bound=float)"
+  },
+  {
+    "title": "Function Overload Signatures",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Provide multiple type signatures for a function using <code>@overload</code>.</p><p>Starting code:</p><pre>from typing import ___\n\n@overload\ndef process(x: int) -> int: ...\n\n@overload\ndef process(x: str) -> str: ...\n\ndef process(x):\n    return x * 2</pre>",
+    "rubric": "Full marks for `overload`.",
+    "sample_solution": "from typing import overload\n\n@overload\ndef process(x: int) -> int: ...\n\n@overload\ndef process(x: str) -> str: ...\n\ndef process(x):\n    return x * 2"
+  },
+  {
+    "title": "Final Constants and Methods",
+    "topic": "Advanced Typing",
+    "difficulty": "medium",
+    "prompt": "<p>Mark a constant as un-reassignable to type checkers using <code>Final</code>.</p><p>Starting code:</p><pre>from typing import ___\n\nMAX_RETRIES: Final[int] = 3</pre>",
+    "rubric": "Full marks for `Final`.",
+    "sample_solution": "from typing import Final\n\nMAX_RETRIES: Final[int] = 3"
+  },
+  {
+    "title": "ClassVar Annotation",
+    "topic": "Advanced Typing",
+    "difficulty": "medium",
+    "prompt": "<p>Annotate a class-level attribute so dataclasses and type-checkers distinguish it from instance fields.</p><p>Starting code:</p><pre>from typing import ___\n\nclass Server:\n    active_count: ClassVar[int] = 0</pre>",
+    "rubric": "Full marks for `ClassVar`.",
+    "sample_solution": "from typing import ClassVar\n\nclass Server:\n    active_count: ClassVar[int] = 0"
+  },
+  {
+    "title": "Annotated Metadata",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Attach validation metadata to a type hint using <code>typing.Annotated</code>.</p><p>Starting code:</p><pre>from typing import ___\n\nPositiveInt = Annotated[int, \"Must be > 0\"]</pre>",
+    "rubric": "Full marks for `Annotated`.",
+    "sample_solution": "from typing import Annotated\n\nPositiveInt = Annotated[int, \"Must be > 0\"]"
+  },
+  {
+    "title": "TypeGuard Narrowing",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Define a custom type-narrowing function returning <code>TypeGuard</code>.</p><p>Starting code:</p><pre>from typing import ___\n\ndef is_str_list(val: list[object]) -> TypeGuard[list[str]]:\n    return all(isinstance(x, str) for x in val)</pre>",
+    "rubric": "Full marks for `TypeGuard`.",
+    "sample_solution": "from typing import TypeGuard\n\ndef is_str_list(val: list[object]) -> TypeGuard[list[str]]:\n    return all(isinstance(x, str) for x in val)"
+  },
+  {
+    "title": "Self Type Annotation",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Annotate a method that returns the instance of its own class (supporting subclasses).</p><p>Starting code:</p><pre>from typing import ___\n\nclass Builder:\n    def set_name(self, name: str) -> Self:\n        return self</pre>",
+    "rubric": "Full marks for `Self`.",
+    "sample_solution": "from typing import Self\n\nclass Builder:\n    def set_name(self, name: str) -> Self:\n        return self"
+  },
+  {
+    "title": "ParamSpec for Decorator Typing",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Preserve parameter types of a decorated function using <code>ParamSpec</code>.</p><p>Starting code:</p><pre>from typing import Callable, TypeVar, ___\n\nP = ParamSpec(\"P\")\nR = TypeVar(\"R\")\n\ndef logged(fn: Callable[P, R]) -> Callable[P, R]:\n    ...</pre>",
+    "rubric": "Full marks for `ParamSpec`.",
+    "sample_solution": "from typing import Callable, TypeVar, ParamSpec\n\nP = ParamSpec(\"P\")\nR = TypeVar(\"R\")\n\ndef logged(fn: Callable[P, R]) -> Callable[P, R]:\n    ..."
+  },
+  {
+    "title": "NewType Distinct Types",
+    "topic": "Advanced Typing",
+    "difficulty": "medium",
+    "prompt": "<p>Create a distinct type <code>UserId</code> backed by int to prevent accidental mixing.</p><p>Starting code:</p><pre>from typing import ___\n\nUserId = NewType(\"UserId\", int)\nadmin_id = UserId(101)</pre>",
+    "rubric": "Full marks for `NewType`.",
+    "sample_solution": "from typing import NewType\n\nUserId = NewType(\"UserId\", int)\nadmin_id = UserId(101)"
+  },
+  {
+    "title": "AnyStr Constrained TypeVar",
+    "topic": "Advanced Typing",
+    "difficulty": "hard",
+    "prompt": "<p>Use <code>AnyStr</code> for a function that accepts either str or bytes and returns the same.</p><p>Starting code:</p><pre>from typing import ___\n\ndef concat(a: AnyStr, b: AnyStr) -> AnyStr:\n    return a + b</pre>",
+    "rubric": "Full marks for `AnyStr`.",
+    "sample_solution": "from typing import AnyStr\n\ndef concat(a: AnyStr, b: AnyStr) -> AnyStr:\n    return a + b"
+  },
+  {
+    "title": "NoReturn Annotation",
+    "topic": "Advanced Typing",
+    "difficulty": "medium",
+    "prompt": "<p>Annotate a function that always raises an exception and never returns normally.</p><p>Starting code:</p><pre>from typing import ___\n\ndef fail_now(msg: str) -> NoReturn:\n    raise RuntimeError(msg)</pre>",
+    "rubric": "Full marks for `NoReturn`.",
+    "sample_solution": "from typing import NoReturn\n\ndef fail_now(msg: str) -> NoReturn:\n    raise RuntimeError(msg)"
+  },
+  {
+    "title": "Cast Type Override",
+    "topic": "Advanced Typing",
+    "difficulty": "medium",
+    "prompt": "<p>Instruct the static type checker to treat a value as a specific type using <code>cast</code>.</p><p>Starting code:</p><pre>from typing import ___\n\nval: object = \"hello\"\ntext = cast(str, val)</pre>",
+    "rubric": "Full marks for `cast`.",
+    "sample_solution": "from typing import cast\n\nval: object = \"hello\"\ntext = cast(str, val)"
+  },
+  {
+    "title": "Asyncio Task Creation",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Schedule a coroutine to run soon on the event loop as a background Task.</p><p>Starting code:</p><pre>import asyncio\n\nasync def main():\n    task = asyncio.___(background_job())\n    await task</pre>",
+    "rubric": "Full marks for `create_task`.",
+    "sample_solution": "import asyncio\n\nasync def main():\n    task = asyncio.create_task(background_job())\n    await task"
+  },
+  {
+    "title": "Asyncio Timeout Context Manager",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Enforce a 5-second timeout on an async block using <code>asyncio.timeout</code>.</p><p>Starting code:</p><pre>import asyncio\n\nasync def fetch():\n    async with asyncio.___(5.0):\n        await slow_request()</pre>",
+    "rubric": "Full marks for `timeout`.",
+    "sample_solution": "import asyncio\n\nasync def fetch():\n    async with asyncio.timeout(5.0):\n        await slow_request()"
+  },
+  {
+    "title": "Asyncio Wait For",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Await a coroutine with a timeout of 2 seconds using <code>asyncio.wait_for</code>.</p><p>Starting code:</p><pre>import asyncio\n\nresult = await asyncio.___(fetch_data(), timeout=2.0)</pre>",
+    "rubric": "Full marks for `wait_for`.",
+    "sample_solution": "import asyncio\n\nresult = await asyncio.wait_for(fetch_data(), timeout=2.0)"
+  },
+  {
+    "title": "Asyncio Queue Producer-Consumer",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Put an item into an asyncio.Queue and mark a fetched task as done.</p><p>Starting code:</p><pre>import asyncio\n\nq = asyncio.Queue()\nawait q.___(\"item_1\")\nitem = await q.get()\nq.task_done()</pre>",
+    "rubric": "Full marks for `put`.",
+    "sample_solution": "import asyncio\n\nq = asyncio.Queue()\nawait q.put(\"item_1\")\nitem = await q.get()\nq.task_done()"
+  },
+  {
+    "title": "Asyncio Semaphore Rate Limiting",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Limit concurrent access to a resource to at most 10 coroutines.</p><p>Starting code:</p><pre>import asyncio\n\nsem = asyncio.___(10)\n\nasync def limited_fetch():\n    async with sem:\n        await do_request()</pre>",
+    "rubric": "Full marks for `Semaphore`.",
+    "sample_solution": "import asyncio\n\nsem = asyncio.Semaphore(10)\n\nasync def limited_fetch():\n    async with sem:\n        await do_request()"
+  },
+  {
+    "title": "Asyncio Event Synchronization",
+    "topic": "Asynchronous I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Wait for an asyncio.Event flag to be set by another coroutine.</p><p>Starting code:</p><pre>import asyncio\n\nevent = asyncio.Event()\n\n# In waiter coroutine:\nawait event.___()\n\n# In notifier coroutine:\nevent.set()</pre>",
+    "rubric": "Full marks for `wait`.",
+    "sample_solution": "import asyncio\n\nevent = asyncio.Event()\n\n# In waiter coroutine:\nawait event.wait()\n\n# In notifier coroutine:\nevent.set()"
+  },
+  {
+    "title": "Async Context Manager Protocol",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Implement an asynchronous context manager using <code>__aenter__</code> and <code>__aexit__</code>.</p><p>Starting code:</p><pre>class AsyncSession:\n    async def ___(self):\n        return self\n        \n    async def __aexit__(self, exc_type, exc, tb):\n        await self.close()</pre>",
+    "rubric": "Full marks for `__aenter__`.",
+    "sample_solution": "class AsyncSession:\n    async def __aenter__(self):\n        return self\n        \n    async def __aexit__(self, exc_type, exc, tb):\n        await self.close()"
+  },
+  {
+    "title": "Async Iterator Protocol",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Implement an asynchronous iterator using <code>__aiter__</code> and <code>__anext__</code>.</p><p>Starting code:</p><pre>class AsyncStream:\n    def ___(self):\n        return self\n        \n    async def __anext__(self):\n        data = await fetch_next()\n        if not data:\n            raise StopAsyncIteration\n        return data</pre>",
+    "rubric": "Full marks for `__aiter__`.",
+    "sample_solution": "class AsyncStream:\n    def __aiter__(self):\n        return self\n        \n    async def __anext__(self):\n        data = await fetch_next()\n        if not data:\n            raise StopAsyncIteration\n        return data"
+  },
+  {
+    "title": "Offloading Blocking I/O to Thread",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Run a synchronous blocking function in a separate thread without blocking the event loop.</p><p>Starting code:</p><pre>import asyncio\n\nresult = await asyncio.___(blocking_io_func, arg1)</pre>",
+    "rubric": "Full marks for `to_thread`.",
+    "sample_solution": "import asyncio\n\nresult = await asyncio.to_thread(blocking_io_func, arg1)"
+  },
+  {
+    "title": "ContextVars for Async Context State",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Define a context-local variable safe for concurrent async tasks.</p><p>Starting code:</p><pre>from contextvars import ___\n\nrequest_id: ContextVar[str] = ContextVar(\"request_id\", default=\"none\")\nrequest_id.set(\"req-123\")</pre>",
+    "rubric": "Full marks for `ContextVar`.",
+    "sample_solution": "from contextvars import ContextVar\n\nrequest_id: ContextVar[str] = ContextVar(\"request_id\", default=\"none\")\nrequest_id.set(\"req-123\")"
+  },
+  {
+    "title": "Threading Event",
+    "topic": "Asynchronous I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Signal between threads using threading.Event.</p><p>Starting code:</p><pre>import threading\n\nstop_event = threading.Event()\nstop_event.___()\n\nif stop_event.is_set():\n    print(\"Stopping\")</pre>",
+    "rubric": "Full marks for `set`.",
+    "sample_solution": "import threading\n\nstop_event = threading.Event()\nstop_event.set()\n\nif stop_event.is_set():\n    print(\"Stopping\")"
+  },
+  {
+    "title": "Threading Local Storage",
+    "topic": "Asynchronous I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Create thread-isolated storage so each thread has its own independent attribute.</p><p>Starting code:</p><pre>import threading\n\ntls = threading.___()\ntls.user = \"admin\"</pre>",
+    "rubric": "Full marks for `local`.",
+    "sample_solution": "import threading\n\ntls = threading.local()\ntls.user = \"admin\""
+  },
+  {
+    "title": "Concurrent Futures As Completed",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Iterate over futures as they finish execution in real time.</p><p>Starting code:</p><pre>from concurrent.futures import ThreadPoolExecutor, ___\n\nwith ThreadPoolExecutor() as ex:\n    futures = [ex.submit(work, i) for i in range(5)]\n    for fut in as_completed(futures):\n        print(fut.result())</pre>",
+    "rubric": "Full marks for `as_completed`.",
+    "sample_solution": "from concurrent.futures import ThreadPoolExecutor, as_completed\n\nwith ThreadPoolExecutor() as ex:\n    futures = [ex.submit(work, i) for i in range(5)]\n    for fut in as_completed(futures):\n        print(fut.result())"
+  },
+  {
+    "title": "Multiprocessing Pool Map",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Distribute CPU-bound work across a pool of worker processes.</p><p>Starting code:</p><pre>from multiprocessing import Pool\n\nwith Pool(processes=4) as pool:\n    results = pool.___(cpu_heavy, [1, 2, 3, 4])</pre>",
+    "rubric": "Full marks for `map`.",
+    "sample_solution": "from multiprocessing import Pool\n\nwith Pool(processes=4) as pool:\n    results = pool.map(cpu_heavy, [1, 2, 3, 4])"
+  },
+  {
+    "title": "Multiprocessing Shared Value",
+    "topic": "Asynchronous I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Create a shared-memory integer value synchronized across processes.</p><p>Starting code:</p><pre>from multiprocessing import ___\n\ncounter = Value('i', 0)</pre>",
+    "rubric": "Full marks for `Value`.",
+    "sample_solution": "from multiprocessing import Value\n\ncounter = Value('i', 0)"
+  }
+]
