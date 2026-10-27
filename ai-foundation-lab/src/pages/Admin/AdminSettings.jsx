@@ -1,7 +1,11 @@
-// src/pages/admin/AdminSettings.jsx
+// src/pages/Admin/AdminSettings.jsx
 import { useState, useEffect } from "react";
 import { Save, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
-import { getSettings, updateSettings } from "../../services/adminSettingsService.js";
+import {
+  getSettings,
+  updateSettings,
+} from "../../services/adminSettingsService.js";
+import { invalidateSettingsCache } from "../../services/settingsService.js";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import { Field, Input, Textarea, Checkbox } from "../../components/ui/Form.js";
@@ -56,7 +60,9 @@ export default function AdminSettings() {
         if (!cancelled) setLoading(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleChange = (field, value) => {
@@ -78,6 +84,8 @@ export default function AdminSettings() {
         exam_duration_minutes: Number(formData.exam_duration_minutes),
         attempt_limit: Number(formData.attempt_limit),
       });
+      // Keep student-side reads fresh in the same browser
+      invalidateSettingsCache();
       setSuccess("Settings saved successfully.");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
@@ -123,7 +131,6 @@ export default function AdminSettings() {
       )}
 
       <form onSubmit={handleSave} className="admin-settings__form">
-        {/* 1. GENERAL COMMUNITY */}
         <Card variant="glass" size="md" className="admin-settings__card">
           <h2 className="admin-settings__section-title">General Community</h2>
           <div className="admin-settings__fields">
@@ -135,20 +142,23 @@ export default function AdminSettings() {
                 type="url"
                 placeholder="https://t.me/+..."
                 value={formData.telegram_group_url}
-                onChange={(e) => handleChange("telegram_group_url", e.target.value)}
+                onChange={(e) =>
+                  handleChange("telegram_group_url", e.target.value)
+                }
               />
             </Field>
             <div className="admin-settings__toggle-row">
               <Checkbox
                 label="Enable General Community link"
                 checked={formData.telegram_enabled}
-                onChange={(e) => handleChange("telegram_enabled", e.target.checked)}
+                onChange={(e) =>
+                  handleChange("telegram_enabled", e.target.checked)
+                }
               />
             </div>
           </div>
         </Card>
 
-        {/* 2. EXAM COMMUNITY */}
         <Card variant="glass" size="md" className="admin-settings__card">
           <h2 className="admin-settings__section-title">Exam Community</h2>
           <div className="admin-settings__fields">
@@ -160,20 +170,23 @@ export default function AdminSettings() {
                 type="url"
                 placeholder="https://t.me/+..."
                 value={formData.exam_telegram_group_url}
-                onChange={(e) => handleChange("exam_telegram_group_url", e.target.value)}
+                onChange={(e) =>
+                  handleChange("exam_telegram_group_url", e.target.value)
+                }
               />
             </Field>
             <div className="admin-settings__toggle-row">
               <Checkbox
                 label="Enable Exam Community link"
                 checked={formData.exam_telegram_enabled}
-                onChange={(e) => handleChange("exam_telegram_enabled", e.target.checked)}
+                onChange={(e) =>
+                  handleChange("exam_telegram_enabled", e.target.checked)
+                }
               />
             </div>
           </div>
         </Card>
 
-        {/* 3. REGISTRATION */}
         <Card variant="glass" size="md" className="admin-settings__card">
           <h2 className="admin-settings__section-title">Registration</h2>
           <div className="admin-settings__fields">
@@ -181,20 +194,23 @@ export default function AdminSettings() {
               <Checkbox
                 label="Registration open"
                 checked={formData.registration_open}
-                onChange={(e) => handleChange("registration_open", e.target.checked)}
+                onChange={(e) =>
+                  handleChange("registration_open", e.target.checked)
+                }
               />
             </div>
             <div className="admin-settings__toggle-row">
               <Checkbox
                 label="Require roster match"
                 checked={formData.require_roster_match}
-                onChange={(e) => handleChange("require_roster_match", e.target.checked)}
+                onChange={(e) =>
+                  handleChange("require_roster_match", e.target.checked)
+                }
               />
             </div>
           </div>
         </Card>
 
-        {/* 4. EXAM CONFIGURATION */}
         <Card variant="glass" size="md" className="admin-settings__card">
           <h2 className="admin-settings__section-title">Exam Configuration</h2>
           <div className="admin-settings__fields admin-settings__fields--grid">
@@ -204,7 +220,9 @@ export default function AdminSettings() {
                 min={1}
                 max={300}
                 value={formData.exam_duration_minutes}
-                onChange={(e) => handleChange("exam_duration_minutes", e.target.value)}
+                onChange={(e) =>
+                  handleChange("exam_duration_minutes", e.target.value)
+                }
               />
             </Field>
             <Field label="Attempt limit">
@@ -213,7 +231,9 @@ export default function AdminSettings() {
                 min={1}
                 max={10}
                 value={formData.attempt_limit}
-                onChange={(e) => handleChange("attempt_limit", e.target.value)}
+                onChange={(e) =>
+                  handleChange("attempt_limit", e.target.value)
+                }
               />
             </Field>
           </div>
