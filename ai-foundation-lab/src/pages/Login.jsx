@@ -1,9 +1,15 @@
 // src/pages/Login.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, ArrowRight, AlertCircle } from "lucide-react";
+import {
+  Mail,
+  ArrowRight,
+  AlertCircle,
+  RefreshCw,
+  CheckCircle2,
+} from "lucide-react";
 import { loginSchema } from "../lib/validation.js";
 import { authService } from "../services";
 import Card from "../components/ui/Card.jsx";
@@ -12,12 +18,20 @@ import Button from "../components/ui/Button.jsx";
 import { Field, Input, PasswordInput } from "../components/ui/Form.js";
 import "./Register.css";
 
+const COOLDOWN_SECONDS = 60;
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [unverifiedEmail, setUnverifiedEmail] = useState(null);
+
+  const [resending, setResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [resendStatus, setResendStatus] = useState(null); // "success" | "error" | null
+  const [resendMessage, setResendMessage] = useState("");
 
   const {
     register,
@@ -30,10 +44,21 @@ export default function Login() {
     defaultValues: { email: "", password: "" },
   });
 
+  // Cooldown countdown
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setTimeout(() => {
+      setCooldown((c) => c - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
+
   const onSubmit = async (values) => {
     setSubmitting(true);
     setFormError(null);
-    console.log("[login] submitting with:", { email: values.email });
+    setUnverifiedEmail(null);
+    setResendStatus(null);
+    setResendMessage("");
 
     try {
       const auth = await authService.login(values.email, values.password);
@@ -42,9 +67,7 @@ export default function Login() {
       const from = location.state?.from || "/profile";
       navigate(from, { replace: true });
     } catch (err) {
-      console.error("[login] error object:", err);
-      console.error("[login] err.response:", err?.response);
-      console.error("[login] err.response.data:", err?.response?.data);
+      console.error("[login] error:", err);
 
       const pbData = err?.response?.data || {};
       let message = "";
@@ -53,11 +76,67 @@ export default function Login() {
       else if (err?.response?.message) message = err.response.message;
       else if (err?.message) message = err.message;
 
-      setFormError(message || "Login failed. Open the console for details.");
+      const lowerMsg = (message || "").toLowerCase();
+
+      // Detect unverified account — PocketBase returns a specific
+      // error when `onlyVerified: true` blocks login.
+      if (
+        lowerMsg.includes("verify") ||
+        lowerMsg.includes("verification") ||
+        lowerMsg.includes("unverified") ||
+        lowerMsg.includes("not verified")
+      ) {
+        setUnverifiedEmail(values.email);
+        setFormError(
+          "Your email address is not verified. Check your inbox for the verification link, or resend it below."
+        );
+      } else {
+        setFormError(
+          message || "Login failed. Open the console for details."
+        );
+      }
     } finally {
       setSubmitting(false);
     }
   };
+
+  const handleResend = async () => {
+    if (!unverifiedEmail || resending || cooldown > 0) return;
+
+    setResending(true);
+    setResendStatus(null);
+    setResendMessage("");
+
+    try {
+      await authService.requestVerification(unverifiedEmail);
+      setResendStatus("success");
+      setResendMessage("Verification email sent. Check your inbox.");
+      setCooldown(COOLDOWN_SECONDS);
+    } catch (err) {
+      console.error("[login] resend error:", err);
+
+      if (err?.status === 429) {
+        setResendStatus("error");
+        setResendMessage("Too many requests. Wait a minute and try again.");
+        setCooldown(COOLDOWN_SECONDS);
+      } else {
+        setResendStatus("error");
+        setResendMessage(
+          err?.response?.message ||
+            err?.message ||
+            "Could not send the email. Please try again."
+        );
+      }
+    } finally {
+      setResending(false);
+    }
+  };
+
+  const resendLabel = resending
+    ? "Sending…"
+    : cooldown > 0
+    ? `Resend in ${cooldown}s`
+    : "Resend verification email";
 
   return (
     <section className="register section">
@@ -122,7 +201,80 @@ export default function Login() {
               </Link>
             </div>
 
-            {formError && (
+            {unverifiedEmail && (
+              <div
+                style={{
+                  padding: "var(--space-4)",
+                  borderRadius: "var(--radius-md)",
+                  background: "rgba(242, 81, 31, 0.08)",
+                  border: "1px solid rgba(242, 81, 31, 0.35)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "var(--space-3)",
+                }}
+                role="alert"
+              >
+                <p
+                  className="type-body-sm"
+                  style={{
+                    margin: 0,
+                    color: "var(--orange-500)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "var(--space-2)",
+                    fontWeight: 500,
+                  }}
+                >
+                  <AlertCircle size={16} aria-hidden="true" />
+                  Email not verified
+                </p>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  fullWidth
+                  onClick={handleResend}
+                  loading={resending}
+                  disabled={cooldown > 0}
+                  leftIcon={<RefreshCw size={16} />}
+                >
+                  {resendLabel}
+                </Button>
+
+                {resendStatus === "success" && (
+                  <span
+                    className="type-body-sm"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "var(--space-2)",
+                      color: "var(--cyan-400)",
+                    }}
+                  >
+                    <CheckCircle2 size={14} aria-hidden="true" />
+                    {resendMessage}
+                  </span>
+                )}
+
+                {resendStatus === "error" && (
+                  <span
+                    className="type-body-sm"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "var(--space-2)",
+                      color: "#FF6B6B",
+                    }}
+                  >
+                    <AlertCircle size={14} aria-hidden="true" />
+                    {resendMessage}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {formError && !unverifiedEmail && (
               <div className="register__form-error" role="alert">
                 <AlertCircle size={16} aria-hidden="true" />
                 <span>{formError}</span>

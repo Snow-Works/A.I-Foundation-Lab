@@ -14,6 +14,8 @@ import Register from "./pages/Register.jsx";
 import VerifyPending from "./pages/VerifyPending.jsx";
 import AuthVerified from "./pages/AuthVerified.jsx";
 import Login from "./pages/Login.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import Profile from "./pages/Profile.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
@@ -127,6 +129,11 @@ export default function App() {
                   <Route path="verify-pending" element={<VerifyPending />} />
                   <Route path="auth/verified" element={<AuthVerified />} />
                   <Route path="login" element={<Login />} />
+                  <Route
+                    path="forgot-password"
+                    element={<ForgotPassword />}
+                  />
+                  <Route path="reset-password" element={<ResetPassword />} />
                   <Route path="exam-gate" element={<ExamGate />} />
 
                   <Route
