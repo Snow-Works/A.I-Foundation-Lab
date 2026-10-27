@@ -38,61 +38,15 @@ export function photoUrl(record, thumb = null) {
 }
 
 /* ------------------------------------------------------------
-   Fetch the student's released exam result with full transcript.
+   Fetch the student's most recent RELEASED exam result with
+   full transcript. Delegated to /api/exam/result because the
+   `questions` collection is now admins-only — the student
+   cannot read question records directly.
    ------------------------------------------------------------ */
-export async function getReleasedExamResult(studentId) {
+export async function getReleasedExamResult() {
   try {
-    const attempts = await pb.collection("attempts").getList(1, 1, {
-      filter: `student = "${studentId}" && status = "released"`,
-      sort: "-updated",
-    });
-
-    if (attempts.items.length === 0) return null;
-    const attempt = attempts.items[0];
-
-    const attemptQuestions = await pb.collection("attempt_questions").getFullList({
-      filter: `attempt = "${attempt.id}"`,
-      sort: "order",
-      expand: "question",
-    });
-
-    const answers = await pb.collection("answers").getFullList({
-      filter: `attempt = "${attempt.id}"`,
-    });
-
-    const marks = await pb.collection("marks").getFullList({
-      filter: `attempt_question.attempt = "${attempt.id}"`,
-    });
-
-    const questions = attemptQuestions.map((aq) => {
-      const answer = answers.find((a) => a.question === aq.question);
-      const mark = marks.find((m) => m.attempt_question === aq.id);
-      return {
-        attempt_question_id: aq.id,
-        order: aq.order,
-        question: aq.expand.question,
-        answer: answer ? answer.body : "",
-        mark: mark || null,
-      };
-    });
-
-    let totalScore = 0;
-    let maxScore = 0;
-    questions.forEach((q) => {
-      if (q.mark) {
-        totalScore += Number(q.mark.score) || 0;
-        maxScore += Number(q.mark.max_score) || 10;
-      }
-    });
-
-    return {
-      attempt,
-      student: pb.authStore.model, // Since this is the student themselves
-      questions,
-      totalScore,
-      maxScore,
-      passed: totalScore >= 180,
-    };
+    const res = await pb.send("/api/exam/result", { method: "GET" });
+    return res.result || null;
   } catch (err) {
     console.error("[profile] get exam result error:", err);
     return null;
