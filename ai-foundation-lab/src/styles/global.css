@@ -1,8 +1,9 @@
 /* GLOBAL BASE STYLES */
-  /* Import order matters: reset → tokens → responsive → global rules.*/
+/* Import order matters: reset → tokens → responsive → admin-tables → global rules.*/
 @import "./reset.css";
 @import "./tokens.css";
 @import "./responsive.css";
+@import "./admin-tables.css";
 
 /*  BASE  */
 html {
@@ -12,7 +13,6 @@ html {
   font-weight: var(--fw-regular);
   font-size: 16px;
   line-height: var(--lh-normal);
-  /* Firefox scrollbar styling */
   scrollbar-color: var(--indigo-700) var(--ink-950);
   scrollbar-width: thin;
 }
@@ -113,7 +113,12 @@ a:hover {
 }
 
 /*  HEADINGS DEFAULT  */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-primary);
 }
 
@@ -165,17 +170,7 @@ input[type="number"] {
   }
 }
 
-
-
-
-
-
-
-
 /*  ICON STROKE VARIANTS */
-/* Applied to Lucide icons or our custom SVGs.*/
-
-
 .icon-gradient {
   stroke: url(#icon-grad);
 }
@@ -188,18 +183,15 @@ input[type="number"] {
   stroke: url(#icon-grad-silver);
 }
 
-/* Default: inherit current color, no gradient */
 .icon-default {
   stroke: currentColor;
 }
 
-/* Smooth transitions when icons animate on hover */
 .icon-transition {
   transition: stroke var(--dur-normal) var(--ease-out),
-              transform var(--dur-normal) var(--ease-out);
+    transform var(--dur-normal) var(--ease-out);
 }
 
-/* Slight lift on interactive icon buttons */
 .icon-lift:hover {
   transform: translateY(-2px);
 }
