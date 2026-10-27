@@ -17,23 +17,44 @@ export function usePythonRunner() {
     );
 
     workerRef.current.onmessage = (e) => {
-      clearTimeout(timeoutRef.current);
-      const { success, output } = e.data;
-      setStatus("ready");
-      
-      if (success) {
-        setOutput(output);
-        setError("");
-      } else {
-        setOutput("");
-        setError(output);
+      const { type } = e.data;
+
+      if (type === "ready") {
+        setStatus("ready");
+        return;
       }
+
+      if (type === "init_error") {
+        setStatus("ready"); // Fallback so button isn't permanently stuck
+        setError(`Failed to load Python engine: ${e.data.message}`);
+        return;
+      }
+
+      if (type === "result") {
+        clearTimeout(timeoutRef.current);
+        const { success, output } = e.data;
+        setStatus("ready");
+        
+        if (success) {
+          setOutput(output);
+          setError("");
+        } else {
+          setOutput("");
+          setError(output);
+        }
+      }
+    };
+
+    // Catch hard crashes (e.g., if the CDN is blocked)
+    workerRef.current.onerror = (err) => {
+      console.error("[Python Worker] Error:", err);
+      setStatus("ready");
+      setError("Failed to load the Python engine. Check your internet connection.");
     };
 
     setStatus("loading");
   }, []);
 
-  // Preload Pyodide as soon as the component mounts
   useEffect(() => {
     initWorker();
     return () => {
@@ -52,7 +73,6 @@ export function usePythonRunner() {
     setOutput("");
     setError("");
 
-    // 5-second safeguard against infinite loops
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       if (workerRef.current) {
@@ -64,7 +84,8 @@ export function usePythonRunner() {
       initWorker();
     }, 5000);
 
-    workerRef.current.postMessage({ code });
+    // Tell the worker we want to run code
+    workerRef.current.postMessage({ type: "run", code });
   }, [initWorker]);
 
   const clearOutput = useCallback(() => {

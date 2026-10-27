@@ -14,7 +14,19 @@ async function initPyodide() {
   return pyodideReadyPromise;
 }
 
+// Initialize immediately and tell the main thread when ready
+initPyodide()
+  .then(() => {
+    self.postMessage({ type: "ready" });
+  })
+  .catch((err) => {
+    self.postMessage({ type: "init_error", message: err.message });
+  });
+
 self.onmessage = async (e) => {
+  // Ignore messages that aren't code executions
+  if (e.data.type !== "run") return;
+  
   const { code } = e.data;
   
   try {
@@ -27,11 +39,13 @@ self.onmessage = async (e) => {
     await pyodide.runPythonAsync(code);
     
     self.postMessage({ 
+      type: "result",
       success: true, 
       output: output.trim() || "Code executed successfully with no output." 
     });
   } catch (err) {
     self.postMessage({ 
+      type: "result",
       success: false, 
       output: err.message 
     });

@@ -7,6 +7,7 @@ import { resumeExam, submitExam } from "../services/examService.js";
 import { useAutosave } from "../hooks/useAutosave.js";
 import { useProctoring } from "../hooks/useProctoring.js";
 import { useExamTimer } from "../hooks/useExamTimer.js";
+import { usePythonRunner } from "../hooks/usePythonRunner.js"; // <-- New Import
 import Button from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import PillTab from "../components/ui/PillTab.jsx";
@@ -57,6 +58,9 @@ export default function ExamSession() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
+  // Init Python Runner
+  const pythonRunner = usePythonRunner();
+
   /* ---------- Resume on mount if no state came from the router ---------- */
   useEffect(() => {
     if (initialAttempt && initialQuestions) return;
@@ -85,9 +89,7 @@ export default function ExamSession() {
         if (!cancelled) setLoading(false);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,64 +102,30 @@ export default function ExamSession() {
     setAnswerIds,
   });
 
-  /* ---------- Go to submitted screen ---------- */
-  const goToSubmitted = useCallback(
-    (reason, answeredCount) => {
+  const goToSubmitted = useCallback((reason, answeredCount) => {
       const at = new Date().toISOString();
-      navigate(
-        `/exam/submitted?reason=${reason}&attempted=${answeredCount}&at=${encodeURIComponent(at)}`,
-        { replace: true }
-      );
-    },
-    [navigate]
-  );
+      navigate(`/exam/submitted?reason=${reason}&attempted=${answeredCount}&at=${encodeURIComponent(at)}`, { replace: true });
+  }, [navigate]);
 
-  /* ---------- Submit ---------- */
-  const performSubmit = useCallback(
-    async (reason) => {
+  const performSubmit = useCallback(async (reason) => {
       if (!attempt?.id) return;
       setSubmitting(true);
       setSubmitError("");
-
       try {
-        // Save any pending drafts first
-        try {
-          await flushNow(true);
-        } catch (err) {
-          console.warn("[exam-session] pre-submit flush warning:", err);
-        }
-
+        try { await flushNow(true); } catch (err) { console.warn(err); }
         await submitExam(attempt.id);
-
-        // Exit fullscreen
-        try {
-          if (document.fullscreenElement) {
-            await document.exitFullscreen();
-          }
-        } catch (_) {}
-
-        const answered = Object.values(answers).filter(
-          (v) => v && v.trim().length > 0
-        ).length;
-
+        try { if (document.fullscreenElement) await document.exitFullscreen(); } catch (_) {}
+        const answered = Object.values(answers).filter((v) => v && v.trim().length > 0).length;
         goToSubmitted(reason, answered);
       } catch (err) {
         console.error("[exam-session] submit error:", err);
-        setSubmitError(
-          err?.response?.message ||
-            err?.message ||
-            "Could not submit. Please try again."
-        );
+        setSubmitError(err?.response?.message || err?.message || "Could not submit.");
         setSubmitting(false);
       }
-    },
-    [attempt, answers, flushNow, goToSubmitted]
-  );
+  }, [attempt, answers, flushNow, goToSubmitted]);
 
-  /* ---------- Timer expiry → auto-submit ---------- */
   const handleTimeUp = useCallback(async () => {
     setTimeUp(true);
-    // Auto-submit
     await performSubmit("time_up");
   }, [performSubmit]);
 
@@ -167,24 +135,11 @@ export default function ExamSession() {
     enabled: !!attempt && !modalMode && !timeUp && !submitModalOpen,
   });
 
-  /* ---------- Violation handlers ---------- */
-  const handleWarning = useCallback((v) => {
-    setViolation(v);
-    setModalMode("warning");
-  }, []);
-
-  const handleTerminate = useCallback(
-    async (v) => {
-      setViolation(v);
-      setModalMode("terminated");
-      try {
-        await flushNow(true);
-      } catch (err) {
-        console.error("[exam-session] final save failed:", err);
-      }
-    },
-    [flushNow]
-  );
+  const handleWarning = useCallback((v) => { setViolation(v); setModalMode("warning"); }, []);
+  const handleTerminate = useCallback(async (v) => {
+      setViolation(v); setModalMode("terminated");
+      try { await flushNow(true); } catch (err) { console.error(err); }
+  }, [flushNow]);
 
   const { report } = useProctoring({
     attemptId: attempt?.id,
@@ -193,55 +148,31 @@ export default function ExamSession() {
     onTerminate: handleTerminate,
   });
 
-  /* ---------- Fullscreen on mount ---------- */
   useEffect(() => {
     if (!attempt) return;
-    if (
-      document.documentElement.requestFullscreen &&
-      !document.fullscreenElement
-    ) {
+    if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
     }
   }, [attempt]);
 
-  /* ---------- Handlers ---------- */
   const dismissWarning = () => {
     setModalMode(null);
-    if (
-      document.documentElement.requestFullscreen &&
-      !document.fullscreenElement
-    ) {
+    if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
     }
   };
 
   const goToProfile = async () => {
     setTerminating(true);
-    try {
-      await flushNow(true);
-    } catch (_) {}
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-    } catch (_) {}
+    try { await flushNow(true); } catch (_) {}
+    try { if (document.fullscreenElement) await document.exitFullscreen(); } catch (_) {}
     navigate("/profile?terminated=1", { replace: true });
   };
 
-  const openSubmitModal = () => {
-    setSubmitError("");
-    setSubmitModalOpen(true);
-  };
+  const openSubmitModal = () => { setSubmitError(""); setSubmitModalOpen(true); };
+  const cancelSubmit = () => { setSubmitModalOpen(false); };
+  const confirmSubmit = () => { performSubmit("manual"); };
 
-  const cancelSubmit = () => {
-    setSubmitModalOpen(false);
-  };
-
-  const confirmSubmit = () => {
-    performSubmit("manual");
-  };
-
-  /* ---------- Render branches ---------- */
   if (loading) {
     return (
       <section className="exam-session-empty section">
@@ -249,9 +180,7 @@ export default function ExamSession() {
           <Card variant="glass" size="lg">
             <div className="exam-session-empty__center">
               <Loader2 size={28} className="exam-session-empty__spinner" />
-              <p className="type-body" style={{ margin: 0 }}>
-                Loading your exam…
-              </p>
+              <p className="type-body" style={{ margin: 0 }}>Loading your exam…</p>
             </div>
           </Card>
         </div>
@@ -264,26 +193,16 @@ export default function ExamSession() {
       <section className="exam-session-empty section">
         <div className="container-narrow">
           <Card variant="glass" size="lg" withTab tone="danger">
-            <PillTab floating position="center" variant="default">
-              No session
-            </PillTab>
+            <PillTab floating position="center" variant="default">No session</PillTab>
             <div className="exam-session-empty__center">
-              <div className="exam-session-empty__icon">
-                <AlertCircle size={28} />
-              </div>
-              <h1
-                className="type-h3"
-                style={{ color: "var(--white)", margin: 0 }}
-              >
+              <div className="exam-session-empty__icon"><AlertCircle size={28} /></div>
+              <h1 className="type-h3" style={{ color: "var(--white)", margin: 0 }}>
                 {error ? "Couldn't load session" : "No active session"}
               </h1>
               <p className="type-body" style={{ maxWidth: "46ch", margin: 0 }}>
-                {error ||
-                  "You need to start the exam from the intro screen. If you were in the middle of an attempt, contact an admin."}
+                {error || "You need to start the exam from the intro screen."}
               </p>
-              <Button variant="primary" size="lg" as={Link} to="/exam/intro">
-                Go to exam intro
-              </Button>
+              <Button variant="primary" size="lg" as={Link} to="/exam/intro">Go to exam intro</Button>
             </div>
           </Card>
         </div>
@@ -297,14 +216,11 @@ export default function ExamSession() {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  const handleNext = () =>
-    setCurrentIndex((i) => Math.min(i + 1, questions.length - 1));
+  const handleNext = () => setCurrentIndex((i) => Math.min(i + 1, questions.length - 1));
   const handlePrev = () => setCurrentIndex((i) => Math.max(i - 1, 0));
   const handleJump = (index) => setCurrentIndex(index);
 
-  const answeredCount = Object.values(answers).filter(
-    (v) => v && v.trim().length > 0
-  ).length;
+  const answeredCount = Object.values(answers).filter((v) => v && v.trim().length > 0).length;
 
   return (
     <>
@@ -335,27 +251,16 @@ export default function ExamSession() {
                 index={currentIndex}
                 total={questions.length}
                 value={answers[currentQuestion.id] || ""}
-                onChange={(val) =>
-                  handleAnswerChange(currentQuestion.id, val)
-                }
+                onChange={(val) => handleAnswerChange(currentQuestion.id, val)}
+                pythonRunner={pythonRunner} // <-- Pass the runner
               />
             )}
 
             <div className="exam-session-nav-buttons">
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-              >
+              <Button variant="secondary" size="lg" onClick={handlePrev} disabled={currentIndex === 0}>
                 ← Previous
               </Button>
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleNext}
-                disabled={currentIndex === questions.length - 1}
-              >
+              <Button variant="primary" size="lg" onClick={handleNext} disabled={currentIndex === questions.length - 1}>
                 Next →
               </Button>
             </div>
