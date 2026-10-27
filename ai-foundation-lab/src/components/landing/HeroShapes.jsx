@@ -87,9 +87,105 @@ export function PortraitPlaceholder({ className = "", style = {} }) {
 
 /* ============================================================
    ROCKET — gold-toned, angled up-right (matching the poster)
+   ------------------------------------------------------------
+   Drawn upright, then rotated 32° clockwise around the center
+   so the nose points up-right and the exhaust trails down-left.
+   Fits inside viewBox 0 0 200 200, so any square container
+   (64×64 in FinalCTA, up to 150×150 in HeroVisual) works.
    ============================================================ */
 export function RocketSVG({ className = "", style = {} }) {
-  
+  return (
+    <svg
+      className={className}
+      style={style}
+      viewBox="0 0 200 200"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="rocket-body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFE9B5" />
+          <stop offset="45%" stopColor="#E5B25C" />
+          <stop offset="100%" stopColor="#9C6E24" />
+        </linearGradient>
+        <linearGradient id="rocket-fin-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#D4249B" />
+          <stop offset="100%" stopColor="#5B2BD6" />
+        </linearGradient>
+        <linearGradient id="rocket-window-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#9FF0FF" />
+          <stop offset="100%" stopColor="#2EC8FF" />
+        </linearGradient>
+        <linearGradient id="rocket-flame-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FFD36E" />
+          <stop offset="50%" stopColor="#F2511F" />
+          <stop offset="100%" stopColor="#C4162E" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <g transform="rotate(32 100 100)">
+        {/* Exhaust flame */}
+        <path
+          d="M 100 152
+             C 88 168, 86 182, 100 196
+             C 114 182, 112 168, 100 152 Z"
+          fill="url(#rocket-flame-grad)"
+        />
+
+        {/* Left fin */}
+        <path
+          d="M 78 130 L 56 158 L 78 158 Z"
+          fill="url(#rocket-fin-grad)"
+        />
+
+        {/* Right fin */}
+        <path
+          d="M 122 130 L 144 158 L 122 158 Z"
+          fill="url(#rocket-fin-grad)"
+        />
+
+        {/* Body */}
+        <path
+          d="M 100 22
+             C 82 40, 78 62, 78 96
+             L 78 152
+             L 122 152
+             L 122 96
+             C 122 62, 118 40, 100 22 Z"
+          fill="url(#rocket-body-grad)"
+          stroke="#8C5A1F"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+
+        {/* Window ring */}
+        <circle cx="100" cy="92" r="15" fill="#0A0630" opacity="0.85" />
+        <circle cx="100" cy="92" r="12" fill="url(#rocket-window-grad)" />
+        <circle cx="96" cy="88" r="4" fill="#FFFFFF" opacity="0.7" />
+
+        {/* Body highlight */}
+        <path
+          d="M 86 50 C 84 70, 84 110, 85 145"
+          stroke="#FFFFFF"
+          strokeWidth="3"
+          strokeLinecap="round"
+          opacity="0.35"
+          fill="none"
+        />
+
+        {/* Bottom rim */}
+        <rect
+          x="78"
+          y="148"
+          width="44"
+          height="4"
+          rx="1.5"
+          fill="#8C5A1F"
+          opacity="0.6"
+        />
+      </g>
+    </svg>
+  );
 }
 
 /* ============================================================
