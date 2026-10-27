@@ -14,6 +14,7 @@ import {
   UserCheck,
   Activity,
   Award,
+  Key, // <-- Added
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import LogoMark from "../../components/ui/LogoMark.jsx";
@@ -23,8 +24,9 @@ const NAV_ITEMS = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
   { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/roster", label: "Roster", icon: UserCheck },
+  { to: "/admin/gate", label: "Exam Gate", icon: Key }, // <-- Added here
   { to: "/admin/submissions", label: "Submissions", icon: FileText },
-  { to: "/admin/results", label: "Results", icon: Award }, // <-- Added here
+  { to: "/admin/results", label: "Results", icon: Award },
   { to: "/admin/questions", label: "Questions", icon: FileText },
   { to: "/admin/violations", label: "Violations", icon: ShieldAlert },
   { to: "/admin/audit", label: "Audit Trail", icon: Activity },

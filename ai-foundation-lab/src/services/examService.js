@@ -100,3 +100,9 @@ export async function submitExam(attemptId) {
   });
   return res;
 }
+
+
+export async function abandonExam() {
+  const res = await pb.send("/api/exam/abandon", { method: "POST" });
+  return res;
+}

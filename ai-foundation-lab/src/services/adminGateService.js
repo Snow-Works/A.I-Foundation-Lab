@@ -3,10 +3,6 @@ import pbAdmin from "../lib/pocketbaseAdmin";
 
 const COLLECTION = "gate_tokens";
 
-/**
- * Fetching all gate tokens, sorted by newest first.
- * Returns the full list of tokens for the admin history table.
- */
 export async function listGateTokens() {
   return pbAdmin.collection(COLLECTION).getFullList({
     sort: "-created",
@@ -14,16 +10,17 @@ export async function listGateTokens() {
 }
 
 /**
- * Generate a new gate token.
- * @param {number} expiryHours - How long the token is valid for.
- * @param {number} maxUses - How many students can use this link.
- * @returns {Object} The newly created token record.
+ * Generate a random hex string using the browser's native crypto API.
+ * (Replaces the Node.js crypto.randomBytes which crashed the browser).
  */
+function generateRandomToken(length = 24) {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export async function createGateToken(expiryHours, maxUses) {
-  // Generate a random 24-character hex string to act as the unique token
-  const token = crypto.randomBytes(24).toString("hex");
-  
-  // Calculate the exact expiry date based on the current time
+  const token = generateRandomToken(24);
   const expiresAt = new Date(Date.now() + expiryHours * 3600 * 1000).toISOString();
 
   return pbAdmin.collection(COLLECTION).create({
@@ -34,10 +31,6 @@ export async function createGateToken(expiryHours, maxUses) {
   });
 }
 
-/**
- * Revoke a token instantly.
- * Sets the 'revoked' flag to true, which the frontend checks when a student clicks the link.
- */
 export async function revokeGateToken(id) {
   return pbAdmin.collection(COLLECTION).update(id, {
     revoked: true,
