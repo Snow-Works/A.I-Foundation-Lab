@@ -6,11 +6,18 @@ const COLLECTION = "app_settings";
 /**
  * Get the single settings row.
  * Returns null if no settings row has been created yet.
- * Cached for 60 seconds in-memory to avoid hammering the backend.
+ *
+ * Cache TTL is 15 seconds (reduced from 60s to keep admin edits
+ * propagating quickly). Every consumer that must have the freshest
+ * value (community links, exam intro, etc.) already passes
+ * { force: true }, so this TTL mostly serves as a secondary safety
+ * net. The admin save handler also calls invalidateSettingsCache()
+ * after a successful update, guaranteeing a fresh read on the
+ * same browser.
  */
 let cache = null;
 let cacheTime = 0;
-const TTL_MS = 60_000;
+const TTL_MS = 15_000;
 
 export async function getAppSettings({ force = false } = {}) {
   const now = Date.now();
