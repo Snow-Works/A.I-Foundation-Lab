@@ -3,12 +3,15 @@ import { z } from "zod";
 
 /* ============================================================
    PHONE — E.164 validation
-   Accepts a formatted display value ("801 234 5678") plus a
-   country code, and validates the digit count.
    ============================================================ */
 
 const COUNTRY_DIGITS = {
-  NG: 10, US: 10, GB: 10, GH: 9, KE: 9, ZA: 9,
+  NG: 10,
+  US: 10,
+  GB: 10,
+  GH: 9,
+  KE: 9,
+  ZA: 9,
 };
 
 const phoneSchema = z
@@ -73,7 +76,11 @@ export const registerSchema = z
    ============================================================ */
 
 export const loginSchema = z.object({
-  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required.")
+    .email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 });
 
@@ -82,8 +89,24 @@ export const loginSchema = z.object({
    ============================================================ */
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required.")
+    .email("Enter a valid email address."),
 });
+
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters."),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 /* ============================================================
    HELPERS — turn Zod errors into RHF-compatible objects
