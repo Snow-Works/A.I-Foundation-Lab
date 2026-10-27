@@ -1,19 +1,7 @@
 /// <reference path="../pb_data/types.d.ts" />
 
-/// <reference path="../pb_data/types.d.ts" />
-
 /* ============================================================
    POST /api/exam/start
-   ------------------------------------------------------------
-   Creates a new attempt for the authenticated student.
-   Steps:
-     1. Auto-expire any stale in-progress attempts (sweeper).
-     2. Verify status = IDENTITY_CONFIRMED.
-     3. Enforce attempt_limit.
-     4. Reject if an attempt is already in progress (409).
-     5. Pick random questions from the active bank.
-     6. Create attempt + attempt_questions.
-     7. Set profile status = EXAM_IN_PROGRESS.
    ============================================================ */
 routerAdd("POST", "/api/exam/start", (c) => {
   try {
@@ -23,11 +11,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
       return c.json(401, { message: "Not authenticated as a student." });
     }
 
-    /* ---------- 1. AUTO-EXPIRY SWEEPER ----------
-       Close any in-progress attempts whose deadline has passed.
-       Prevents a student being permanently stuck if their browser
-       crashed mid-exam or they forgot to submit.
-       -------------------------------------------- */
+    /* ---------- 1. AUTO-EXPIRY SWEEPER ---------- */
     try {
       const expiredAttempts = $app.dao().findRecordsByFilter(
         "attempts",
@@ -50,7 +34,6 @@ routerAdd("POST", "/api/exam/start", (c) => {
         $app.dao().saveRecord(authRecord);
       }
     } catch (sweeperErr) {
-      // Never let the sweeper break the start flow
       console.warn("[exam/start] sweeper failed (continuing):", sweeperErr);
     }
 
@@ -215,9 +198,6 @@ routerAdd("POST", "/api/exam/start", (c) => {
 
 /* ============================================================
    GET /api/exam/resume
-   ------------------------------------------------------------
-   Returns the current in-progress attempt for the authenticated
-   student, along with the assigned questions and saved drafts.
    ============================================================ */
 routerAdd("GET", "/api/exam/resume", (c) => {
   try {
@@ -312,10 +292,6 @@ routerAdd("GET", "/api/exam/resume", (c) => {
 
 /* ============================================================
    POST /api/exam/violation
-   ------------------------------------------------------------
-   Logs a violation. Auto-terminates on:
-     - 2nd violation of any kind
-     - any fullscreen_exit event (bypasses two-strike rule)
    ============================================================ */
 routerAdd("POST", "/api/exam/violation", (c) => {
   try {
@@ -390,8 +366,6 @@ routerAdd("POST", "/api/exam/violation", (c) => {
 
 /* ============================================================
    POST /api/exam/submit
-   ------------------------------------------------------------
-   Finalizes the in-progress attempt. Idempotent.
    ============================================================ */
 routerAdd("POST", "/api/exam/submit", (c) => {
   try {
@@ -474,9 +448,6 @@ routerAdd("POST", "/api/exam/submit", (c) => {
 
 /* ============================================================
    POST /api/exam/abandon
-   ------------------------------------------------------------
-   Student discards active attempt and starts fresh.
-   Limited by profiles.resets_remaining (default 3).
    ============================================================ */
 routerAdd("POST", "/api/exam/abandon", (c) => {
   try {
@@ -530,12 +501,68 @@ routerAdd("POST", "/api/exam/abandon", (c) => {
 });
 
 /* ============================================================
-   GET /api/exam/result
+   GET /api/exam/meta
    ------------------------------------------------------------
-   Returns the student's most recent RELEASED attempt, with
-   safe question fields only (no rubric, no sample_solution).
-   The `questions` collection is now admins-only, so this is
-   the only way students can read question data post-release.
+   Safe public metadata for the exam intro screen. Returns only
+   the aggregate question count (no per-difficulty breakdown, no
+   rubric, no solution). Replaces the previous client-side reads
+   of `exam_blueprints` and `app_settings`, which depended on
+   collection rules that may tighten in the future.
+   ============================================================ */
+routerAdd("GET", "/api/exam/meta", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const authRecord = info.authRecord;
+    if (!authRecord || authRecord.collection().name !== "profiles") {
+      return c.json(401, { message: "Not authenticated as a student." });
+    }
+
+    let settings = null;
+    try {
+      const list = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0);
+      settings = list[0] || null;
+    } catch (_) {}
+
+    let blueprint = null;
+    try {
+      const bps = $app.dao().findRecordsByFilter(
+        "exam_blueprints",
+        "is_active = true",
+        "",
+        1,
+        0
+      );
+      blueprint = bps[0] || null;
+    } catch (_) {}
+
+    const questionCount = blueprint
+      ? (blueprint.get("easy_count") || 0) +
+        (blueprint.get("medium_count") || 0) +
+        (blueprint.get("hard_count") || 0)
+      : 25;
+
+    const durationMinutes = settings
+      ? settings.get("exam_duration_minutes") || 105
+      : 105;
+
+    const attemptLimit = settings ? settings.get("attempt_limit") || 2 : 2;
+
+    return c.json(200, {
+      question_count: questionCount,
+      duration_minutes: durationMinutes,
+      attempt_limit: attemptLimit,
+    });
+  } catch (err) {
+    console.error("[exam/meta] error:", err);
+    return c.json(500, {
+      message: "Failed to load exam meta.",
+      details: String(err),
+    });
+  }
+});
+
+/* ============================================================
+   GET /api/exam/result
    ============================================================ */
 routerAdd("GET", "/api/exam/result", (c) => {
   try {
@@ -665,14 +692,11 @@ routerAdd("GET", "/api/exam/result", (c) => {
 
 /* ============================================================
    GET /api/gate/validate?id=xxx
-   ------------------------------------------------------------
-   Public validation of a gate token. Returns minimal info only.
-   Idempotent for the current user if authenticated.
    ============================================================ */
 routerAdd("GET", "/api/gate/validate", (c) => {
   try {
     const info = $apis.requestInfo(c);
-    const authRecord = info.authRecord; // may be null
+    const authRecord = info.authRecord;
     const id = c.queryParam("id");
 
     if (!id) {
@@ -699,7 +723,6 @@ routerAdd("GET", "/api/gate/validate", (c) => {
 
     if (usedBy) {
       if (authRecord && authRecord.collection().name === "profiles" && usedBy === authRecord.id) {
-        // Same user returning — idempotent
         return c.json(200, { valid: true, already_claimed: true });
       }
       if (maxUses === 1) {
@@ -716,9 +739,6 @@ routerAdd("GET", "/api/gate/validate", (c) => {
 
 /* ============================================================
    POST /api/gate/claim
-   ------------------------------------------------------------
-   Claims a gate token for the authenticated student.
-   Idempotent: if already claimed by this user, returns success.
    ============================================================ */
 routerAdd("POST", "/api/gate/claim", (c) => {
   try {
@@ -784,10 +804,6 @@ routerAdd("POST", "/api/gate/claim", (c) => {
 
 /* ============================================================
    POST /api/admin/roster/upload
-   ------------------------------------------------------------
-   Bulk upload of roster entries. Admin only.
-   (Sweeper removed — it never belonged here and is now
-   correctly placed inside /api/exam/start.)
    ============================================================ */
 routerAdd("POST", "/api/admin/roster/upload", (c) => {
   try {
