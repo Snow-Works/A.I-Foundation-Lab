@@ -18,11 +18,8 @@ export default function FinalCTA() {
 
   return (
     <section id="final-cta" className="final-cta">
-        <section id="final-cta" className="final-cta">
-  <h2 className="sr-only">Ready to join the AI Foundation Lab</h2>
+      <h2 className="sr-only">Ready to join the AI Foundation Lab</h2>
 
-  {/* ... rest unchanged ... */}
-</section>
       {/* Layered background — mirrors the hero */}
       <div className="final-cta__bg" aria-hidden="true">
         <div className="final-cta__gradient" />
