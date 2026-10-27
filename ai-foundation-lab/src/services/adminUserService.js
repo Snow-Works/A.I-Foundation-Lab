@@ -1,5 +1,5 @@
 // src/services/adminUserService.js
-import pbAdmin from "../lib/pocketbaseAdmin";
+import pbAdmin from "../lib/pocketbase";
 import { logAdminAction } from "./adminAuditService.js";
 
 const PROFILES = "profiles";
@@ -76,6 +76,16 @@ export async function rejectUser(id, adminId, reason = "") {
   await logAdminAction("rejected_user", "profile", id, { email: updated.email, reason });
   
   return updated;
+}
+
+/* ------------------------------------------------------------
+   Delete a student and cascade cleanup via custom hook.
+   ------------------------------------------------------------ */
+export async function deleteUser(id) {
+  return pbAdmin.send("/api/admin/users/delete", {
+    method: "POST",
+    body: { userId: id },
+  });
 }
 
 /* ------------------------------------------------------------

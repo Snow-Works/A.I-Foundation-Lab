@@ -1,5 +1,7 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+/// <reference path="../pb_data/types.d.ts" />
+
 /* ============================================================
    POST /api/exam/start
    ============================================================ */
@@ -502,12 +504,6 @@ routerAdd("POST", "/api/exam/abandon", (c) => {
 
 /* ============================================================
    GET /api/exam/meta
-   ------------------------------------------------------------
-   Safe public metadata for the exam intro screen. Returns only
-   the aggregate question count (no per-difficulty breakdown, no
-   rubric, no solution). Replaces the previous client-side reads
-   of `exam_blueprints` and `app_settings`, which depended on
-   collection rules that may tighten in the future.
    ============================================================ */
 routerAdd("GET", "/api/exam/meta", (c) => {
   try {
@@ -887,9 +883,127 @@ routerAdd("POST", "/api/admin/roster/upload", (c) => {
 });
 
 /* ============================================================
+   POST /api/admin/users/delete
+   ------------------------------------------------------------
+   Deletes a student profile and cascades cleanup of all
+   related records (attempts, answers, marks, etc).
+   Admin only.
+   ============================================================ */
+routerAdd("POST", "/api/admin/users/delete", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const adminRecord = info.authRecord;
+    if (!adminRecord || adminRecord.collection().name !== "admins") {
+      return c.json(401, { message: "Not authenticated as an admin." });
+    }
+
+    const data = info.data || {};
+    const userId = data.userId;
+    if (!userId) {
+      return c.json(400, { message: "Missing userId." });
+    }
+
+    // Prevent admin from deleting themselves (safety)
+    // Note: admins and students are different collections, but this is a good guard anyway
+    if (userId === adminRecord.id) {
+      return c.json(400, { message: "You cannot delete your own admin account." });
+    }
+
+    let userRecord;
+    try {
+      userRecord = $app.dao().findRecordById("profiles", userId);
+    } catch (_) {
+      return c.json(404, { message: "User not found." });
+    }
+
+    try {
+      // 1. Delete marks
+      const marks = $app.dao().findRecordsByFilter(
+        "marks",
+        "attempt_question.attempt.student = {:userId}",
+        "", 0, 0, { userId }
+      );
+      for (const m of marks) $app.dao().deleteRecord(m);
+
+      // 2. Delete answers
+      const answers = $app.dao().findRecordsByFilter(
+        "answers",
+        "student = {:userId}",
+        "", 0, 0, { userId }
+      );
+      for (const a of answers) $app.dao().deleteRecord(a);
+
+      // 3. Delete attempt_questions
+      const aqs = $app.dao().findRecordsByFilter(
+        "attempt_questions",
+        "attempt.student = {:userId}",
+        "", 0, 0, { userId }
+      );
+      for (const aq of aqs) $app.dao().deleteRecord(aq);
+
+      // 4. Delete violations
+      const violations = $app.dao().findRecordsByFilter(
+        "violations",
+        "student = {:userId}",
+        "", 0, 0, { userId }
+      );
+      for (const v of violations) $app.dao().deleteRecord(v);
+
+      // 5. Delete attempts
+      const attempts = $app.dao().findRecordsByFilter(
+        "attempts",
+        "student = {:userId}",
+        "", 0, 0, { userId }
+      );
+      for (const at of attempts) $app.dao().deleteRecord(at);
+
+      // 6. Nullify gate_tokens.used_by
+      const tokens = $app.dao().findRecordsByFilter(
+        "gate_tokens",
+        "used_by = {:userId}",
+        "", 0, 0, { userId }
+      );
+      for (const t of tokens) {
+        t.set("used_by", "");
+        $app.dao().saveRecord(t);
+      }
+
+      // 7. Capture details for audit log before deleting
+      const userEmail = userRecord.get("email");
+      const userName = userRecord.get("first_name") + " " + userRecord.get("surname");
+
+      // 8. Delete profile
+      $app.dao().deleteRecord(userRecord);
+
+      // 9. Audit log
+      try {
+        const auditCollection = $app.dao().findCollectionByNameOrId("audit_log");
+        const log = new Record(auditCollection);
+        log.set("actor", adminRecord.get("name") || adminRecord.get("email"));
+        log.set("actor_type", "admin");
+        log.set("action", "deleted_user");
+        log.set("target_type", "profile");
+        log.set("target_id", userId);
+        log.set("details", { email: userEmail, name: userName });
+        log.set("occurred_at", new Date().toISOString());
+        $app.dao().saveRecord(log);
+      } catch (auditErr) {
+        console.error("[admin/delete-user] audit log failed:", auditErr);
+      }
+
+      return c.json(200, { success: true });
+    } catch (err) {
+      console.error("[admin/delete-user] error:", err);
+      return c.json(500, { message: "Failed to delete user.", details: String(err) });
+    }
+  } catch (err) {
+    console.error("[admin/delete-user] outer error:", err);
+    return c.json(500, { message: "Internal error.", details: String(err) });
+  }
+});
+
+/* ============================================================
    Roster enforcement on profile creation.
-   Only runs when app_settings.require_roster_match = true.
-   Fails open (allows) on any error.
    ============================================================ */
 onRecordBeforeCreateRequest((e) => {
   if (e.collection.name !== "profiles") return;

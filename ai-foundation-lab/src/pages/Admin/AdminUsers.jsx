@@ -14,12 +14,14 @@ import {
   Calendar,
   AlertTriangle,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import {
   listUsers,
   approveUser,
   rejectUser,
+  deleteUser,
   adminPhotoUrl,
 } from "../../services/adminUserService.js";
 import Card from "../../components/ui/Card.jsx";
@@ -76,6 +78,8 @@ export default function AdminUsers() {
   const [approveTarget, setApproveTarget] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  
   const [actionPending, setActionPending] = useState(false);
   const [actionError, setActionError] = useState("");
 
@@ -126,6 +130,11 @@ export default function AdminUsers() {
     setRejectTarget(user);
   };
 
+  const openDelete = (user) => {
+    setActionError("");
+    setDeleteTarget(user);
+  };
+
   const confirmApprove = async () => {
     if (!approveTarget) return;
     setActionPending(true);
@@ -153,6 +162,28 @@ export default function AdminUsers() {
     } catch (err) {
       console.error("[admin-users] reject error:", err);
       setActionError(err?.response?.message || "Could not reject this user.");
+    } finally {
+      setActionPending(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setActionPending(true);
+    setActionError("");
+    try {
+      await deleteUser(deleteTarget.id);
+      setDeleteTarget(null);
+      
+      // If we just deleted the only user on a page > 1, go back a page
+      if (users.length === 1 && page > 1) {
+        setPage((p) => p - 1);
+      } else {
+        await fetchUsers();
+      }
+    } catch (err) {
+      console.error("[admin-users] delete error:", err);
+      setActionError(err?.response?.message || "Could not delete this user.");
     } finally {
       setActionPending(false);
     }
@@ -348,6 +379,19 @@ export default function AdminUsers() {
                               Reject
                             </button>
                           )}
+                          
+                          {/* Delete Button (Icon Only, Red) */}
+                          {admin && user.id !== admin.id && (
+                            <button
+                              type="button"
+                              className="admin-action-btn admin-action-btn--reject"
+                              onClick={() => openDelete(user)}
+                              title="Delete User"
+                              style={{ padding: "5px 8px" }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -436,6 +480,28 @@ export default function AdminUsers() {
             minRows={3}
           />
         </div>
+        {actionError && (
+          <div className="admin-users__modal-error">{actionError}</div>
+        )}
+      </AlertModal>
+
+      {/* Delete modal */}
+      <AlertModal
+        open={!!deleteTarget}
+        onClose={() => !actionPending && setDeleteTarget(null)}
+        tone="danger"
+        title="Delete this user permanently?"
+        description={
+          deleteTarget
+            ? `${deleteTarget.first_name || deleteTarget.email} will be permanently deleted, along with all their exam attempts, answers, and marks. This action cannot be undone.`
+            : ""
+        }
+        confirmLabel={actionPending ? "Deleting…" : "Delete permanently"}
+        onConfirm={confirmDelete}
+        showCancel
+        closeOnBackdrop={!actionPending}
+        closeOnEsc={!actionPending}
+      >
         {actionError && (
           <div className="admin-users__modal-error">{actionError}</div>
         )}

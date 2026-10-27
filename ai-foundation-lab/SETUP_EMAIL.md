@@ -1,12 +1,14 @@
-# Email Setup — Password Reset & Verification
+# Email Setup — Password Reset, Verification & Notifications
 
-AI Foundation Lab sends three types of emails from PocketBase:
+AI Foundation Lab sends five types of emails from PocketBase:
 
-1. **Email verification** — sent on registration
-2. **Password reset** — sent via `/forgot-password`
-3. **Auth alerts** (optional) — sent on new device logins
+1. **Email verification** — sent on registration (built-in)
+2. **Password reset** — sent via `/forgot-password` (built-in)
+3. **Account approved** — sent automatically when admin approves (custom hook)
+4. **Account rejected** — sent automatically when admin rejects (custom hook)
+5. **Results released** — sent automatically when admin releases marks (custom hook)
 
-By default, PocketBase's email links point at its own admin UI, not your app. **You must configure this once** so links go to your frontend.
+---
 
 ## Development (no SMTP — emails go to terminal)
 
