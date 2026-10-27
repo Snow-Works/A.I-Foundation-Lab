@@ -1,20 +1,32 @@
-/* src/styles/admin-tables.css */
-@import "./styles/global.css";
-@import "./styles/admin-tables.css";
+/* src/styles/admin-tables.css
+   ------------------------------------------------------------
+   Opt-in utilities for the admin data tables.
 
-/* Universal fix for all admin data tables on mobile */
+   Not imported by any page currently. If you want the iOS
+   momentum-scroll and right-edge gradient hint on admin
+   tables, import this file once from `src/styles/global.css`:
+
+       @import "./admin-tables.css";
+
+   Per-page CSS files already handle their own overflow and
+   min-width values, so those rules are intentionally NOT
+   duplicated here.
+   ------------------------------------------------------------ */
+
+/* Smooth touch scrolling + breathing room for the scrollbar */
 .admin-users__table-wrap,
 .admin-questions__table-wrap,
 .admin-roster__table-wrap,
 .admin-submissions__table-wrap,
 .admin-violations__table-wrap,
 .admin-audit__table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  padding-bottom: var(--space-2); /* Gives breathing room for the scrollbar */
+  position: relative; /* anchors the ::after gradient below */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-2);
 }
 
-/* Add a subtle gradient fade on the right edge to indicate more content */
+/* Right-edge gradient hint that indicates more columns
+   are available by scrolling horizontally */
 .admin-users__table-wrap::after,
 .admin-questions__table-wrap::after,
 .admin-roster__table-wrap::after,
@@ -25,18 +37,10 @@
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--space-2); /* stop above the scrollbar padding */
   width: 20px;
   background: linear-gradient(to right, transparent, rgba(10, 6, 48, 0.8));
   pointer-events: none;
-}
-
-/* Ensure all tables have a sensible minimum width so they don't squish */
-.admin-users__table,
-.admin-questions__table,
-.admin-roster__table,
-.admin-submissions__table,
-.admin-violations__table,
-.admin-audit__table {
-  min-width: 700px;
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
 }
