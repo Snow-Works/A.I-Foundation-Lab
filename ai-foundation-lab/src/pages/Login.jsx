@@ -39,10 +39,6 @@ export default function Login() {
       const auth = await authService.login(values.email, values.password);
       console.log("[login] success:", auth);
 
-      // No refresh() call needed.
-      // authWithPassword already populated pb.authStore,
-      // and AuthContext's onChange listener will fire immediately.
-
       const from = location.state?.from || "/profile";
       navigate(from, { replace: true });
     } catch (err) {
@@ -109,6 +105,22 @@ export default function Login() {
                 )}
               />
             </Field>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: "calc(-1 * var(--space-2))",
+              }}
+            >
+              <Link
+                to="/forgot-password"
+                className="register__footer-link"
+                style={{ fontSize: "var(--fs-sm)" }}
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             {formError && (
               <div className="register__form-error" role="alert">
