@@ -1,59 +1,70 @@
 // src/services/examService.js
 import pb from "../lib/pocketbase";
 
-const GATE_COLLECTION = "gate_tokens";
 const PROFILES_COLLECTION = "profiles";
 
 /* ------------------------------------------------------------
-   GATE TOKEN
+   GATE TOKEN — server-validated, never read directly
    ------------------------------------------------------------ */
 
-export async function getGateToken(recordId) {
-  return pb.collection(GATE_COLLECTION).getOne(recordId);
+/**
+ * Validate a gate token by id. Public route.
+ * Returns { valid: true } | { valid: false, reason: "..." }
+ * Reasons: not_found | revoked | expired | already_used
+ */
+export async function validateGateTokenById(recordId) {
+  return pb.send(`/api/gate/validate?id=${encodeURIComponent(recordId)}`, {
+    method: "GET",
+  });
 }
 
-export function validateGateToken(record) {
-  if (!record) return { valid: false, reason: "not_found" };
-  if (record.revoked) return { valid: false, reason: "revoked" };
-
-  const now = new Date();
-  const expires = new Date(record.expires_at);
-  if (expires < now) return { valid: false, reason: "expired" };
-
-  if (record.used_by && record.max_uses === 1) {
-    return { valid: false, reason: "already_used" };
-  }
-
-  return { valid: true };
+/**
+ * Claim a gate token for the currently authenticated student.
+ * Must be called AFTER authWithPassword.
+ */
+export async function claimGateToken(recordId) {
+  return pb.send("/api/gate/claim", {
+    method: "POST",
+    body: { recordId },
+  });
 }
 
+/**
+ * Authenticate the student, claim the gate token, and transition
+ * their profile to IDENTITY_CONFIRMED. All in one call.
+ *
+ * Throws an Error with a user-friendly message if the token is
+ * not usable.
+ */
 export async function confirmIdentityAndClaimToken({
   recordId,
   email,
   password,
 }) {
-  const auth = await pb
-    .collection(PROFILES_COLLECTION)
-    .authWithPassword(email, password);
+  // 1. Authenticate with PocketBase's native endpoint
+  await pb.collection(PROFILES_COLLECTION).authWithPassword(email, password);
 
-  const user = pb.authStore.model || auth?.record || auth?.model;
-  if (!user) throw new Error("Authentication did not return a user.");
+  // 2. Claim the gate token (server verifies used_by, revoked, expiry)
+  const result = await claimGateToken(recordId);
 
-  await pb.collection(GATE_COLLECTION).update(recordId, {
-    used_by: user.id,
-    used_at: new Date().toISOString(),
-  });
-
-  const updated = await pb.collection(PROFILES_COLLECTION).update(user.id, {
-    status: "IDENTITY_CONFIRMED",
-    identity_confirmed_at: new Date().toISOString(),
-  });
-
-  if (pb.authStore.model?.id === user.id) {
-    pb.authStore.save(pb.authStore.token, updated);
+  if (!result.valid) {
+    const reasonMessages = {
+      not_found: "This exam link doesn't exist.",
+      revoked: "This exam link has been cancelled.",
+      expired: "This exam link has expired.",
+      already_used: "This exam link has already been used.",
+    };
+    throw new Error(reasonMessages[result.reason] || "This link is not valid.");
   }
 
-  return { user: updated };
+  // 3. Refresh local auth store so the client sees the updated status
+  try {
+    await pb.collection(PROFILES_COLLECTION).authRefresh();
+  } catch (_) {
+    // Non-fatal — the claim succeeded server-side
+  }
+
+  return result;
 }
 
 /* ------------------------------------------------------------
@@ -62,47 +73,46 @@ export async function confirmIdentityAndClaimToken({
 
 /**
  * Start a new exam attempt.
- * Calls the server-side hook that:
- *   - validates eligibility
- *   - picks random questions
- *   - creates the attempt
- *   - returns { attempt, questions, drafts }
- *
- * Throws ClientResponseError on failure.
- *   - err.status === 409 → already have an attempt in progress
- *   - err.status === 403 → not eligible
- *   - err.status === 400 → not enough questions
+ * Server: validates eligibility, picks random questions, creates attempt.
+ * Errors:
+ *   409 -> attempt already in progress (err.response.data.attemptId)
+ *   403 -> not eligible / attempts exhausted
+ *   400 -> not enough questions in bank
  */
 export async function startExam() {
-  const res = await pb.send("/api/exam/start", { method: "POST" });
-  return res;
+  return pb.send("/api/exam/start", { method: "POST" });
 }
 
 /**
  * Resume the current in-progress attempt.
- * Returns { attempt, questions, drafts }.
- * Throws ClientResponseError(404) if no attempt is in progress.
+ * Throws 404 if nothing in progress.
  */
 export async function resumeExam() {
-  const res = await pb.send("/api/exam/resume", { method: "GET" });
-  return res;
+  return pb.send("/api/exam/resume", { method: "GET" });
 }
 
-
 /**
- * Submit the given attempt. Finalizes all drafts server-side.
- * Returns { attempt_id, submitted_at, answers_finalized, already_submitted? }.
+ * Submit an attempt. Idempotent.
  */
 export async function submitExam(attemptId) {
-  const res = await pb.send("/api/exam/submit", {
+  return pb.send("/api/exam/submit", {
     method: "POST",
     body: { attempt: attemptId },
   });
-  return res;
 }
 
-
+/**
+ * Abandon the current attempt and start fresh (limited by resets).
+ */
 export async function abandonExam() {
-  const res = await pb.send("/api/exam/abandon", { method: "POST" });
-  return res;
+  return pb.send("/api/exam/abandon", { method: "POST" });
+}
+
+/**
+ * Fetch the student's most recent released result with safe
+ * question fields. Returns null if no released attempt exists.
+ */
+export async function getReleasedResult() {
+  const res = await pb.send("/api/exam/result", { method: "GET" });
+  return res.result || null;
 }
