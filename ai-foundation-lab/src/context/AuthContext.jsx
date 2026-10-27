@@ -1,6 +1,42 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import pb from "../lib/pocketbase";
+
+/* ------------------------------------------------------------
+   Canonical profile status list (mirrors the migrations).
+   Consumers import this to avoid typos and to iterate status
+   values in dropdowns/filters.
+   ------------------------------------------------------------ */
+export const PROFILE_STATUSES = [
+  "REGISTERED",
+  "EMAIL_VERIFIED",
+  "APPROVED",
+  "PHOTO_VERIFIED",
+  "COMMUNITY_UNLOCKED",
+  "IDENTITY_CONFIRMED",
+  "EXAM_IN_PROGRESS",
+  "SUBMITTED",
+  "MARKED",
+  "REJECTED",
+];
+
+/* ------------------------------------------------------------
+   getDisplayStatus — normalizes stored status for UI display.
+   PHOTO_VERIFIED is displayed as COMMUNITY_UNLOCKED so the
+   ProgressTracker shows the "Community" step as the student's
+   current position (they've already completed photo verification).
+   The underlying stored status is not changed.
+   ------------------------------------------------------------ */
+export function getDisplayStatus(status) {
+  if (status === "PHOTO_VERIFIED") return "COMMUNITY_UNLOCKED";
+  return status;
+}
 
 const AuthContext = createContext(null);
 
