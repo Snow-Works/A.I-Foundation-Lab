@@ -1,7 +1,19 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+/// <reference path="../pb_data/types.d.ts" />
+
 /* ============================================================
    POST /api/exam/start
+   ------------------------------------------------------------
+   Creates a new attempt for the authenticated student.
+   Steps:
+     1. Auto-expire any stale in-progress attempts (sweeper).
+     2. Verify status = IDENTITY_CONFIRMED.
+     3. Enforce attempt_limit.
+     4. Reject if an attempt is already in progress (409).
+     5. Pick random questions from the active bank.
+     6. Create attempt + attempt_questions.
+     7. Set profile status = EXAM_IN_PROGRESS.
    ============================================================ */
 routerAdd("POST", "/api/exam/start", (c) => {
   try {
@@ -11,6 +23,38 @@ routerAdd("POST", "/api/exam/start", (c) => {
       return c.json(401, { message: "Not authenticated as a student." });
     }
 
+    /* ---------- 1. AUTO-EXPIRY SWEEPER ----------
+       Close any in-progress attempts whose deadline has passed.
+       Prevents a student being permanently stuck if their browser
+       crashed mid-exam or they forgot to submit.
+       -------------------------------------------- */
+    try {
+      const expiredAttempts = $app.dao().findRecordsByFilter(
+        "attempts",
+        "student = {:student} && status = 'in_progress' && deadline_at < {:now}",
+        "",
+        0,
+        0,
+        { student: authRecord.id, now: new Date().toISOString() }
+      );
+
+      for (const expired of expiredAttempts) {
+        expired.set("status", "submitted");
+        expired.set("submitted_at", expired.get("deadline_at"));
+        expired.set("auto_terminated", true);
+        $app.dao().saveRecord(expired);
+      }
+
+      if (expiredAttempts.length > 0 && authRecord.get("status") === "EXAM_IN_PROGRESS") {
+        authRecord.set("status", "IDENTITY_CONFIRMED");
+        $app.dao().saveRecord(authRecord);
+      }
+    } catch (sweeperErr) {
+      // Never let the sweeper break the start flow
+      console.warn("[exam/start] sweeper failed (continuing):", sweeperErr);
+    }
+
+    /* ---------- 2. ELIGIBILITY ---------- */
     if (authRecord.get("status") !== "IDENTITY_CONFIRMED") {
       return c.json(403, {
         message: "You must confirm your identity before starting the exam.",
@@ -40,6 +84,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
       });
     }
 
+    /* ---------- 3. EXISTING IN-PROGRESS CHECK ---------- */
     const existing = $app.dao().findRecordsByFilter(
       "attempts",
       "student = {:student} && status = 'in_progress'",
@@ -48,15 +93,15 @@ routerAdd("POST", "/api/exam/start", (c) => {
       0,
       { student: authRecord.id }
     );
-    
 
     if (existing.length > 0) {
       return c.json(409, {
         message: "You already have an attempt in progress.",
-        data: { attemptId: existing[0].id }, // <-- Wrapped in data
+        data: { attemptId: existing[0].id },
       });
     }
 
+    /* ---------- 4. BLUEPRINT + QUESTION BANK ---------- */
     let blueprint = null;
     try {
       const bps = $app.dao().findRecordsByFilter(
@@ -73,7 +118,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
       ? (blueprint.get("easy_count") || 0) +
         (blueprint.get("medium_count") || 0) +
         (blueprint.get("hard_count") || 0)
-      : 15;
+      : 25;
 
     const allActive = $app.dao().findRecordsByFilter(
       "questions",
@@ -89,6 +134,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
       });
     }
 
+    /* ---------- 5. FISHER-YATES SHUFFLE ---------- */
     const shuffled = allActive.slice();
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -106,6 +152,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
       startedAt.getTime() + durationMinutes * 60 * 1000
     );
 
+    /* ---------- 6. CREATE ATTEMPT ---------- */
     const attemptsCollection = $app.dao().findCollectionByNameOrId("attempts");
     const attempt = new Record(attemptsCollection);
     attempt.set("student", authRecord.id);
@@ -118,6 +165,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
     attempt.set("auto_terminated", false);
     $app.dao().saveRecord(attempt);
 
+    /* ---------- 7. ASSIGN QUESTIONS ---------- */
     const aqCollection = $app
       .dao()
       .findCollectionByNameOrId("attempt_questions");
@@ -169,8 +217,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
    GET /api/exam/resume
    ------------------------------------------------------------
    Returns the current in-progress attempt for the authenticated
-   user, along with the assigned questions and any saved drafts.
-   Used when the student refreshes the page or returns later.
+   student, along with the assigned questions and saved drafts.
    ============================================================ */
 routerAdd("GET", "/api/exam/resume", (c) => {
   try {
@@ -180,7 +227,6 @@ routerAdd("GET", "/api/exam/resume", (c) => {
       return c.json(401, { message: "Not authenticated as a student." });
     }
 
-    // 1. Find in-progress attempt
     const attempts = $app.dao().findRecordsByFilter(
       "attempts",
       "student = {:student} && status = 'in_progress'",
@@ -196,7 +242,6 @@ routerAdd("GET", "/api/exam/resume", (c) => {
 
     const attempt = attempts[0];
 
-    // 2. Load attempt_questions
     const aqList = $app.dao().findRecordsByFilter(
       "attempt_questions",
       "attempt = {:attempt}",
@@ -206,7 +251,6 @@ routerAdd("GET", "/api/exam/resume", (c) => {
       { attempt: attempt.id }
     );
 
-    // 3. Load questions and drafts
     const questionsPayload = [];
     const draftsPayload = [];
 
@@ -227,7 +271,6 @@ routerAdd("GET", "/api/exam/resume", (c) => {
         order: aq.get("order"),
       });
 
-      // Look for a saved draft for this question
       try {
         const drafts = $app.dao().findRecordsByFilter(
           "answers",
@@ -267,17 +310,12 @@ routerAdd("GET", "/api/exam/resume", (c) => {
   }
 });
 
-
-
-
 /* ============================================================
    POST /api/exam/violation
    ------------------------------------------------------------
-   Logs a violation against the student's in-progress attempt.
-   Increments the attempt's violation_count.
-   Auto-terminates on:
+   Logs a violation. Auto-terminates on:
      - 2nd violation of any kind
-     - any fullscreen_exit event (bypasses the two-strike rule)
+     - any fullscreen_exit event (bypasses two-strike rule)
    ============================================================ */
 routerAdd("POST", "/api/exam/violation", (c) => {
   try {
@@ -350,16 +388,10 @@ routerAdd("POST", "/api/exam/violation", (c) => {
   }
 });
 
-
-
 /* ============================================================
    POST /api/exam/submit
    ------------------------------------------------------------
-   Finalizes the student's in-progress attempt:
-     - marks all drafts as submitted
-     - sets attempts.status = 'submitted'
-     - sets profiles.status = 'SUBMITTED'
-   Idempotent: safe to call twice.
+   Finalizes the in-progress attempt. Idempotent.
    ============================================================ */
 routerAdd("POST", "/api/exam/submit", (c) => {
   try {
@@ -388,7 +420,6 @@ routerAdd("POST", "/api/exam/submit", (c) => {
 
     const status = attempt.get("status");
     if (status === "submitted" || status === "marked" || status === "released") {
-      // Idempotent — already submitted. Return success.
       return c.json(200, {
         attempt_id: attemptId,
         submitted_at: attempt.get("submitted_at"),
@@ -405,7 +436,6 @@ routerAdd("POST", "/api/exam/submit", (c) => {
 
     const now = new Date().toISOString();
 
-    // Finalize all drafts
     const drafts = $app.dao().findRecordsByFilter(
       "answers",
       "attempt = {:attempt} && is_draft = true",
@@ -421,12 +451,10 @@ routerAdd("POST", "/api/exam/submit", (c) => {
       $app.dao().saveRecord(d);
     }
 
-    // Update attempt
     attempt.set("status", "submitted");
     attempt.set("submitted_at", now);
     $app.dao().saveRecord(attempt);
 
-    // Update profile
     authRecord.set("status", "SUBMITTED");
     $app.dao().saveRecord(authRecord);
 
@@ -444,11 +472,322 @@ routerAdd("POST", "/api/exam/submit", (c) => {
   }
 });
 
+/* ============================================================
+   POST /api/exam/abandon
+   ------------------------------------------------------------
+   Student discards active attempt and starts fresh.
+   Limited by profiles.resets_remaining (default 3).
+   ============================================================ */
+routerAdd("POST", "/api/exam/abandon", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const authRecord = info.authRecord;
 
+    if (!authRecord || authRecord.collection().name !== "profiles") {
+      return c.json(401, { message: "Not authenticated as a student." });
+    }
 
+    const resets = authRecord.get("resets_remaining");
+    const currentResets = resets === null || resets === undefined ? 3 : resets;
+
+    if (currentResets <= 0) {
+      return c.json(403, {
+        message: "You have no resets remaining. You must resume your active exam.",
+      });
+    }
+
+    const attempts = $app.dao().findRecordsByFilter(
+      "attempts",
+      "student = {:student} && status = 'in_progress'",
+      "",
+      1,
+      0,
+      { student: authRecord.id }
+    );
+
+    if (attempts.length > 0) {
+      const oldAttempt = attempts[0];
+      oldAttempt.set("status", "submitted");
+      oldAttempt.set("auto_terminated", true);
+      $app.dao().saveRecord(oldAttempt);
+    }
+
+    authRecord.set("resets_remaining", currentResets - 1);
+    authRecord.set("status", "IDENTITY_CONFIRMED");
+    $app.dao().saveRecord(authRecord);
+
+    return c.json(200, {
+      success: true,
+      resets_remaining: currentResets - 1,
+    });
+  } catch (err) {
+    console.error("[exam/abandon] error:", err);
+    return c.json(500, {
+      message: "Failed to abandon exam.",
+      details: String(err),
+    });
+  }
+});
+
+/* ============================================================
+   GET /api/exam/result
+   ------------------------------------------------------------
+   Returns the student's most recent RELEASED attempt, with
+   safe question fields only (no rubric, no sample_solution).
+   The `questions` collection is now admins-only, so this is
+   the only way students can read question data post-release.
+   ============================================================ */
+routerAdd("GET", "/api/exam/result", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const authRecord = info.authRecord;
+    if (!authRecord || authRecord.collection().name !== "profiles") {
+      return c.json(401, { message: "Not authenticated as a student." });
+    }
+
+    const attempts = $app.dao().findRecordsByFilter(
+      "attempts",
+      "student = {:student} && status = 'released'",
+      "-updated",
+      1,
+      0,
+      { student: authRecord.id }
+    );
+
+    if (attempts.length === 0) {
+      return c.json(200, { result: null });
+    }
+
+    const attempt = attempts[0];
+
+    const aqList = $app.dao().findRecordsByFilter(
+      "attempt_questions",
+      "attempt = {:attempt}",
+      "order",
+      0,
+      0,
+      { attempt: attempt.id }
+    );
+
+    let totalScore = 0;
+    let maxScore = 0;
+    const questions = [];
+
+    for (const aq of aqList) {
+      let q;
+      try {
+        q = $app.dao().findRecordById("questions", aq.get("question"));
+      } catch (_) {
+        continue;
+      }
+
+      let answerBody = "";
+      try {
+        const answers = $app.dao().findRecordsByFilter(
+          "answers",
+          "attempt = {:attempt} && question = {:question}",
+          "",
+          1,
+          0,
+          { attempt: attempt.id, question: q.id }
+        );
+        if (answers.length > 0) answerBody = answers[0].get("body") || "";
+      } catch (_) {}
+
+      let mark = null;
+      try {
+        const marks = $app.dao().findRecordsByFilter(
+          "marks",
+          "attempt_question = {:aq}",
+          "",
+          1,
+          0,
+          { aq: aq.id }
+        );
+        if (marks.length > 0) {
+          const m = marks[0];
+          const score = Number(m.get("score")) || 0;
+          const max = Number(m.get("max_score")) || 10;
+          mark = {
+            score,
+            max_score: max,
+            comment: m.get("comment") || "",
+          };
+          totalScore += score;
+          maxScore += max;
+        }
+      } catch (_) {}
+
+      questions.push({
+        attempt_question_id: aq.id,
+        order: aq.get("order"),
+        question: {
+          id: q.id,
+          title: q.get("title"),
+          prompt: q.get("prompt"),
+          difficulty: q.get("difficulty"),
+          topic: q.get("topic") || "",
+        },
+        answer: answerBody,
+        mark,
+      });
+    }
+
+    return c.json(200, {
+      result: {
+        attempt: {
+          id: attempt.id,
+          status: attempt.get("status"),
+          submitted_at: attempt.get("submitted_at"),
+          updated: attempt.get("updated"),
+        },
+        student: {
+          id: authRecord.id,
+          email: authRecord.get("email"),
+          first_name: authRecord.get("first_name"),
+          middle_name: authRecord.get("middle_name") || "",
+          surname: authRecord.get("surname"),
+        },
+        questions,
+        totalScore,
+        maxScore,
+        passed: totalScore >= 180,
+      },
+    });
+  } catch (err) {
+    console.error("[exam/result] error:", err);
+    return c.json(500, {
+      message: "Failed to load result.",
+      details: String(err),
+    });
+  }
+});
+
+/* ============================================================
+   GET /api/gate/validate?id=xxx
+   ------------------------------------------------------------
+   Public validation of a gate token. Returns minimal info only.
+   Idempotent for the current user if authenticated.
+   ============================================================ */
+routerAdd("GET", "/api/gate/validate", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const authRecord = info.authRecord; // may be null
+    const id = c.queryParam("id");
+
+    if (!id) {
+      return c.json(400, { message: "Missing id." });
+    }
+
+    let record;
+    try {
+      record = $app.dao().findRecordById("gate_tokens", id);
+    } catch (_) {
+      return c.json(200, { valid: false, reason: "not_found" });
+    }
+
+    if (record.get("revoked")) {
+      return c.json(200, { valid: false, reason: "revoked" });
+    }
+
+    if (new Date(record.get("expires_at")) < new Date()) {
+      return c.json(200, { valid: false, reason: "expired" });
+    }
+
+    const usedBy = record.get("used_by");
+    const maxUses = record.get("max_uses") || 1;
+
+    if (usedBy) {
+      if (authRecord && authRecord.collection().name === "profiles" && usedBy === authRecord.id) {
+        // Same user returning — idempotent
+        return c.json(200, { valid: true, already_claimed: true });
+      }
+      if (maxUses === 1) {
+        return c.json(200, { valid: false, reason: "already_used" });
+      }
+    }
+
+    return c.json(200, { valid: true });
+  } catch (err) {
+    console.error("[gate/validate] error:", err);
+    return c.json(500, { message: "Validation failed.", details: String(err) });
+  }
+});
+
+/* ============================================================
+   POST /api/gate/claim
+   ------------------------------------------------------------
+   Claims a gate token for the authenticated student.
+   Idempotent: if already claimed by this user, returns success.
+   ============================================================ */
+routerAdd("POST", "/api/gate/claim", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const authRecord = info.authRecord;
+    if (!authRecord || authRecord.collection().name !== "profiles") {
+      return c.json(401, { message: "Not authenticated as a student." });
+    }
+
+    const data = info.data || {};
+    const recordId = data.recordId;
+    if (!recordId) {
+      return c.json(400, { message: "Missing recordId." });
+    }
+
+    let record;
+    try {
+      record = $app.dao().findRecordById("gate_tokens", recordId);
+    } catch (_) {
+      return c.json(200, { valid: false, reason: "not_found" });
+    }
+
+    if (record.get("revoked")) {
+      return c.json(200, { valid: false, reason: "revoked" });
+    }
+
+    if (new Date(record.get("expires_at")) < new Date()) {
+      return c.json(200, { valid: false, reason: "expired" });
+    }
+
+    const usedBy = record.get("used_by");
+    const maxUses = record.get("max_uses") || 1;
+
+    if (usedBy && usedBy !== authRecord.id && maxUses === 1) {
+      return c.json(200, { valid: false, reason: "already_used" });
+    }
+
+    if (!usedBy) {
+      record.set("used_by", authRecord.id);
+      record.set("used_at", new Date().toISOString());
+      $app.dao().saveRecord(record);
+    }
+
+    authRecord.set("status", "IDENTITY_CONFIRMED");
+    authRecord.set("identity_confirmed_at", new Date().toISOString());
+    $app.dao().saveRecord(authRecord);
+
+    return c.json(200, {
+      valid: true,
+      user: {
+        id: authRecord.id,
+        email: authRecord.get("email"),
+        first_name: authRecord.get("first_name"),
+        surname: authRecord.get("surname"),
+        status: authRecord.get("status"),
+      },
+    });
+  } catch (err) {
+    console.error("[gate/claim] error:", err);
+    return c.json(500, { message: "Claim failed.", details: String(err) });
+  }
+});
 
 /* ============================================================
    POST /api/admin/roster/upload
+   ------------------------------------------------------------
+   Bulk upload of roster entries. Admin only.
+   (Sweeper removed — it never belonged here and is now
+   correctly placed inside /api/exam/start.)
    ============================================================ */
 routerAdd("POST", "/api/admin/roster/upload", (c) => {
   try {
@@ -466,31 +805,15 @@ routerAdd("POST", "/api/admin/roster/upload", (c) => {
 
     const rosterCollection = $app.dao().findCollectionByNameOrId("roster");
 
-    // Get all existing records safely
     let existingKeys = new Set();
     try {
-
-
-          // --- AUTO-EXPIRY SWEEPER (Step 9.3) ---
-    // Find any in_progress attempts whose deadline has already passed
-    const expiredAttempts = $app.dao().findRecordsByFilter(
-      "attempts",
-      "student = {:student} && status = 'in_progress' && deadline_at < {:now}",
-      "",
-      0,
-      0,
-      { student: authRecord.id, now: new Date().toISOString() }
-    );
-
-    // Mark them as submitted so they don't block the student
-    for (const expired of expiredAttempts) {
-      expired.set("status", "submitted");
-      expired.set("submitted_at", expired.get("deadline_at")); // Use the deadline as the submission time
-      $app.dao().saveRecord(expired);
-    }
-    // -------------------------------------
-
-      const existing = $app.dao().findRecordsByFilter("roster", "id != ''", "", 10000, 0);
+      const existing = $app.dao().findRecordsByFilter(
+        "roster",
+        "id != ''",
+        "",
+        10000,
+        0
+      );
       existing.forEach((r) => {
         const fname = String(r.get("first_name") || "").trim().toLowerCase();
         const sname = String(r.get("surname") || "").trim().toLowerCase();
@@ -547,28 +870,23 @@ routerAdd("POST", "/api/admin/roster/upload", (c) => {
   }
 });
 
-
 /* ============================================================
    Roster enforcement on profile creation.
    Only runs when app_settings.require_roster_match = true.
-   Fails open (allows) on any error, so registration never
-   breaks because of this hook.
+   Fails open (allows) on any error.
    ============================================================ */
 onRecordBeforeCreateRequest((e) => {
   if (e.collection.name !== "profiles") return;
 
-  // Skip for superuser admin requests
   try {
     if (e.httpContext.admin()) return;
   } catch (_) {}
 
-  // Skip for custom admin requests
   try {
     const auth = e.httpContext.get("authRecord");
     if (auth && auth.collection().name === "admins") return;
   } catch (_) {}
 
-  // Check the flag — default to false (do not enforce)
   let requireMatch = false;
   try {
     const settings = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0);
@@ -584,10 +902,9 @@ onRecordBeforeCreateRequest((e) => {
 
   const firstName = String(e.record.get("first_name") || "").trim();
   const surname = String(e.record.get("surname") || "").trim();
-  if (!firstName || !surname) return; // let field validation handle
+  if (!firstName || !surname) return;
 
   try {
-    // Substring search first (fast), then confirm exact match in JS
     const candidates = $app.dao().findRecordsByFilter(
       "roster",
       "first_name ~ {:f} && surname ~ {:s}",
@@ -610,64 +927,6 @@ onRecordBeforeCreateRequest((e) => {
     }
   } catch (err) {
     if (err instanceof BadRequestError) throw err;
-    // Any other error — allow registration (fail open)
     console.warn("[roster] lookup failed, allowing registration:", err);
-  }
-});
-
-
-
-
-/* 
-   POST /api/exam/abandon
-   Allows a student to discard their active attempt and start
-   fresh. Strictly limited to 3 times per user. */
-routerAdd("POST", "/api/exam/abandon", (c) => {
-  try {
-    const info = $apis.requestInfo(c);
-    const authRecord = info.authRecord;
-    
-    if (!authRecord || authRecord.collection().name !== "profiles") {
-      return c.json(401, { message: "Not authenticated as a student." });
-    }
-
-    // 1. Check if they have resets remaining
-    const resets = authRecord.get("resets_remaining");
-    // If null/undefined, we treat it as 3 (default for existing users)
-    const currentResets = (resets === null || resets === undefined) ? 3 : resets;
-
-    if (currentResets <= 0) {
-      return c.json(403, { message: "You have no resets remaining. You must resume your active exam." });
-    }
-
-    // 2. Find their active attempt
-    const attempts = $app.dao().findRecordsByFilter(
-      "attempts",
-      "student = {:student} && status = 'in_progress'",
-      "",
-      1,
-      0,
-      { student: authRecord.id }
-    );
-
-    if (attempts.length > 0) {
-      // 3. Mark the old attempt as abandoned
-      const oldAttempt = attempts[0];
-      oldAttempt.set("status", "submitted"); 
-      oldAttempt.set("auto_terminated", true);
-      $app.dao().saveRecord(oldAttempt);
-    }
-
-    // 4. Decrement the resets_remaining counter
-    authRecord.set("resets_remaining", currentResets - 1);
-    
-    // 5. Reset their profile status so they are allowed to start a new exam
-    authRecord.set("status", "IDENTITY_CONFIRMED");
-    $app.dao().saveRecord(authRecord);
-
-    return c.json(200, { success: true, resets_remaining: currentResets - 1 });
-  } catch (err) {
-    console.error("[exam/abandon] error:", err);
-    return c.json(500, { message: "Failed to abandon exam.", details: String(err) });
   }
 });
