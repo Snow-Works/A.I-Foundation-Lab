@@ -23,10 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
-
-# PocketBase (whole folder — binary, data, docs)
-pocketbase/
-
+# PocketBase — track source (hooks + migrations), ignore binary + data
+pocketbase/pb_data/
+pocketbase/pocketbase
+pocketbase/pocketbase.exe
+pocketbase/CHANGELOG.md
+pocketbase/LICENSE.md
 
 # Local env
 .env
