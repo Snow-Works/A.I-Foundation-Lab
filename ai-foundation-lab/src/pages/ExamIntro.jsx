@@ -13,7 +13,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { getAppSettings } from "../services/settingsService.js";
 import { startExam, abandonExam } from "../services/examService.js";
 import pb from "../lib/pocketbase";
 import Card from "../components/ui/Card.jsx";
@@ -26,20 +25,18 @@ export default function ExamIntro() {
   const navigate = useNavigate();
   const { user, refresh } = useAuth();
 
-  const [settings, setSettings] = useState(null);
-  const [questionCount, setQuestionCount] = useState(null);
+  const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
 
-  // State to handle an existing active attempt
+  // Existing active attempt state
   const [activeAttemptId, setActiveAttemptId] = useState(null);
   const [resetsRemaining, setResetsRemaining] = useState(3);
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetting, setResetting] = useState(false);
 
-  // Synchronous guards — prevent double-click / rapid-Enter double-submits.
-  // React state alone can be stale inside the same event loop tick.
+  // Synchronous guards — prevent double-click / rapid-Enter double-submits
   const startingRef = useRef(false);
   const resettingRef = useRef(false);
 
@@ -48,21 +45,18 @@ export default function ExamIntro() {
 
     (async () => {
       try {
-        const s = await getAppSettings({ force: true });
-        if (!cancelled) setSettings(s);
+        const m = await pb.send("/api/exam/meta", { method: "GET" });
+        if (!cancelled) setMeta(m);
       } catch (err) {
-        console.error("[exam-intro] settings load error:", err);
-      }
-
-      try {
-        const bp = await pb
-          .collection("exam_blueprints")
-          .getFirstListItem("is_active = true");
-        const total =
-          (bp.easy_count || 0) + (bp.medium_count || 0) + (bp.hard_count || 0);
-        if (!cancelled) setQuestionCount(total || 25);
-      } catch (err) {
-        if (!cancelled) setQuestionCount(25);
+        console.error("[exam-intro] meta load error:", err);
+        if (!cancelled) {
+          // Fall back to safe defaults; the page stays usable.
+          setMeta({
+            question_count: 25,
+            duration_minutes: 105,
+            attempt_limit: 2,
+          });
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -73,16 +67,17 @@ export default function ExamIntro() {
     };
   }, []);
 
-  // Keep track of their resets (defaulting to 3 if null)
+  // Keep track of resets (defaulting to 3 if null)
   useEffect(() => {
     if (user) {
       setResetsRemaining(user.resets_remaining ?? 3);
     }
   }, [user]);
 
-  const durationMinutes = settings?.exam_duration_minutes || 105;
+  const durationMinutes = meta?.duration_minutes ?? 105;
+  const attemptLimit = meta?.attempt_limit ?? 2;
+  const questionCount = meta?.question_count ?? 25;
   const attemptsRemaining = user?.attempts_remaining ?? 0;
-  const attemptLimit = settings?.attempt_limit || 2;
 
   const handleBegin = async () => {
     if (startingRef.current) return;
@@ -93,7 +88,6 @@ export default function ExamIntro() {
     setActiveAttemptId(null);
 
     try {
-      // Request fullscreen first (user gesture is still active)
       try {
         const el = document.documentElement;
         if (el.requestFullscreen && !document.fullscreenElement) {
@@ -112,7 +106,6 @@ export default function ExamIntro() {
       } catch (err) {
         console.error("[exam-intro] start exam error:", err);
 
-        // 409 Conflict — attempt already in progress
         if (err?.status === 409) {
           const attemptId =
             err?.response?.data?.attemptId || err?.response?.attemptId;
@@ -153,11 +146,10 @@ export default function ExamIntro() {
 
     try {
       await abandonExam();
-      await refresh(); // Refresh auth state to get the new resets_remaining count
+      await refresh();
       setShowResetModal(false);
       setActiveAttemptId(null);
       setError("");
-      // Automatically try to start a new exam. handleBegin has its own guard.
       handleBegin();
     } catch (err) {
       console.error("[exam-intro] abandon error:", err);
@@ -280,6 +272,10 @@ export default function ExamIntro() {
                 Copying, pasting, and right-click are disabled. Attempts are
                 logged.
               </li>
+              <li>
+                Screenshots are not allowed. Every screen you see carries a
+                visible watermark traceable to your account.
+              </li>
             </ul>
           </div>
 
@@ -291,7 +287,6 @@ export default function ExamIntro() {
           )}
 
           <div className="exam-intro__actions">
-            {/* Dynamic UI: Show Resume/Reset if there is an active attempt */}
             {activeAttemptId ? (
               <div
                 style={{
@@ -344,7 +339,6 @@ export default function ExamIntro() {
         </Card>
       </div>
 
-      {/* Confirmation Modal for Reset */}
       <AlertModal
         open={showResetModal}
         onClose={() => !resetting && setShowResetModal(false)}
