@@ -1,16 +1,7 @@
 /* src/styles/admin-tables.css
    ------------------------------------------------------------
-   Opt-in utilities for the admin data tables.
-
-   Not imported by any page currently. If you want the iOS
-   momentum-scroll and right-edge gradient hint on admin
-   tables, import this file once from `src/styles/global.css`:
-
-       @import "./admin-tables.css";
-
-   Per-page CSS files already handle their own overflow and
-   min-width values, so those rules are intentionally NOT
-   duplicated here.
+   Opt-in utilities for the admin data tables. Imported by
+   src/styles/global.css so it's active app-wide.
    ------------------------------------------------------------ */
 
 /* Smooth touch scrolling + breathing room for the scrollbar */
@@ -20,27 +11,7 @@
 .admin-submissions__table-wrap,
 .admin-violations__table-wrap,
 .admin-audit__table-wrap {
-  position: relative; /* anchors the ::after gradient below */
+  position: relative;
   -webkit-overflow-scrolling: touch;
   padding-bottom: var(--space-2);
-}
-
-/* Right-edge gradient hint that indicates more columns
-   are available by scrolling horizontally */
-.admin-users__table-wrap::after,
-.admin-questions__table-wrap::after,
-.admin-roster__table-wrap::after,
-.admin-submissions__table-wrap::after,
-.admin-violations__table-wrap::after,
-.admin-audit__table-wrap::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: var(--space-2); /* stop above the scrollbar padding */
-  width: 20px;
-  background: linear-gradient(to right, transparent, rgba(10, 6, 48, 0.8));
-  pointer-events: none;
-  border-top-right-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
 }
