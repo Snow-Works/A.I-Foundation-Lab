@@ -13,8 +13,7 @@ import {
 } from "lucide-react";
 import { identitySchema } from "../lib/validation.js";
 import {
-  getGateToken,
-  validateGateToken,
+  validateGateTokenById,
   confirmIdentityAndClaimToken,
 } from "../services/examService.js";
 import Card from "../components/ui/Card.jsx";
@@ -31,12 +30,9 @@ const STATUS = {
 };
 
 const REASON_COPY = {
-  not_found:
-    "This exam link doesn't exist. Ask the admin for a fresh one.",
-  revoked:
-    "This exam link has been cancelled. Ask the admin for a new one.",
-  expired:
-    "This exam link has expired. Ask the admin for a new one.",
+  not_found: "This exam link doesn't exist. Ask the admin for a fresh one.",
+  revoked: "This exam link has been cancelled. Ask the admin for a new one.",
+  expired: "This exam link has expired. Ask the admin for a new one.",
   already_used:
     "This exam link has already been used. Each link works only once.",
 };
@@ -74,10 +70,9 @@ export default function ExamGate() {
       }
 
       try {
-        const record = await getGateToken(recordId);
+        const check = await validateGateTokenById(recordId);
         if (cancelled) return;
 
-        const check = validateGateToken(record);
         if (!check.valid) {
           setErrorReason(check.reason);
           setStatus(STATUS.INVALID);
@@ -111,22 +106,33 @@ export default function ExamGate() {
       navigate("/exam/intro", { replace: true });
     } catch (err) {
       console.error("[exam-gate] claim error:", err);
+
+      // If the claim endpoint reported a specific reason, show it
+      const claimReasons = [
+        "not_found",
+        "revoked",
+        "expired",
+        "already_used",
+      ];
+      const msg = err?.message || "";
+      const matched = claimReasons.find((r) =>
+        REASON_COPY[r] && msg.toLowerCase().includes(r.replace("_", " "))
+      );
+
+      if (matched) {
+        setErrorReason(matched);
+        setStatus(STATUS.INVALID);
+        return;
+      }
+
+      // Otherwise it's a login error
       const pbData = err?.response?.data || {};
       const message =
         pbData.email?.message ||
         pbData.password?.message ||
         err?.response?.message ||
+        err?.message ||
         "We couldn't confirm your identity. Check your email and password.";
-
-      // Special-case: someone else already claimed the token
-      if (
-        pbData.used_by?.message ||
-        (err?.status === 400 && /used_by/i.test(message))
-      ) {
-        setErrorReason("already_used");
-        setStatus(STATUS.INVALID);
-        return;
-      }
 
       setFormError(message);
       setStatus(STATUS.FORM);
@@ -165,7 +171,10 @@ export default function ExamGate() {
               <div className="exam-gate__icon exam-gate__icon--error">
                 <XCircle size={30} />
               </div>
-              <h1 className="type-h3" style={{ color: "var(--white)", margin: 0 }}>
+              <h1
+                className="type-h3"
+                style={{ color: "var(--white)", margin: 0 }}
+              >
                 We couldn't open this exam link
               </h1>
               <p className="type-body" style={{ maxWidth: "46ch", margin: 0 }}>
@@ -196,9 +205,7 @@ export default function ExamGate() {
             <div className="exam-gate__icon exam-gate__icon--info">
               <ShieldCheck size={28} />
             </div>
-            <h1 className="type-h3 exam-gate__title">
-              Confirm your identity
-            </h1>
+            <h1 className="type-h3 exam-gate__title">Confirm your identity</h1>
             <p className="type-body exam-gate__subtitle">
               This exam link is single-use. Before we open the exam, re-enter
               your registered email and password to prove it's you.
@@ -257,8 +264,8 @@ export default function ExamGate() {
           </form>
 
           <p className="exam-gate__note">
-            Your credentials are sent directly to our servers. This is the
-            same login you used when you registered.
+            Your credentials are sent directly to our servers. This is the same
+            login you used when you registered.
           </p>
         </Card>
       </div>
