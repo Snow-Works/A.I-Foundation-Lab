@@ -21,6 +21,13 @@ import Leaderboard from "./pages/Leaderboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 
+// --- Informational Pages ---
+import About from "./pages/About.jsx";
+import Team from "./pages/Team.jsx";
+import Legal from "./pages/Legal.jsx";
+import Contact from "./pages/Contact.jsx";
+import FAQ from "./pages/FAQ.jsx";
+
 // --- Manual Pages ---
 import ManualLayout from "./pages/manual/ManualLayout.jsx";
 import Welcome from "./pages/manual/Welcome.jsx";
@@ -43,18 +50,12 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers.jsx"));
 const AdminRoster = lazy(() => import("./pages/admin/AdminRoster.jsx"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.jsx"));
 const AdminQuestions = lazy(() => import("./pages/admin/AdminQuestions.jsx"));
-const AdminSubmissions = lazy(() =>
-  import("./pages/admin/AdminSubmissions.jsx")
-);
+const AdminSubmissions = lazy(() => import("./pages/admin/AdminSubmissions.jsx"));
 const AdminMarking = lazy(() => import("./pages/admin/AdminMarking.jsx"));
-const AdminViolations = lazy(() =>
-  import("./pages/admin/AdminViolations.jsx")
-);
+const AdminViolations = lazy(() => import("./pages/admin/AdminViolations.jsx"));
 const AdminAudit = lazy(() => import("./pages/admin/AdminAudit.jsx"));
 const AdminResults = lazy(() => import("./pages/admin/AdminResults.jsx"));
-const AdminResultDetail = lazy(() =>
-  import("./pages/admin/AdminResultDetail.jsx")
-);
+const AdminResultDetail = lazy(() => import("./pages/admin/AdminResultDetail.jsx"));
 const AdminGate = lazy(() => import("./pages/admin/AdminGate.jsx"));
 const AdminStatus = lazy(() => import("./pages/admin/AdminStatus.jsx"));
 
@@ -99,15 +100,9 @@ export default function App() {
                   <Route path="users" element={<AdminUsers />} />
                   <Route path="roster" element={<AdminRoster />} />
                   <Route path="submissions" element={<AdminSubmissions />} />
-                  <Route
-                    path="submissions/:attemptId"
-                    element={<AdminMarking />}
-                  />
+                  <Route path="submissions/:attemptId" element={<AdminMarking />} />
                   <Route path="results" element={<AdminResults />} />
-                  <Route
-                    path="results/:attemptId"
-                    element={<AdminResultDetail />}
-                  />
+                  <Route path="results/:attemptId" element={<AdminResultDetail />} />
                   <Route path="gate" element={<AdminGate />} />
                   <Route path="questions" element={<AdminQuestions />} />
                   <Route path="violations" element={<AdminViolations />} />
@@ -123,12 +118,16 @@ export default function App() {
                   <Route path="verify-pending" element={<VerifyPending />} />
                   <Route path="auth/verified" element={<AuthVerified />} />
                   <Route path="login" element={<Login />} />
-                  <Route
-                    path="forgot-password"
-                    element={<ForgotPassword />}
-                  />
+                  <Route path="forgot-password" element={<ForgotPassword />} />
                   <Route path="reset-password" element={<ResetPassword />} />
                   <Route path="exam-gate" element={<ExamGate />} />
+
+                  {/* --- Informational Pages --- */}
+                  <Route path="about" element={<About />} />
+                  <Route path="team" element={<Team />} />
+                  <Route path="legal" element={<Legal />} />
+                  <Route path="contact" element={<Contact />} />
+                  <Route path="faq" element={<FAQ />} />
 
                   <Route
                     path="profile"

@@ -8,7 +8,6 @@
   flex-direction: column;
 }
 
-
 /* ---------- SKIP LINK ---------- */
 .skip-link {
   position: absolute;
@@ -35,11 +34,10 @@
   outline-offset: 2px;
 }
 
-
-
 .app-main {
   flex: 1;
-  padding-top: 0; /* hero handles its own top spacing */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Full-bleed layout for pages that take over the viewport */
@@ -160,33 +158,29 @@
 
 /* ============================================================
    FOOTER
-   Brand block + three grouped link columns + bottom bar.
    ============================================================ */
 
 .footer {
   position: relative;
   width: 100%;
   border-top: 1px solid var(--glass-border);
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(10, 6, 48, 0.6) 0%,
-      rgba(10, 6, 48, 0.9) 100%
-    );
-  padding-top: var(--space-8);
+  background: linear-gradient(to bottom, rgba(10, 6, 48, 0.6) 0%, rgba(10, 6, 48, 0.9) 100%);
+  padding-top: var(--space-7);
   padding-bottom: calc(var(--space-4) + var(--safe-bottom));
-  margin-top: var(--space-9);
+  margin-top: var(--space-8); /* Reduced from space-9 */
 }
 
+/* Make the footer container a 4-column grid on desktop */
 .footer__container {
   display: grid;
-  gap: var(--space-8);
+  
+  
 }
 
 @media (min-width: 768px) {
   .footer__container {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr);
-    gap: var(--space-8);
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: var(--space-6);
   }
 }
 
@@ -194,7 +188,7 @@
 .footer__brand {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   max-width: 360px;
 }
 
@@ -259,11 +253,7 @@
   border: 1px solid var(--glass-border);
   color: var(--silver);
   text-decoration: none;
-  transition:
-    background var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 
 .footer__social:hover {
@@ -278,23 +268,10 @@
   outline-offset: 2px;
 }
 
-.footer__social--disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.footer__social--disabled:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: var(--glass-border);
-  color: var(--silver);
-  transform: none;
-}
-
 /* ---------- LINK GROUPS ---------- */
+/* Using display: contents allows these children to become direct grid items in the container */
 .footer__groups {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: contents; 
 }
 
 .footer__group {
@@ -336,18 +313,6 @@
   color: var(--white);
 }
 
-.footer__link:focus-visible {
-  outline: 2px solid var(--accent-focus);
-  outline-offset: 3px;
-  border-radius: var(--radius-xs);
-}
-
-.footer__link--disabled {
-  color: var(--text-muted);
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
 .footer__link-arrow {
   opacity: 0.6;
   transition: transform var(--dur-fast) var(--ease-out);
@@ -358,18 +323,32 @@
   opacity: 1;
 }
 
+/* Mobile fix for the display: contents grid */
+@media (max-width: 767px) {
+  .footer__groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  .footer__group:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 479px) {
+  .footer__groups {
+    grid-template-columns: 1fr;
+  }
+  .footer__group:last-child {
+    grid-column: auto;
+  }
+}
+
 /* ---------- BOTTOM BAR ---------- */
 .footer__bottom {
-  margin-top: var(--space-8);
-  padding-top: var(--space-5);
+  margin-top: var(--space-7);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--glass-border);
-  background:
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 63, 164, 0.08) 50%,
-      transparent 100%
-    );
 }
 
 .footer__bottom-inner {
@@ -392,72 +371,4 @@
 .footer__credit {
   margin: 0;
   color: var(--text-muted);
-}
-
-/* ---------- FOOTER RESPONSIVE ---------- */
-
-@media (max-width: 767px) {
-  .footer {
-    padding-top: var(--space-7);
-    margin-top: var(--space-8);
-  }
-
-  .footer__container {
-    gap: var(--space-7);
-  }
-
-  .footer__brand {
-    max-width: none;
-  }
-
-  .footer__groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-5);
-  }
-
-  .footer__group:last-child {
-    grid-column: 1 / -1;
-  }
-
-  .footer__bottom {
-    margin-top: var(--space-7);
-  }
-}
-
-@media (max-width: 479px) {
-  .footer__groups {
-    grid-template-columns: 1fr;
-  }
-
-  .footer__group:last-child {
-    grid-column: auto;
-  }
-
-  .footer__signature {
-    font-size: 1.9rem;
-  }
-}
-
-@media (max-width: 359px) {
-  .footer {
-    padding-top: var(--space-6);
-    margin-top: var(--space-7);
-  }
-
-  .footer__brand-name {
-    font-size: var(--fs-sm);
-  }
-
-  .footer__tagline {
-    font-size: var(--fs-xs);
-  }
-
-  .footer__signature {
-    font-size: 1.6rem;
-  }
-
-  .footer__social {
-    width: 32px;
-    height: 32px;
-  }
 }

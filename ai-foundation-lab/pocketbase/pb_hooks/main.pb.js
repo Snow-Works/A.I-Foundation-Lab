@@ -1369,6 +1369,7 @@ onRecordBeforeCreateRequest((e) => {
     );
     
     if (exact.length > 0) {
+      // Auto-inject the batch from the roster if it exists
       const rosterBatch = exact[0].get("batch");
       if (rosterBatch && !e.record.get("batch")) {
         e.record.set("batch", rosterBatch);
@@ -1381,5 +1382,47 @@ onRecordBeforeCreateRequest((e) => {
   } catch (err) {
     if (err instanceof BadRequestError) throw err;
     console.warn("[roster] lookup failed, allowing registration:", err);
+  }
+});
+
+/* ============================================================
+   SUPPORT MESSAGES HOOKS
+   ============================================================ */
+onRecordBeforeCreateRequest((e) => {
+  if (e.collection.name !== "support_messages") return;
+
+  const auth = e.httpContext.get("authRecord");
+  if (!auth) return;
+
+  if (auth.collection().name === "profiles") {
+    e.record.set("student", auth.id);
+    e.record.set("sender", auth.id);
+    e.record.set("sender_type", "student");
+    e.record.set("is_read_by_admin", false);
+    e.record.set("is_read_by_student", true);
+  } else if (auth.collection().name === "admins") {
+    e.record.set("sender", auth.id);
+    e.record.set("sender_type", "admin");
+    e.record.set("is_read_by_admin", true);
+    e.record.set("is_read_by_student", false);
+  }
+});
+
+onRecordBeforeUpdateRequest((e) => {
+  if (e.collection.name !== "support_messages") return;
+
+  const auth = e.httpContext.get("authRecord");
+  if (!auth) return;
+
+  // Prevent students from editing the body or sender after creation
+  if (auth.collection().name === "profiles") {
+    const original = e.record.original();
+    if (original) {
+      e.record.set("body", original.get("body"));
+      e.record.set("sender", original.get("sender"));
+      e.record.set("sender_type", original.get("sender_type"));
+      e.record.set("student", original.get("student"));
+      e.record.set("is_read_by_admin", original.get("is_read_by_admin"));
+    }
   }
 });

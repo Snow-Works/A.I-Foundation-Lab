@@ -1,0 +1,149 @@
+/* src/pages/FAQ.css */
+.faq-chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 60vh;
+}
+
+.faq-chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  flex: 1;
+  padding-bottom: var(--space-6);
+}
+
+/* Chat Bubble Base */
+.chat-msg {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 85%;
+  animation: chat-slide-up 0.4s var(--ease-out);
+}
+
+@keyframes chat-slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg--user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-msg--bot {
+  align-self: flex-start;
+}
+
+/* Avatars */
+.chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--ink-950);
+  border: 1px solid var(--glass-border);
+}
+
+.chat-avatar--user {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--silver);
+}
+
+.chat-avatar--bot {
+  background: var(--gradient-button);
+  color: var(--white);
+}
+
+/* Bubbles */
+.chat-bubble {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+}
+
+.chat-msg--user .chat-bubble {
+  background: var(--indigo-700);
+  color: var(--white);
+  border-top-right-radius: 4px;
+}
+
+.chat-msg--bot .chat-bubble {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--silver);
+  border-top-left-radius: 4px;
+}
+
+.chat-bubble strong {
+  color: var(--white);
+}
+
+/* Typing Indicator */
+.chat-typing {
+  display: flex;
+  gap: 4px;
+  padding: var(--space-2) var(--space-4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  border-top-left-radius: 4px;
+  width: fit-content;
+}
+
+.chat-typing span {
+  width: 6px;
+  height: 6px;
+  background: var(--silver);
+  border-radius: 50%;
+  animation: chat-bounce 1.4s infinite ease-in-out both;
+}
+
+.chat-typing span:nth-child(1) { animation-delay: -0.32s; }
+.chat-typing span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes chat-bounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Quick Questions (Input area) */
+.faq-quick-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+}
+
+.faq-quick-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--cyan-400);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.faq-quick-btn:hover {
+  background: rgba(46, 200, 255, 0.1);
+  border-color: var(--cyan-400);
+  transform: translateY(-1px);
+}
+
+.faq-quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
