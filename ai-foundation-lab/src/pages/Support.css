@@ -187,3 +187,69 @@
 }
 
 @keyframes support-spin { to { transform: rotate(360deg); } }
+
+
+
+
+/* Attachment Button */
+.support__attach-btn,
+.admin-support__attach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.support__attach-btn:hover,
+.admin-support__attach-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+}
+
+/* File Preview */
+.support__file-preview,
+.admin-support__file-preview {
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.support__file-preview img,
+.support__file-preview video,
+.admin-support__file-preview img,
+.admin-support__file-preview video {
+  height: 60px;
+  width: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+}
+
+.support__file-cancel,
+.admin-support__file-cancel {
+  position: absolute;
+  top: 10px;
+  left: 60px;
+  background: var(--alert-red);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}

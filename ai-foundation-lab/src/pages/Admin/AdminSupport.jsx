@@ -1,6 +1,6 @@
 // src/pages/Admin/AdminSupport.jsx
 import { useState, useEffect, useRef } from "react";
-import { MessageSquare, Send, Loader2, User } from "lucide-react";
+import { MessageSquare, Send, Loader2, User, Paperclip, X } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import {
   getAdminInbox,
@@ -8,6 +8,7 @@ import {
   sendAdminMessage,
   markThreadReadByAdmin,
 } from "../../services/supportService.js";
+import { renderTextWithLinks, renderAttachment } from "../../utils/chatUtils.jsx";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import "./AdminSupport.css";
@@ -18,15 +19,18 @@ export default function AdminSupport() {
   const [activeStudentId, setActiveStudentId] = useState(null);
   const [activeStudentName, setActiveStudentName] = useState("");
   const [thread, setThread] = useState([]);
+  
   const [replyBody, setReplyBody] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   
   const [loadingInbox, setLoadingInbox] = useState(true);
   const [loadingThread, setLoadingThread] = useState(false);
   const [sending, setSending] = useState(false);
   
   const chatEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-  // Fetch inbox on mount
   const fetchInbox = async () => {
     try {
       const data = await getAdminInbox();
@@ -40,15 +44,12 @@ export default function AdminSupport() {
 
   useEffect(() => {
     fetchInbox();
-    // Poll inbox every 30s for new messages
     const interval = setInterval(fetchInbox, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch thread when a student is selected
   useEffect(() => {
     if (!activeStudentId) return;
-
     let cancelled = false;
 
     const fetchThread = async (isInitial = false) => {
@@ -57,11 +58,9 @@ export default function AdminSupport() {
         const msgs = await getAdminThread(activeStudentId);
         if (cancelled) return;
         setThread(msgs);
-        
-        // Mark as read when we open it
         if (isInitial) {
           await markThreadReadByAdmin(activeStudentId);
-          fetchInbox(); // Refresh inbox to clear the unread badge
+          fetchInbox();
         }
       } catch (err) {
         console.error("[admin-support] thread error:", err);
@@ -71,8 +70,6 @@ export default function AdminSupport() {
     };
 
     fetchThread(true);
-    
-    // Poll active thread every 10s
     const interval = setInterval(() => fetchThread(false), 10000);
 
     return () => {
@@ -81,7 +78,6 @@ export default function AdminSupport() {
     };
   }, [activeStudentId]);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [thread]);
@@ -90,24 +86,52 @@ export default function AdminSupport() {
     setActiveStudentId(studentId);
     setActiveStudentName(studentName);
     setReplyBody("");
+    cancelFile();
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File is too large. Max size is 10MB.");
+      return;
+    }
+
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      alert("Only images and videos are allowed.");
+      return;
+    }
+
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const cancelFile = () => {
+    setSelectedFile(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
   };
 
   const handleSendReply = async (e) => {
     e.preventDefault();
-    if (!replyBody.trim() || !activeStudentId || sending) return;
+    if ((!replyBody.trim() && !selectedFile) || !activeStudentId || sending) return;
 
     setSending(true);
     const body = replyBody.trim();
+    const fileToUpload = selectedFile;
+    
     setReplyBody("");
+    cancelFile();
 
     try {
-      await sendAdminMessage(activeStudentId, admin.id, body);
-      // Refresh thread immediately
+      await sendAdminMessage(activeStudentId, admin.id, body, fileToUpload);
       const msgs = await getAdminThread(activeStudentId);
       setThread(msgs);
     } catch (err) {
       console.error("[admin-support] send error:", err);
-      setReplyBody(body); // Restore on fail
+      setReplyBody(body);
       alert("Failed to send reply. Please try again.");
     } finally {
       setSending(false);
@@ -126,7 +150,6 @@ export default function AdminSupport() {
       </header>
 
       <div className="admin-support__layout">
-        {/* ---------- LEFT: INBOX LIST ---------- */}
         <Card variant="glass" size="md" className="admin-support__sidebar">
           {loadingInbox ? (
             <div className="admin-support__loading">
@@ -171,7 +194,6 @@ export default function AdminSupport() {
           )}
         </Card>
 
-        {/* ---------- RIGHT: CHAT THREAD ---------- */}
         <Card variant="glass" size="md" className="admin-support__chat-area">
           {!activeStudentId ? (
             <div className="admin-support__empty-chat">
@@ -197,13 +219,45 @@ export default function AdminSupport() {
                       msg.sender_type === "admin" ? "support-msg--user" : "support-msg--admin"
                     }`}
                   >
-                    <div className="support-msg__bubble">{msg.body}</div>
+                    <div className="support-msg__bubble">
+                      {renderAttachment(msg, true)}
+                      {msg.body && <div>{renderTextWithLinks(msg.body)}</div>}
+                    </div>
                   </div>
                 ))}
                 <div ref={chatEndRef} />
               </div>
 
+              {previewUrl && (
+                <div className="admin-support__file-preview">
+                  {selectedFile?.type.startsWith("image/") ? (
+                    <img src={previewUrl} alt="Preview" />
+                  ) : (
+                    <video src={previewUrl} />
+                  )}
+                  <button type="button" className="admin-support__file-cancel" onClick={cancelFile}>
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
               <form className="admin-support__input-area" onSubmit={handleSendReply}>
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  style={{ display: "none" }}
+                />
+                <button
+                  type="button"
+                  className="admin-support__attach-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={sending}
+                  title="Attach image or video"
+                >
+                  <Paperclip size={20} />
+                </button>
                 <input
                   type="text"
                   className="admin-support__input"
@@ -218,7 +272,7 @@ export default function AdminSupport() {
                   size="md"
                   rightIcon={<Send size={16} />}
                   loading={sending}
-                  disabled={!replyBody.trim()}
+                  disabled={!replyBody.trim() && !selectedFile}
                 >
                   Send
                 </Button>

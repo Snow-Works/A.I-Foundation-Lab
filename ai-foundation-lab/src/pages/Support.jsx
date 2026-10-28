@@ -1,13 +1,14 @@
 // src/pages/Support.jsx
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Send, Loader2, Paperclip, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
   getStudentMessages,
   sendStudentMessage,
   markMessagesReadByStudent,
 } from "../services/supportService.js";
+import { renderTextWithLinks, renderAttachment } from "../utils/chatUtils.jsx";
 import Card from "../components/ui/Card.jsx";
 import Button from "../components/ui/Button.jsx";
 import LogoMark from "../components/ui/LogoMark.jsx";
@@ -17,9 +18,13 @@ export default function Support() {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  
   const chatEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const fetchMessages = async (isInitial = false) => {
     if (!user) return;
@@ -39,8 +44,6 @@ export default function Support() {
   useEffect(() => {
     if (!user) return;
     fetchMessages(true);
-
-    // Poll for new messages every 10 seconds
     const interval = setInterval(() => fetchMessages(false), 10000);
     return () => clearInterval(interval);
   }, [user]);
@@ -49,16 +52,44 @@ export default function Support() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File is too large. Max size is 10MB.");
+      return;
+    }
+
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      alert("Only images and videos are allowed.");
+      return;
+    }
+
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const cancelFile = () => {
+    setSelectedFile(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || sending) return;
+    if ((!newMessage.trim() && !selectedFile) || !user || sending) return;
 
     setSending(true);
     const body = newMessage.trim();
-    setNewMessage(""); // Optimistic clear
+    const fileToUpload = selectedFile;
+    
+    setNewMessage("");
+    cancelFile(); // clear preview immediately
 
     try {
-      const msg = await sendStudentMessage(user.id, body);
+      const msg = await sendStudentMessage(user.id, body, fileToUpload);
       setMessages((prev) => [...prev, msg]);
     } catch (err) {
       console.error("[support] send error:", err);
@@ -112,7 +143,8 @@ export default function Support() {
                     </div>
                   )}
                   <div className="support-msg__bubble">
-                    {msg.body}
+                    {renderAttachment(msg, false)}
+                    {msg.body && <div>{renderTextWithLinks(msg.body)}</div>}
                   </div>
                 </div>
               ))
@@ -120,7 +152,37 @@ export default function Support() {
             <div ref={chatEndRef} />
           </div>
 
+          {/* File Preview */}
+          {previewUrl && (
+            <div className="support__file-preview">
+              {selectedFile?.type.startsWith("image/") ? (
+                <img src={previewUrl} alt="Preview" />
+              ) : (
+                <video src={previewUrl} />
+              )}
+              <button type="button" className="support__file-cancel" onClick={cancelFile}>
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
           <form className="support__input-area" onSubmit={handleSend}>
+            <input
+              type="file"
+              accept="image/*,video/*"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              style={{ display: "none" }}
+            />
+            <button
+              type="button"
+              className="support__attach-btn"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={sending}
+              title="Attach image or video"
+            >
+              <Paperclip size={20} />
+            </button>
             <input
               type="text"
               className="support__input"
@@ -135,7 +197,7 @@ export default function Support() {
               size="md"
               rightIcon={<Send size={16} />}
               loading={sending}
-              disabled={!newMessage.trim()}
+              disabled={!newMessage.trim() && !selectedFile}
             >
               Send
             </Button>
