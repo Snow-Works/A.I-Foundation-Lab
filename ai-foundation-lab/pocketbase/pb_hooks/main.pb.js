@@ -1,7 +1,5 @@
 /// <reference path="../pb_data/types.d.ts" />
 
-/// <reference path="../pb_data/types.d.ts" />
-
 /* ============================================================
    PING TEST ROUTE
    ============================================================ */
@@ -1099,12 +1097,6 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
     }
 
     // 1. Signups Data (Last 30 Days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().replace("T", " ").substring(0, 19);
-
-    const recentProfiles = $app.dao().findRecordsByFilter("profiles", "created >= {:date}", "", 0, 0, { date: thirtyDaysAgoStr });
-    
     const signupsMap = {};
     for (let i = 0; i < 30; i++) {
       const d = new Date();
@@ -1113,10 +1105,17 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
       signupsMap[dateStr] = 0;
     }
 
-    recentProfiles.forEach(p => {
-      const createdStr = p.get("created").substring(0, 10);
-      if (signupsMap[createdStr] !== undefined) {
-        signupsMap[createdStr]++;
+    const allProfiles = $app.dao().findRecordsByFilter("profiles", "id != ''", "", 0, 0, {});
+    allProfiles.forEach(p => {
+      try {
+        const d = new Date(p.get("created"));
+        if (isNaN(d.getTime())) return;
+        const createdStr = d.toISOString().substring(0, 10);
+        if (signupsMap[createdStr] !== undefined) {
+          signupsMap[createdStr]++;
+        }
+      } catch (e) {
+        // ignore invalid dates
       }
     });
 
@@ -1124,41 +1123,42 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
       const parts = date.split("-");
       const displayDate = `${parts[1]}/${parts[2]}`; // MM/DD
       return { date: displayDate, count: signupsMap[date] };
-    }).sort((a, b) => new Date(`2026-${a.date}`) - new Date(`2026-${b.date}`));
+    });
 
-    // 2. Pass/Fail Data
+    // 2. Pass/Fail Data (Bulletproof JS Joining)
     const releasedAttempts = $app.dao().findRecordsByFilter("attempts", "status = 'released'", "", 0, 0, {});
-    const attemptIds = releasedAttempts.map(a => a.id);
-    
+    const releasedAttemptIds = {};
+    releasedAttempts.forEach(a => releasedAttemptIds[a.id] = true);
+
     let passCount = 0;
     let failCount = 0;
     const PASS_MARK = 180;
 
-    if (attemptIds.length > 0) {
-      const aqs = $app.dao().findRecordsByFilter("attempt_questions", "attempt IN {:attempts}", "", 0, 0, { attempts: attemptIds });
-      const aqIds = aqs.map(a => a.id);
+    if (releasedAttempts.length > 0) {
+      const allAqs = $app.dao().findRecordsByFilter("attempt_questions", "id != ''", "", 0, 0, {});
+      const aqsForReleased = allAqs.filter(aq => releasedAttemptIds[aq.get("attempt")]);
       
-      if (aqIds.length > 0) {
-        const marks = $app.dao().findRecordsByFilter("marks", "attempt_question IN {:aqs}", "", 0, 0, { aqs: aqIds });
-        
-        const scores = {};
-        for (const m of marks) {
-          const aqId = m.get("attempt_question");
-          scores[aqId] = (scores[aqId] || 0) + (Number(m.get("score")) || 0);
-        }
-        
-        for (const a of releasedAttempts) {
-          let total = 0;
-          for (const aq of aqs) {
-            if (aq.get("attempt") === a.id) {
-              total += scores[aq.id] || 0;
-            }
+      const aqIds = {};
+      aqsForReleased.forEach(aq => aqIds[aq.id] = true);
+
+      const allMarks = $app.dao().findRecordsByFilter("marks", "id != ''", "", 0, 0, {});
+      const marksForReleased = allMarks.filter(m => aqIds[m.get("attempt_question")]);
+
+      const scores = {};
+      for (const m of marksForReleased) {
+        const aqId = m.get("attempt_question");
+        scores[aqId] = (scores[aqId] || 0) + (Number(m.get("score")) || 0);
+      }
+
+      for (const a of releasedAttempts) {
+        let total = 0;
+        for (const aq of aqsForReleased) {
+          if (aq.get("attempt") === a.id) {
+            total += scores[aq.id] || 0;
           }
-          if (total >= PASS_MARK) passCount++;
-          else failCount++;
         }
-      } else {
-        failCount = releasedAttempts.length;
+        if (total >= PASS_MARK) passCount++;
+        else failCount++;
       }
     }
 
@@ -1168,9 +1168,9 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
     ];
 
     // 3. Violations Data
-    const violations = $app.dao().findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
+    const allViolations = $app.dao().findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
     const violationsMap = {};
-    violations.forEach(v => {
+    allViolations.forEach(v => {
       const type = v.get("type");
       violationsMap[type] = (violationsMap[type] || 0) + 1;
     });
@@ -1179,7 +1179,7 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
       let displayType = type.replace(/_/g, " ");
       displayType = displayType.charAt(0).toUpperCase() + displayType.slice(1);
       return { name: displayType, count: violationsMap[type] };
-    }).sort((a, b) => b.count - a.count).slice(0, 5); // Top 5 violations
+    }).sort((a, b) => b.count - a.count).slice(0, 5);
 
     return c.json(200, {
       signups: signupsData,
