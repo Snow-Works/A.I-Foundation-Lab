@@ -18,40 +18,40 @@
    ============================================================ */
 
 migrate((db) => {
-  const dao = new Dao(db);
+    const dao = new Dao(db);
 
-  // ---- questions: admins only ----
-  const questions = dao.findCollectionByNameOrId("qu0000000000001");
-  questions.listRule = '@request.auth.collectionName = "admins"';
-  questions.viewRule = '@request.auth.collectionName = "admins"';
-  dao.saveCollection(questions);
+    // ---- questions: admins only ----
+    const questions = dao.findCollectionByNameOrId("qu0000000000001");
+    questions.listRule = '@request.auth.collectionName = "admins"';
+    questions.viewRule = '@request.auth.collectionName = "admins"';
+    dao.saveCollection(questions);
 
-  // ---- gate_tokens: admins only ----
-  const gateTokens = dao.findCollectionByNameOrId("gt0000000000001");
-  gateTokens.listRule = '@request.auth.collectionName = "admins"';
-  gateTokens.viewRule = '@request.auth.collectionName = "admins"';
-  gateTokens.createRule = '@request.auth.collectionName = "admins"';
-  gateTokens.updateRule = '@request.auth.collectionName = "admins"';
-  gateTokens.deleteRule = '@request.auth.collectionName = "admins"';
-  dao.saveCollection(gateTokens);
+    // ---- gate_tokens: admins only ----
+    const gateTokens = dao.findCollectionByNameOrId("gt0000000000001");
+    gateTokens.listRule = '@request.auth.collectionName = "admins"';
+    gateTokens.viewRule = '@request.auth.collectionName = "admins"';
+    gateTokens.createRule = '@request.auth.collectionName = "admins"';
+    gateTokens.updateRule = '@request.auth.collectionName = "admins"';
+    gateTokens.deleteRule = '@request.auth.collectionName = "admins"';
+    dao.saveCollection(gateTokens);
 
-  return null;
+    return null;
 }, (db) => {
-  const dao = new Dao(db);
+    const dao = new Dao(db);
 
-  // Restore previous (insecure) rules on rollback
-  const questions = dao.findCollectionByNameOrId("qu0000000000001");
-  questions.listRule = '@request.auth.collectionName = "admins" || @request.auth.id != ""';
-  questions.viewRule = '@request.auth.collectionName = "admins" || @request.auth.id != ""';
-  dao.saveCollection(questions);
+    // Restore previous (insecure) rules on rollback
+    const questions = dao.findCollectionByNameOrId("qu0000000000001");
+    questions.listRule = '@request.auth.collectionName = "admins" || @request.auth.id != ""';
+    questions.viewRule = '@request.auth.collectionName = "admins" || @request.auth.id != ""';
+    dao.saveCollection(questions);
 
-  const gateTokens = dao.findCollectionByNameOrId("gt0000000000001");
-  gateTokens.listRule = 'id != ""';
-  gateTokens.viewRule = 'id != ""';
-  gateTokens.createRule = '@request.auth.collectionName = "admins"';
-  gateTokens.updateRule = '@request.auth.collectionName = "admins"';
-  gateTokens.deleteRule = '@request.auth.collectionName = "admins"';
-  dao.saveCollection(gateTokens);
+    const gateTokens = dao.findCollectionByNameOrId("gt0000000000001");
+    gateTokens.listRule = 'id != ""';
+    gateTokens.viewRule = 'id != ""';
+    gateTokens.createRule = '@request.auth.collectionName = "admins"';
+    gateTokens.updateRule = '@request.auth.collectionName = "admins"';
+    gateTokens.deleteRule = '@request.auth.collectionName = "admins"';
+    dao.saveCollection(gateTokens);
 
-  return null;
+    return null;
 });

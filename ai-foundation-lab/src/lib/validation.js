@@ -1,17 +1,8 @@
 // src/lib/validation.js
 import { z } from "zod";
 
-/* ============================================================
-   PHONE — E.164 validation
-   ============================================================ */
-
 const COUNTRY_DIGITS = {
-  NG: 10,
-  US: 10,
-  GB: 10,
-  GH: 9,
-  KE: 9,
-  ZA: 9,
+  NG: 10, US: 10, GB: 10, GH: 9, KE: 9, ZA: 9,
 };
 
 const phoneSchema = z
@@ -28,10 +19,6 @@ const phoneSchema = z
     },
     { message: "Enter a valid phone number for the selected country." }
   );
-
-/* ============================================================
-   REGISTER
-   ============================================================ */
 
 export const registerSchema = z
   .object({
@@ -58,6 +45,12 @@ export const registerSchema = z
       .email("Enter a valid email address.")
       .max(160, "Email must be 160 characters or fewer."),
     whatsapp: phoneSchema,
+    batch: z
+      .string()
+      .trim()
+      .max(60, "Batch must be 60 characters or fewer.")
+      .optional()
+      .or(z.literal("")),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters."),
@@ -71,46 +64,24 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
-/* ============================================================
-   LOGIN
-   ============================================================ */
-
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required.")
-    .email("Enter a valid email address."),
+  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 });
 
-/* ============================================================
-   PASSWORD RESET
-   ============================================================ */
-
 export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required.")
-    .email("Enter a valid email address."),
+  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
 });
 
 export const resetPasswordSchema = z
   .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
-
-/* ============================================================
-   HELPERS — turn Zod errors into RHF-compatible objects
-   ============================================================ */
 
 export function zodToFieldErrors(zodError) {
   const errors = {};
@@ -121,15 +92,7 @@ export function zodToFieldErrors(zodError) {
   return errors;
 }
 
-/* ============================================================
-   IDENTITY CONFIRMATION (Exam Gate)
-   ============================================================ */
-
 export const identitySchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required.")
-    .email("Enter a valid email address."),
+  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 });

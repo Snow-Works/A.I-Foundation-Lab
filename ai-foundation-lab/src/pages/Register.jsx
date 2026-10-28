@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, User, ArrowRight, Info } from "lucide-react";
+import { Mail, User, ArrowRight, Info, Layers } from "lucide-react";
 import { registerSchema } from "../lib/validation.js";
 import { authService } from "../services";
 import { COUNTRIES } from "../components/ui/PhoneInput.jsx";
@@ -37,6 +37,7 @@ export default function Register() {
       firstName: "",
       middleName: "",
       surname: "",
+      batch: "",
       email: "",
       whatsapp: { display: "", digits: "", country: "NG" },
       password: "",
@@ -49,7 +50,6 @@ export default function Register() {
     setSubmitting(true);
     setFormError(null);
 
-    // Build E.164 WhatsApp number from digits + country code
     const country = COUNTRIES[values.whatsapp.country] || COUNTRIES.NG;
     const e164 = `${country.code}${values.whatsapp.digits}`;
 
@@ -61,16 +61,15 @@ export default function Register() {
         first_name: values.firstName,
         middle_name: values.middleName || "",
         surname: values.surname,
+        batch: values.batch || "",
         whatsapp: e164,
       });
 
-      // Redirect to the "check your inbox" screen
       navigate(
         `/verify-pending?email=${encodeURIComponent(values.email)}`,
         { replace: true }
       );
     } catch (err) {
-      // PocketBase returns field-level errors in err.response.data
       const pbErrors = err?.response?.data || {};
       let handled = false;
 
@@ -160,6 +159,20 @@ export default function Register() {
                 />
               </Field>
             </div>
+
+            <Field
+              label="Batch / Cohort"
+              error={errors.batch?.message}
+              hint="If your name is on the pre-approved roster, we'll auto-fill this."
+            >
+              <Input
+                type="text"
+                placeholder="e.g., Cohort 2026-A"
+                leftIcon={<Layers size={16} />}
+                error={!!errors.batch}
+                {...register("batch")}
+              />
+            </Field>
 
             <Field
               label="Email"
