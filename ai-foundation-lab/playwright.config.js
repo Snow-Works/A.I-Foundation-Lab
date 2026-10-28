@@ -1,53 +1,28 @@
-// eslint.config.js
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+// playwright.config.js
+import { defineConfig, devices } from "@playwright/test";
 
-export default defineConfig([
-  globalIgnores(['dist', 'pocketbase']),
-  
-  // 1. Standard React Frontend Rules
-  {
-    files: ['src/**/*.{js,jsx}'],
-    ignores: ['src/workers/**/*.js'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
-    languageOptions: {
-      globals: { ...globals.browser },
-      parserOptions: { ecmaFeatures: { jsx: true } },
-    },
-    rules: {
-      'react-hooks/set-state-in-effect': 'off',
-      'react-refresh/only-export-components': 'off',
-      'no-unused-vars': 'warn', 
-      'no-empty': 'warn',
-    }
+export default defineConfig({
+  testDir: "./e2e",
+  testMatch: "**/*.spec.js", // Only run Playwright spec files, ignore Vitest
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
+  use: {
+    baseURL: "http://localhost:5173",
+    trace: "on-first-retry",
   },
-
-  // 2. Web Worker Rules (for pythonWorker.js)
-  {
-    files: ['src/workers/**/*.js'],
-    languageOptions: {
-      globals: { 
-        ...globals.worker,
-        loadPyodide: 'readonly' 
-      },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
-    rules: {
-      'no-undef': 'warn', // Pyodide is injected via CDN
-    }
+  ],
+  webServer: {
+    command: "npm run dev",
+    url: "http://localhost:5173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
   },
-
-  // 3. Node.js Rules (for config files and e2e tests)
-  {
-    files: ['*.config.js', 'e2e/**/*.js'],
-    languageOptions: {
-      globals: { ...globals.node },
-    },
-  }
-])
+});

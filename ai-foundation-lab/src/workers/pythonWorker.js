@@ -1,3 +1,4 @@
+/* global loadPyodide */
 // src/workers/pythonWorker.js
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js");
 
@@ -14,7 +15,6 @@ async function initPyodide() {
   return pyodideReadyPromise;
 }
 
-// Initialize immediately and tell the main thread when ready
 initPyodide()
   .then(() => {
     self.postMessage({ type: "ready" });
@@ -24,7 +24,6 @@ initPyodide()
   });
 
 self.onmessage = async (e) => {
-  // Ignore messages that aren't code executions
   if (e.data.type !== "run") return;
   
   const { code } = e.data;
