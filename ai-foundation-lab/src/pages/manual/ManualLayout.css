@@ -1,0 +1,188 @@
+/* src/pages/manual/ManualLayout.css */
+.manual-layout {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .manual-layout {
+    grid-template-columns: 260px 1fr;
+    gap: var(--space-8);
+    align-items: start;
+  }
+}
+
+/* SIDEBAR */
+.manual-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  position: sticky;
+  top: 88px;
+}
+
+@media (max-width: 1023px) {
+  .manual-sidebar {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--glass-border);
+  }
+}
+
+.manual-sidebar__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  padding: var(--space-2) 0;
+  margin: 0;
+}
+
+.manual-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all var(--dur-fast);
+}
+
+.manual-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
+}
+
+.manual-link--active {
+  background: rgba(46, 200, 255, 0.10);
+  color: var(--cyan-400);
+  border-left: 3px solid var(--cyan-400);
+}
+
+/* CONTENT */
+.manual-content {
+  min-width: 0;
+}
+
+.manual-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: manual-fade-in 0.4s var(--ease-out);
+}
+
+@keyframes manual-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.manual-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.manual-page__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-3xl);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+  color: var(--white);
+  margin: 0;
+}
+
+.manual-page__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-lg);
+  color: var(--silver);
+  max-width: 70ch;
+  margin: 0;
+  line-height: var(--lh-relaxed);
+}
+
+/* TYPOGRAPHY UTILS FOR MANUAL */
+.manual-prose {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+}
+
+.manual-prose h3 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xl);
+  color: var(--white);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.manual-prose p {
+  margin-bottom: var(--space-4);
+}
+
+.manual-prose ul, .manual-prose ol {
+  padding-left: var(--space-5);
+  margin-bottom: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.manual-prose li {
+  padding-left: var(--space-2);
+}
+
+.manual-prose strong {
+  color: var(--white);
+}
+
+/* ALERTS / CALLOUTS */
+.manual-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  margin: var(--space-5) 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+}
+
+.manual-callout svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.manual-callout--info {
+  background: rgba(46, 200, 255, 0.08);
+  border: 1px solid rgba(46, 200, 255, 0.3);
+  color: var(--silver);
+}
+.manual-callout--info svg { color: var(--cyan-400); }
+
+.manual-callout--warning {
+  background: rgba(242, 81, 31, 0.08);
+  border: 1px solid rgba(242, 81, 31, 0.3);
+  color: var(--silver);
+}
+.manual-callout--warning svg { color: var(--orange-500); }
+
+.manual-callout--danger {
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.3);
+  color: var(--silver);
+}
+.manual-callout--danger svg { color: #FF6B6B; }

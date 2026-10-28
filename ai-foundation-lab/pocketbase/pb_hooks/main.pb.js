@@ -1125,7 +1125,7 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
       return { date: displayDate, count: signupsMap[date] };
     });
 
-    // 2. Pass/Fail Data (Bulletproof JS Joining)
+    // 2. Pass/Fail Data
     const releasedAttempts = $app.dao().findRecordsByFilter("attempts", "status = 'released'", "", 0, 0, {});
     const releasedAttemptIds = {};
     releasedAttempts.forEach(a => releasedAttemptIds[a.id] = true);
@@ -1189,6 +1189,134 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
   } catch (err) {
     console.error("[admin/analytics] error:", err);
     return c.json(500, { message: "Failed to load analytics.", details: String(err) });
+  }
+});
+
+/* ============================================================
+   GET /api/leaderboard
+   ============================================================ */
+routerAdd("GET", "/api/leaderboard", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const authRecord = info.authRecord;
+    if (!authRecord || authRecord.collection().name !== "profiles") {
+      return c.json(401, { message: "Not authenticated as a student." });
+    }
+
+    const batchFilter = c.queryParam("batch");
+
+    // Fetch all released attempts
+    const releasedAttempts = $app.dao().findRecordsByFilter("attempts", "status = 'released'", "", 0, 0, {});
+    if (releasedAttempts.length === 0) {
+      return c.json(200, { leaderboard: [], batches: [] });
+    }
+
+    const releasedAttemptIds = {};
+    releasedAttempts.forEach(a => releasedAttemptIds[a.id] = true);
+
+    // Fetch associated profiles
+    const studentIds = {};
+    releasedAttempts.forEach(a => studentIds[a.get("student")] = true);
+    
+    const allProfiles = $app.dao().findRecordsByFilter("profiles", "id != ''", "", 0, 0, {});
+    const profileMap = {};
+    allProfiles.forEach(p => {
+      if (studentIds[p.id]) {
+        profileMap[p.id] = {
+          id: p.id,
+          first_name: p.get("first_name"),
+          surname: p.get("surname"),
+          batch: p.get("batch") || "Unassigned"
+        };
+      }
+    });
+
+    // Fetch all AQs and Marks to calculate scores
+    const allAqs = $app.dao().findRecordsByFilter("attempt_questions", "id != ''", "", 0, 0, {});
+    const aqsByAttempt = {};
+    allAqs.forEach(aq => {
+      if (releasedAttemptIds[aq.get("attempt")]) {
+        if (!aqsByAttempt[aq.get("attempt")]) aqsByAttempt[aq.get("attempt")] = [];
+        aqsByAttempt[aq.get("attempt")].push(aq.id);
+      }
+    });
+
+    const allMarks = $app.dao().findRecordsByFilter("marks", "id != ''", "", 0, 0, {});
+    const markMap = {};
+    allMarks.forEach(m => {
+      markMap[m.get("attempt_question")] = {
+        score: Number(m.get("score")) || 0,
+        max_score: Number(m.get("max_score")) || 10
+      };
+    });
+
+    // Calculate highest score per student
+    const bestAttempts = {};
+    const availableBatchesSet = {};
+
+    for (const a of releasedAttempts) {
+      const studentId = a.get("student");
+      const student = profileMap[studentId];
+      if (!student) continue;
+
+      let totalScore = 0;
+      let maxScore = 0;
+      const aqIds = aqsByAttempt[a.id] || [];
+      
+      for (const aqId of aqIds) {
+        const mark = markMap[aqId];
+        if (mark) {
+          totalScore += mark.score;
+          maxScore += mark.max_score;
+        }
+      }
+
+      const passed = totalScore >= 180;
+
+      const attemptData = {
+        studentId,
+        first_name: student.first_name,
+        surname: student.surname,
+        batch: student.batch,
+        totalScore,
+        maxScore,
+        passed
+      };
+
+      // Keep only the highest score for each student
+      if (!bestAttempts[studentId] || totalScore > bestAttempts[studentId].totalScore) {
+        bestAttempts[studentId] = attemptData;
+      }
+      
+      // Track available batches for the dropdown filter
+      availableBatchesSet[student.batch] = true;
+    }
+
+    let list = Object.values(bestAttempts);
+
+    // Apply batch filter if provided
+    if (batchFilter) {
+      list = list.filter(item => item.batch === batchFilter);
+    }
+
+    // Sort by score descending, then name alphabetically for ties
+    list.sort((a, b) => {
+      if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+      return a.surname.localeCompare(b.surname);
+    });
+
+    // Assign ranks (Top 20 only)
+    const leaderboard = list.slice(0, 20).map((item, index) => ({
+      ...item,
+      rank: index + 1
+    }));
+
+    const batches = Object.keys(availableBatchesSet).sort();
+
+    return c.json(200, { leaderboard, batches });
+  } catch (err) {
+    console.error("[leaderboard] error:", err);
+    return c.json(500, { message: "Failed to load leaderboard.", details: String(err) });
   }
 });
 

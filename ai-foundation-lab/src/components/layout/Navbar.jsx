@@ -1,7 +1,7 @@
 // src/components/layout/Navbar.jsx
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X as CloseIcon, User as UserIcon } from "lucide-react";
+import { Menu, X as CloseIcon, User as UserIcon, Trophy } from "lucide-react";
 import LogoMark from "../ui/LogoMark.jsx";
 import Button from "../ui/Button.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -46,6 +46,19 @@ export default function Navbar() {
           >
             Lab guide
           </NavLink>
+
+          {isAuthenticated && (
+            <NavLink
+              to="/leaderboard"
+              className={({ isActive }) =>
+                `navbar__link type-ui ${isActive ? "navbar__link--active" : ""}`
+              }
+              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              <Trophy size={14} />
+              Leaderboard
+            </NavLink>
+          )}
 
           {isAuthenticated ? (
             <NavLink
@@ -100,6 +113,16 @@ export default function Navbar() {
             >
               Lab guide
             </NavLink>
+
+            {isAuthenticated && (
+              <NavLink
+                to="/leaderboard"
+                className="navbar__mobile-link type-h4"
+                onClick={() => setMobileOpen(false)}
+              >
+                Leaderboard
+              </NavLink>
+            )}
 
             {isAuthenticated ? (
               <NavLink

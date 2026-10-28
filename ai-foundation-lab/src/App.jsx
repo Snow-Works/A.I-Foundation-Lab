@@ -17,6 +17,7 @@ import Login from "./pages/Login.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import Profile from "./pages/Profile.jsx";
+import Leaderboard from "./pages/Leaderboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 
@@ -143,6 +144,14 @@ export default function App() {
                     element={
                       <ProtectedRoute>
                         <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="leaderboard"
+                    element={
+                      <ProtectedRoute>
+                        <Leaderboard />
                       </ProtectedRoute>
                     }
                   />
