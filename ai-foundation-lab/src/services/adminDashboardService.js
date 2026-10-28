@@ -4,7 +4,6 @@ import pbAdmin from "../lib/pocketbaseAdmin";
 export async function getDashboardStats() {
   const yesterday = new Date(Date.now() - 86400000).toISOString();
 
-  // Fire all count requests in parallel.
   const [
     totalUsers,
     pendingUsers,
@@ -14,19 +13,11 @@ export async function getDashboardStats() {
     recentViolations,
   ] = await Promise.all([
     pbAdmin.collection("profiles").getList(1, 1),
-    pbAdmin
-      .collection("profiles")
-      .getList(1, 1, { filter: 'status = "EMAIL_VERIFIED"' }),
-    pbAdmin
-      .collection("profiles")
-      .getList(1, 1, { filter: 'status = "REJECTED"' }),
+    pbAdmin.collection("profiles").getList(1, 1, { filter: 'status = "EMAIL_VERIFIED"' }),
+    pbAdmin.collection("profiles").getList(1, 1, { filter: 'status = "REJECTED"' }),
     pbAdmin.collection("attempts").getList(1, 1),
-    pbAdmin
-      .collection("attempts")
-      .getList(1, 1, { filter: 'status = "submitted"' }),
-    pbAdmin
-      .collection("violations")
-      .getList(1, 1, { filter: `occurred_at >= "${yesterday}"` }),
+    pbAdmin.collection("attempts").getList(1, 1, { filter: 'status = "submitted"' }),
+    pbAdmin.collection("violations").getList(1, 1, { filter: `occurred_at >= "${yesterday}"` }),
   ]);
 
   return {
@@ -44,5 +35,15 @@ export async function getRecentSubmissions(limit = 5) {
     filter: 'status = "submitted"',
     sort: "-submitted_at",
     expand: "student",
+  });
+}
+
+export async function getAnalyticsData() {
+  // Explicitly pass the admin token to ensure the custom route authenticates
+  return pbAdmin.send("/api/admin/analytics", { 
+    method: "GET",
+    headers: {
+      "Authorization": pbAdmin.authStore.token
+    }
   });
 }

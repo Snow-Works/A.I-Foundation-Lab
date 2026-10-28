@@ -150,9 +150,66 @@
   color: var(--pink-400);
 }
 
+/* ---------- CHARTS GRID ---------- */
+.admin-dashboard__charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+}
+
+.admin-chart-card--wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1024px) {
+  .admin-dashboard__charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-chart-card {
+  padding: var(--space-5) !important; /* Override Card defaults slightly */
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-chart-card__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-base);
+  color: var(--white);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+}
+
+.admin-chart-card__legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.admin-chart-card__legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-chart-card__legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 /* ---------- RECENT SUBMISSIONS PANEL ---------- */
 .admin-dashboard__panel {
-  margin-top: var(--space-4);
+  margin-top: var(--space-2);
 }
 
 .admin-dashboard__empty {

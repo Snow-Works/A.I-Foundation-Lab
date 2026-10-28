@@ -1,4 +1,4 @@
-// src/pages/admin/AdminDashboard.jsx
+// src/pages/Admin/AdminDashboard.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -11,8 +11,14 @@ import {
   Calendar,
 } from "lucide-react";
 import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+  PieChart, Pie, Cell,
+  BarChart, Bar
+} from "recharts";
+import {
   getDashboardStats,
   getRecentSubmissions,
+  getAnalyticsData
 } from "../../services/adminDashboardService.js";
 import Card from "../../components/ui/Card.jsx";
 import PillTab from "../../components/ui/PillTab.jsx";
@@ -28,9 +34,12 @@ function formatDate(iso) {
   });
 }
 
+const COLORS = ["#2EC8FF", "#FF3FA4", "#F2511F", "#8A2FD0", "#5B2BD6"];
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [submissions, setSubmissions] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -39,13 +48,15 @@ export default function AdminDashboard() {
 
     (async () => {
       try {
-        const [s, subs] = await Promise.all([
+        const [s, subs, a] = await Promise.all([
           getDashboardStats(),
           getRecentSubmissions(5),
+          getAnalyticsData(),
         ]);
         if (cancelled) return;
         setStats(s);
         setSubmissions(subs.items);
+        setAnalytics(a);
       } catch (err) {
         console.error("[admin-dashboard] error:", err);
         if (!cancelled) {
@@ -114,6 +125,16 @@ export default function AdminDashboard() {
     },
   ];
 
+  // Custom tooltip styling to match dark theme
+  const tooltipStyle = {
+    backgroundColor: "rgba(10, 6, 48, 0.95)",
+    borderColor: "var(--glass-border)",
+    borderRadius: "var(--radius-sm)",
+    color: "var(--white)",
+    fontFamily: "var(--font-body)",
+    fontSize: "var(--fs-sm)",
+  };
+
   return (
     <div className="admin-dashboard">
       <header className="admin-dashboard__header">
@@ -144,6 +165,75 @@ export default function AdminDashboard() {
           </div>
         ))}
       </div>
+
+      {/* ---------- CHARTS ---------- */}
+      {analytics && (
+        <div className="admin-dashboard__charts-grid">
+          
+          {/* Signups Over Time */}
+          <Card variant="glass" size="md" className="admin-chart-card admin-chart-card--wide">
+            <h3 className="admin-chart-card__title">Signups (Last 30 Days)</h3>
+            <div style={{ width: "100%", height: 250, marginTop: "var(--space-4)" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={analytics.signups} margin={{ top: 5, right: 20, bottom: 5, left: -20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <XAxis dataKey="date" stroke="rgba(255,255,255,0.4)" tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 12 }} tickLine={false} axisLine={false} />
+                  <YAxis stroke="rgba(255,255,255,0.4)" tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 12 }} tickLine={false} axisLine={false} allowDecimals={false} />
+                  <RechartsTooltip contentStyle={tooltipStyle} itemStyle={{ color: "#2EC8FF" }} />
+                  <Line type="monotone" dataKey="count" stroke="#2EC8FF" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#2EC8FF", stroke: "#0A0630", strokeWidth: 2 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          {/* Pass/Fail Donut */}
+          <Card variant="glass" size="md" className="admin-chart-card">
+            <h3 className="admin-chart-card__title">Pass vs Fail</h3>
+            <div style={{ width: "100%", height: 250, marginTop: "var(--space-4)" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={analytics.passFail}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {analytics.passFail.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index === 0 ? "#2EC8FF" : "#FF3FA4"} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip contentStyle={tooltipStyle} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="admin-chart-card__legend">
+              <span><span className="dot" style={{ background: "#2EC8FF" }}></span> Passed ({analytics.passFail[0]?.value || 0})</span>
+              <span><span className="dot" style={{ background: "#FF3FA4" }}></span> Failed ({analytics.passFail[1]?.value || 0})</span>
+            </div>
+          </Card>
+
+          {/* Violations Bar Chart */}
+          <Card variant="glass" size="md" className="admin-chart-card">
+            <h3 className="admin-chart-card__title">Top Violations</h3>
+            <div style={{ width: "100%", height: 250, marginTop: "var(--space-4)" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analytics.violations} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+                  <XAxis type="number" stroke="rgba(255,255,255,0.4)" tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 12 }} tickLine={false} axisLine={false} allowDecimals={false} />
+                  <YAxis type="category" dataKey="name" stroke="rgba(255,255,255,0.4)" tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }} tickLine={false} axisLine={false} width={90} />
+                  <RechartsTooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
+                  <Bar dataKey="count" fill="#F2511F" radius={[0, 4, 4, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+        </div>
+      )}
 
       {/* ---------- RECENT SUBMISSIONS ---------- */}
       <Card variant="glass" size="md" withTab className="admin-dashboard__panel">
