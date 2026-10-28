@@ -1385,6 +1385,9 @@ onRecordBeforeCreateRequest((e) => {
   }
 });
 
+
+
+
 /* ============================================================
    SUPPORT MESSAGES HOOKS
    ============================================================ */
@@ -1396,12 +1399,12 @@ onRecordBeforeCreateRequest((e) => {
 
   if (auth.collection().name === "profiles") {
     e.record.set("student", auth.id);
-    e.record.set("sender", auth.id);
+    e.record.set("sender_id", auth.id);
     e.record.set("sender_type", "student");
     e.record.set("is_read_by_admin", false);
     e.record.set("is_read_by_student", true);
   } else if (auth.collection().name === "admins") {
-    e.record.set("sender", auth.id);
+    e.record.set("sender_id", auth.id);
     e.record.set("sender_type", "admin");
     e.record.set("is_read_by_admin", true);
     e.record.set("is_read_by_student", false);
@@ -1418,11 +1421,12 @@ onRecordBeforeUpdateRequest((e) => {
   if (auth.collection().name === "profiles") {
     const original = e.record.original();
     if (original) {
-      e.record.set("body", original.get("body"));
-      e.record.set("sender", original.get("sender"));
-      e.record.set("sender_type", original.get("sender_type"));
-      e.record.set("student", original.get("student"));
-      e.record.set("is_read_by_admin", original.get("is_read_by_admin"));
+      // Safely reset all fields except is_read_by_student
+      e.record.set("body", original.get("body") || "");
+      e.record.set("sender_id", original.get("sender_id") || "");
+      e.record.set("sender_type", original.get("sender_type") || "student");
+      e.record.set("student", original.get("student") || "");
+      e.record.set("is_read_by_admin", original.get("is_read_by_admin") || false);
     }
   }
 });

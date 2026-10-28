@@ -27,6 +27,7 @@ import Team from "./pages/Team.jsx";
 import Legal from "./pages/Legal.jsx";
 import Contact from "./pages/Contact.jsx";
 import FAQ from "./pages/FAQ.jsx";
+import Support from "./pages/Support.jsx";
 
 // --- Manual Pages ---
 import ManualLayout from "./pages/manual/ManualLayout.jsx";
@@ -58,6 +59,7 @@ const AdminResults = lazy(() => import("./pages/admin/AdminResults.jsx"));
 const AdminResultDetail = lazy(() => import("./pages/admin/AdminResultDetail.jsx"));
 const AdminGate = lazy(() => import("./pages/admin/AdminGate.jsx"));
 const AdminStatus = lazy(() => import("./pages/admin/AdminStatus.jsx"));
+const AdminSupport = lazy(() => import("./pages/admin/AdminSupport.jsx"));
 
 function RouteFallback() {
   return (
@@ -108,6 +110,7 @@ export default function App() {
                   <Route path="violations" element={<AdminViolations />} />
                   <Route path="audit" element={<AdminAudit />} />
                   <Route path="status" element={<AdminStatus />} />
+                  <Route path="support" element={<AdminSupport />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
 
@@ -134,6 +137,14 @@ export default function App() {
                     element={
                       <ProtectedRoute>
                         <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="support"
+                    element={
+                      <ProtectedRoute>
+                        <Support />
                       </ProtectedRoute>
                     }
                   />
@@ -178,7 +189,7 @@ export default function App() {
                     }
                   />
 
-                  {/* --- NEW LAB MANUAL --- */}
+                  {/* --- LAB MANUAL --- */}
                   <Route path="manual" element={<ManualLayout />}>
                     <Route index element={<Welcome />} />
                     <Route path="student-journey" element={<StudentJourney />} />

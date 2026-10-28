@@ -15,6 +15,7 @@ import {
   Activity,
   Award,
   Key,
+  MessageSquare,
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import LogoMark from "../../components/ui/LogoMark.jsx";
@@ -27,10 +28,11 @@ const NAV_ITEMS = [
   { to: "/admin/gate", label: "Exam Gate", icon: Key },
   { to: "/admin/submissions", label: "Submissions", icon: FileText },
   { to: "/admin/results", label: "Results", icon: Award },
+  { to: "/admin/support", label: "Support Inbox", icon: MessageSquare },
   { to: "/admin/questions", label: "Questions", icon: FileText },
   { to: "/admin/violations", label: "Violations", icon: ShieldAlert },
   { to: "/admin/audit", label: "Audit Trail", icon: Activity },
-  { to: "/admin/status", label: "System Status", icon: Activity }, // NEW
+  { to: "/admin/status", label: "System Status", icon: Activity },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -108,7 +110,7 @@ export default function AdminLayout() {
       </aside>
 
       <main className="admin-main">
-        {!isMarkingPage ? (
+        {!isMarkingPage && !location.pathname.includes("/admin/support") ? (
           <>
             <header className="admin-topbar">
               <button
@@ -124,7 +126,7 @@ export default function AdminLayout() {
             </div>
           </>
         ) : (
-          <div style={{ flex: 1, minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+          <div style={{ flex: 1, minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column", padding: "var(--space-4)" }}>
              <Outlet />
           </div>
         )}
