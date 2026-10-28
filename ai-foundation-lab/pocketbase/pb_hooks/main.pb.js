@@ -1388,6 +1388,8 @@ onRecordBeforeCreateRequest((e) => {
 
 
 
+
+
 /* ============================================================
    SUPPORT MESSAGES HOOKS
    ============================================================ */
@@ -1417,16 +1419,16 @@ onRecordBeforeUpdateRequest((e) => {
   const auth = e.httpContext.get("authRecord");
   if (!auth) return;
 
-  // Prevent students from editing the body or sender after creation
   if (auth.collection().name === "profiles") {
     const original = e.record.original();
     if (original) {
-      // Safely reset all fields except is_read_by_student
       e.record.set("body", original.get("body") || "");
       e.record.set("sender_id", original.get("sender_id") || "");
       e.record.set("sender_type", original.get("sender_type") || "student");
       e.record.set("student", original.get("student") || "");
       e.record.set("is_read_by_admin", original.get("is_read_by_admin") || false);
+      e.record.set("attachment", original.get("attachment") || "");
+      e.record.set("message_type", original.get("message_type") || "text");
     }
   }
 });

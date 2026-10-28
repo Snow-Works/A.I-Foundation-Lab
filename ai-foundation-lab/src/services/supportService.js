@@ -15,15 +15,24 @@ export async function getStudentMessages(studentId) {
   });
 }
 
-export async function sendStudentMessage(studentId, body) {
-  return pb.collection(COLLECTION).create({
-    student: studentId,
-    sender_id: studentId,
-    sender_type: "student",
-    body: body,
-    is_read_by_admin: false,
-    is_read_by_student: true,
-  });
+export async function sendStudentMessage(studentId, body, file = null) {
+  const formData = new FormData();
+  formData.append("student", studentId);
+  formData.append("sender_id", studentId);
+  formData.append("sender_type", "student");
+  formData.append("is_read_by_admin", "false");
+  formData.append("is_read_by_student", "true");
+
+  let type = "text";
+  if (file) {
+    formData.append("attachment", file);
+    type = file.type.startsWith("image/") ? "image" : "video";
+  }
+  formData.append("message_type", type);
+
+  if (body) formData.append("body", body);
+
+  return pb.collection(COLLECTION).create(formData);
 }
 
 export async function markMessagesReadByStudent(studentId) {
@@ -31,13 +40,11 @@ export async function markMessagesReadByStudent(studentId) {
     const unread = await pb.collection(COLLECTION).getFullList({
       filter: `student = "${studentId}" && sender_type = "admin" && is_read_by_student = false`,
     });
-
     for (const msg of unread) {
       await pb.collection(COLLECTION).update(msg.id, { is_read_by_student: true });
     }
   } catch (err) {
     console.warn("[support] failed to mark messages as read:", err);
-    // Silently fail so it doesn't break the UI
   }
 }
 
@@ -82,15 +89,24 @@ export async function getAdminThread(studentId) {
   });
 }
 
-export async function sendAdminMessage(studentId, adminId, body) {
-  return pbAdmin.collection(COLLECTION).create({
-    student: studentId,
-    sender_id: adminId,
-    sender_type: "admin",
-    body: body,
-    is_read_by_admin: true,
-    is_read_by_student: false,
-  });
+export async function sendAdminMessage(studentId, adminId, body, file = null) {
+  const formData = new FormData();
+  formData.append("student", studentId);
+  formData.append("sender_id", adminId);
+  formData.append("sender_type", "admin");
+  formData.append("is_read_by_admin", "true");
+  formData.append("is_read_by_student", "false");
+
+  let type = "text";
+  if (file) {
+    formData.append("attachment", file);
+    type = file.type.startsWith("image/") ? "image" : "video";
+  }
+  formData.append("message_type", type);
+
+  if (body) formData.append("body", body);
+
+  return pbAdmin.collection(COLLECTION).create(formData);
 }
 
 export async function markThreadReadByAdmin(studentId) {
@@ -98,7 +114,6 @@ export async function markThreadReadByAdmin(studentId) {
     const unread = await pbAdmin.collection(COLLECTION).getFullList({
       filter: `student = "${studentId}" && sender_type = "student" && is_read_by_admin = false`,
     });
-
     for (const msg of unread) {
       await pbAdmin.collection(COLLECTION).update(msg.id, { is_read_by_admin: true });
     }
