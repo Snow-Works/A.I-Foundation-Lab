@@ -1,5 +1,7 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+/// <reference path="../pb_data/types.d.ts" />
+
 /* ============================================================
    PING TEST ROUTE
    ============================================================ */
@@ -1011,9 +1013,6 @@ routerAdd("GET", "/api/admin/status", (c) => {
     const totalStudents = $app.dao().findRecordsByFilter("profiles", "id != ''", "", 0, 0, {}).length;
     const totalAttempts = $app.dao().findRecordsByFilter("attempts", "id != ''", "", 0, 0, {}).length;
     
-    const activeExams = 0; // We will calculate this below
-    const stalledExams = 0;
-    
     const pendingMarking = $app.dao().findRecordsByFilter(
       "attempts", "status = 'submitted'", "", 0, 0, {}
     ).length;
@@ -1089,6 +1088,111 @@ routerAdd("POST", "/api/admin/sweep", (c) => {
 });
 
 /* ============================================================
+   GET /api/admin/analytics
+   ============================================================ */
+routerAdd("GET", "/api/admin/analytics", (c) => {
+  try {
+    const info = $apis.requestInfo(c);
+    const adminRecord = info.authRecord;
+    if (!adminRecord || adminRecord.collection().name !== "admins") {
+      return c.json(401, { message: "Not authenticated as an admin." });
+    }
+
+    // 1. Signups Data (Last 30 Days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().replace("T", " ").substring(0, 19);
+
+    const recentProfiles = $app.dao().findRecordsByFilter("profiles", "created >= {:date}", "", 0, 0, { date: thirtyDaysAgoStr });
+    
+    const signupsMap = {};
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - (29 - i));
+      const dateStr = d.toISOString().substring(0, 10); // YYYY-MM-DD
+      signupsMap[dateStr] = 0;
+    }
+
+    recentProfiles.forEach(p => {
+      const createdStr = p.get("created").substring(0, 10);
+      if (signupsMap[createdStr] !== undefined) {
+        signupsMap[createdStr]++;
+      }
+    });
+
+    const signupsData = Object.keys(signupsMap).map(date => {
+      const parts = date.split("-");
+      const displayDate = `${parts[1]}/${parts[2]}`; // MM/DD
+      return { date: displayDate, count: signupsMap[date] };
+    }).sort((a, b) => new Date(`2026-${a.date}`) - new Date(`2026-${b.date}`));
+
+    // 2. Pass/Fail Data
+    const releasedAttempts = $app.dao().findRecordsByFilter("attempts", "status = 'released'", "", 0, 0, {});
+    const attemptIds = releasedAttempts.map(a => a.id);
+    
+    let passCount = 0;
+    let failCount = 0;
+    const PASS_MARK = 180;
+
+    if (attemptIds.length > 0) {
+      const aqs = $app.dao().findRecordsByFilter("attempt_questions", "attempt IN {:attempts}", "", 0, 0, { attempts: attemptIds });
+      const aqIds = aqs.map(a => a.id);
+      
+      if (aqIds.length > 0) {
+        const marks = $app.dao().findRecordsByFilter("marks", "attempt_question IN {:aqs}", "", 0, 0, { aqs: aqIds });
+        
+        const scores = {};
+        for (const m of marks) {
+          const aqId = m.get("attempt_question");
+          scores[aqId] = (scores[aqId] || 0) + (Number(m.get("score")) || 0);
+        }
+        
+        for (const a of releasedAttempts) {
+          let total = 0;
+          for (const aq of aqs) {
+            if (aq.get("attempt") === a.id) {
+              total += scores[aq.id] || 0;
+            }
+          }
+          if (total >= PASS_MARK) passCount++;
+          else failCount++;
+        }
+      } else {
+        failCount = releasedAttempts.length;
+      }
+    }
+
+    const passFailData = [
+      { name: "Passed", value: passCount },
+      { name: "Failed", value: failCount }
+    ];
+
+    // 3. Violations Data
+    const violations = $app.dao().findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
+    const violationsMap = {};
+    violations.forEach(v => {
+      const type = v.get("type");
+      violationsMap[type] = (violationsMap[type] || 0) + 1;
+    });
+
+    const violationsData = Object.keys(violationsMap).map(type => {
+      let displayType = type.replace(/_/g, " ");
+      displayType = displayType.charAt(0).toUpperCase() + displayType.slice(1);
+      return { name: displayType, count: violationsMap[type] };
+    }).sort((a, b) => b.count - a.count).slice(0, 5); // Top 5 violations
+
+    return c.json(200, {
+      signups: signupsData,
+      passFail: passFailData,
+      violations: violationsData
+    });
+  } catch (err) {
+    console.error("[admin/analytics] error:", err);
+    return c.json(500, { message: "Failed to load analytics.", details: String(err) });
+  }
+});
+
+/* ============================================================
    Roster enforcement on profile creation.
    + Auto-assign batch from roster.
    ============================================================ */
@@ -1137,7 +1241,6 @@ onRecordBeforeCreateRequest((e) => {
     );
     
     if (exact.length > 0) {
-      // Auto-inject the batch from the roster if it exists
       const rosterBatch = exact[0].get("batch");
       if (rosterBatch && !e.record.get("batch")) {
         e.record.set("batch", rosterBatch);
