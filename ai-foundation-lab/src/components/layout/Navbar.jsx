@@ -1,7 +1,7 @@
 // src/components/layout/Navbar.jsx
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X as CloseIcon, User as UserIcon, Trophy } from "lucide-react";
+import { Menu, X as CloseIcon, User as UserIcon, Trophy, BookOpen } from "lucide-react";
 import LogoMark from "../ui/LogoMark.jsx";
 import Button from "../ui/Button.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -39,12 +39,14 @@ export default function Navbar() {
 
         <nav className="navbar__links" aria-label="Primary">
           <NavLink
-            to="/style-guide"
+            to="/manual"
             className={({ isActive }) =>
               `navbar__link type-ui ${isActive ? "navbar__link--active" : ""}`
             }
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
-            Lab guide
+            <BookOpen size={14} />
+            Lab Manual
           </NavLink>
 
           {isAuthenticated && (
@@ -107,11 +109,11 @@ export default function Navbar() {
             style={{ display: "grid", gap: "var(--space-4)" }}
           >
             <NavLink
-              to="/style-guide"
+              to="/manual"
               className="navbar__mobile-link type-h4"
               onClick={() => setMobileOpen(false)}
             >
-              Lab guide
+              Lab Manual
             </NavLink>
 
             {isAuthenticated && (

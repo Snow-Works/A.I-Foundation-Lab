@@ -21,6 +21,14 @@ import Leaderboard from "./pages/Leaderboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 
+// --- Manual Pages ---
+import ManualLayout from "./pages/manual/ManualLayout.jsx";
+import Welcome from "./pages/manual/Welcome.jsx";
+import StudentJourney from "./pages/manual/StudentJourney.jsx";
+import ExamEnvironment from "./pages/manual/ExamEnvironment.jsx";
+import RulesProctoring from "./pages/manual/RulesProctoring.jsx";
+import EmergencyProtocol from "./pages/manual/EmergencyProtocol.jsx";
+
 // --- Lazy Loaded (Heavy / Secondary pages) ---
 const PhotoUpload = lazy(() => import("./pages/PhotoUpload.jsx"));
 const ExamGate = lazy(() => import("./pages/ExamGate.jsx"));
@@ -49,23 +57,6 @@ const AdminResultDetail = lazy(() =>
 );
 const AdminGate = lazy(() => import("./pages/admin/AdminGate.jsx"));
 const AdminStatus = lazy(() => import("./pages/admin/AdminStatus.jsx"));
-
-// --- Lazy Loaded Style Guide ---
-const StyleGuideLayout = lazy(() =>
-  import("./pages/style-guide/StyleGuideLayout.jsx")
-);
-const StyleGuideIndex = lazy(() =>
-  import("./pages/style-guide/StyleGuideIndex.jsx")
-);
-const Foundations = lazy(() =>
-  import("./pages/style-guide/sections/Foundations.jsx")
-);
-const Components = lazy(() =>
-  import("./pages/style-guide/sections/Components.jsx")
-);
-const Patterns = lazy(() =>
-  import("./pages/style-guide/sections/Patterns.jsx")
-);
 
 function RouteFallback() {
   return (
@@ -188,11 +179,13 @@ export default function App() {
                     }
                   />
 
-                  <Route path="style-guide" element={<StyleGuideLayout />}>
-                    <Route index element={<StyleGuideIndex />} />
-                    <Route path="foundations" element={<Foundations />} />
-                    <Route path="components" element={<Components />} />
-                    <Route path="patterns" element={<Patterns />} />
+                  {/* --- NEW LAB MANUAL --- */}
+                  <Route path="manual" element={<ManualLayout />}>
+                    <Route index element={<Welcome />} />
+                    <Route path="student-journey" element={<StudentJourney />} />
+                    <Route path="exam-environment" element={<ExamEnvironment />} />
+                    <Route path="rules-proctoring" element={<RulesProctoring />} />
+                    <Route path="emergency" element={<EmergencyProtocol />} />
                   </Route>
 
                   <Route path="*" element={<NotFound />} />
