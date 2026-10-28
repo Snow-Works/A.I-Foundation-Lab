@@ -1,7 +1,9 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+/// <reference path="../pb_data/types.d.ts" />
+
 /* ============================================================
-   PING TEST ROUTE (to verify hooks are loading)
+   PING TEST ROUTE
    ============================================================ */
 routerAdd("GET", "/api/ping", (c) => {
   return c.json(200, { message: "pong" });
@@ -20,23 +22,22 @@ routerAdd("POST", "/api/exam/start", (c) => {
 
     /* ---------- 1. AUTO-EXPIRY SWEEPER ---------- */
     try {
-      const expiredAttempts = $app.dao().findRecordsByFilter(
-        "attempts",
-        "student = {:student} && status = 'in_progress' && deadline_at < {:now}",
-        "",
-        0,
-        0,
-        { student: authRecord.id, now: new Date().toISOString() }
-      );
-
-      for (const expired of expiredAttempts) {
-        expired.set("status", "submitted");
-        expired.set("submitted_at", expired.get("deadline_at"));
-        expired.set("auto_terminated", true);
-        $app.dao().saveRecord(expired);
+      const now = new Date();
+      const inProgress = $app.dao().findRecordsByFilter("attempts", "student = {:student} && status = 'in_progress'", "", 0, 0, { student: authRecord.id });
+      let swept = 0;
+      
+      for (const expired of inProgress) {
+        const deadlineStr = expired.get("deadline_at");
+        if (deadlineStr && new Date(deadlineStr) < now) {
+          expired.set("status", "submitted");
+          expired.set("submitted_at", deadlineStr);
+          expired.set("auto_terminated", true);
+          $app.dao().saveRecord(expired);
+          swept++;
+        }
       }
 
-      if (expiredAttempts.length > 0 && authRecord.get("status") === "EXAM_IN_PROGRESS") {
+      if (swept > 0 && authRecord.get("status") === "EXAM_IN_PROGRESS") {
         authRecord.set("status", "IDENTITY_CONFIRMED");
         $app.dao().saveRecord(authRecord);
       }
@@ -53,7 +54,7 @@ routerAdd("POST", "/api/exam/start", (c) => {
 
     let settings = null;
     try {
-      const list = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0);
+      const list = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0, {});
       settings = list[0] || null;
     } catch (_) {}
 
@@ -99,7 +100,8 @@ routerAdd("POST", "/api/exam/start", (c) => {
         "is_active = true",
         "",
         1,
-        0
+        0,
+        {}
       );
       blueprint = bps[0] || null;
     } catch (_) {}
@@ -115,7 +117,8 @@ routerAdd("POST", "/api/exam/start", (c) => {
       "active = true",
       "",
       0,
-      0
+      0,
+      {}
     );
 
     if (allActive.length < totalQuestions) {
@@ -520,7 +523,7 @@ routerAdd("GET", "/api/exam/meta", (c) => {
 
     let settings = null;
     try {
-      const list = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0);
+      const list = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0, {});
       settings = list[0] || null;
     } catch (_) {}
 
@@ -531,7 +534,8 @@ routerAdd("GET", "/api/exam/meta", (c) => {
         "is_active = true",
         "",
         1,
-        0
+        0,
+        {}
       );
       blueprint = bps[0] || null;
     } catch (_) {}
@@ -829,7 +833,8 @@ routerAdd("POST", "/api/admin/roster/upload", (c) => {
         "id != ''",
         "",
         10000,
-        0
+        0,
+        {}
       );
       existing.forEach((r) => {
         const fname = String(r.get("first_name") || "").trim().toLowerCase();
@@ -993,7 +998,7 @@ routerAdd("POST", "/api/admin/users/delete", (c) => {
 });
 
 /* ============================================================
-   GET /api/admin/status
+   GET /api/admin/status (BULLETPROOF JS DATE LOGIC)
    ============================================================ */
 routerAdd("GET", "/api/admin/status", (c) => {
   try {
@@ -1003,23 +1008,29 @@ routerAdd("GET", "/api/admin/status", (c) => {
       return c.json(401, { message: "Not authenticated as an admin." });
     }
 
-    const now = new Date().toISOString();
-
-    // Correct count logic using .length
-    const totalStudents = $app.dao().findRecordsByFilter("profiles", "", "", 0, 0).length;
-    const totalAttempts = $app.dao().findRecordsByFilter("attempts", "", "", 0, 0).length;
+    const now = new Date();
     
-    const activeExams = $app.dao().findRecordsByFilter(
-      "attempts", "status = 'in_progress' && deadline_at >= {:now}", "", 0, 0, { now }
-    ).length;
+    const totalStudents = $app.dao().findRecordsByFilter("profiles", "", "", 0, 0, {}).length;
+    const totalAttempts = $app.dao().findRecordsByFilter("attempts", "", "", 0, 0, {}).length;
+    const pendingMarking = $app.dao().findRecordsByFilter("attempts", "status = 'submitted'", "", 0, 0, {}).length;
 
-    const stalledExams = $app.dao().findRecordsByFilter(
-      "attempts", "status = 'in_progress' && deadline_at < {:now}", "", 0, 0, { now }
-    ).length;
+    const inProgress = $app.dao().findRecordsByFilter("attempts", "status = 'in_progress'", "", 0, 0, {});
+    let activeExams = 0;
+    let stalledExams = 0;
 
-    const pendingMarking = $app.dao().findRecordsByFilter(
-      "attempts", "status = 'submitted'", "", 0, 0
-    ).length;
+    for (const attempt of inProgress) {
+      const deadlineStr = attempt.get("deadline_at");
+      if (deadlineStr) {
+        const deadline = new Date(deadlineStr);
+        if (deadline < now) {
+          stalledExams++;
+        } else {
+          activeExams++;
+        }
+      } else {
+        stalledExams++; // If no deadline, treat as stalled
+      }
+    }
 
     return c.json(200, {
       totalStudents,
@@ -1027,7 +1038,7 @@ routerAdd("GET", "/api/admin/status", (c) => {
       activeExams,
       stalledExams,
       pendingMarking,
-      serverTime: now,
+      serverTime: now.toISOString(),
     });
   } catch (err) {
     console.error("[admin/status] error:", err);
@@ -1036,7 +1047,7 @@ routerAdd("GET", "/api/admin/status", (c) => {
 });
 
 /* ============================================================
-   POST /api/admin/sweep
+   POST /api/admin/sweep (BULLETPROOF JS DATE LOGIC)
    ============================================================ */
 routerAdd("POST", "/api/admin/sweep", (c) => {
   try {
@@ -1046,27 +1057,31 @@ routerAdd("POST", "/api/admin/sweep", (c) => {
       return c.json(401, { message: "Not authenticated as an admin." });
     }
 
-    const now = new Date().toISOString();
-    const expiredAttempts = $app.dao().findRecordsByFilter(
-      "attempts", "status = 'in_progress' && deadline_at < {:now}", "", 0, 0, { now }
-    );
-
+    const now = new Date();
+    const inProgress = $app.dao().findRecordsByFilter("attempts", "status = 'in_progress'", "", 0, 0, {});
+    
     let swept = 0;
-    for (const expired of expiredAttempts) {
-      expired.set("status", "submitted");
-      expired.set("submitted_at", expired.get("deadline_at"));
-      expired.set("auto_terminated", true);
-      $app.dao().saveRecord(expired);
+    for (const expired of inProgress) {
+      const deadlineStr = expired.get("deadline_at");
+      if (deadlineStr) {
+        const deadline = new Date(deadlineStr);
+        if (deadline < now) {
+          expired.set("status", "submitted");
+          expired.set("submitted_at", deadlineStr);
+          expired.set("auto_terminated", true);
+          $app.dao().saveRecord(expired);
 
-      try {
-        const profile = $app.dao().findRecordById("profiles", expired.get("student"));
-        if (profile.get("status") === "EXAM_IN_PROGRESS") {
-          profile.set("status", "SUBMITTED");
-          $app.dao().saveRecord(profile);
+          try {
+            const profile = $app.dao().findRecordById("profiles", expired.get("student"));
+            if (profile.get("status") === "EXAM_IN_PROGRESS") {
+              profile.set("status", "SUBMITTED");
+              $app.dao().saveRecord(profile);
+            }
+          } catch (_) {}
+
+          swept++;
         }
-      } catch (_) {}
-
-      swept++;
+      }
     }
 
     return c.json(200, { success: true, swept });
@@ -1094,7 +1109,7 @@ onRecordBeforeCreateRequest((e) => {
 
   let requireMatch = false;
   try {
-    const settings = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0);
+    const settings = $app.dao().findRecordsByFilter("app_settings", "", "", 1, 0, {});
     if (settings.length > 0) {
       requireMatch = settings[0].get("require_roster_match") === true;
     }
