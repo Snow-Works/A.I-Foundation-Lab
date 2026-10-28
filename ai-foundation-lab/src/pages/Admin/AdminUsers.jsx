@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   ShieldCheck,
   Trash2,
+  Layers,
 } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext.jsx";
 import {
@@ -23,6 +24,7 @@ import {
   rejectUser,
   deleteUser,
   adminPhotoUrl,
+  getBatches,
 } from "../../services/adminUserService.js";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
@@ -71,6 +73,8 @@ export default function AdminUsers() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [statusFilter, setStatusFilter] = useState("EMAIL_VERIFIED");
+  const [batchFilter, setBatchFilter] = useState("all");
+  const [availableBatches, setAvailableBatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -83,6 +87,10 @@ export default function AdminUsers() {
   const [actionPending, setActionPending] = useState(false);
   const [actionError, setActionError] = useState("");
 
+  useEffect(() => {
+    getBatches().then(setAvailableBatches).catch(console.error);
+  }, []);
+
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -92,6 +100,7 @@ export default function AdminUsers() {
         perPage,
         search,
         statusFilter,
+        batchFilter,
       });
       setUsers(result.items);
       setTotalItems(result.totalItems);
@@ -102,7 +111,7 @@ export default function AdminUsers() {
     } finally {
       setLoading(false);
     }
-  }, [page, perPage, search, statusFilter]);
+  }, [page, perPage, search, statusFilter, batchFilter]);
 
   useEffect(() => {
     fetchUsers();
@@ -116,6 +125,11 @@ export default function AdminUsers() {
 
   const handleStatusChange = (value) => {
     setStatusFilter(value);
+    setPage(1);
+  };
+
+  const handleBatchChange = (value) => {
+    setBatchFilter(value);
     setPage(1);
   };
 
@@ -174,8 +188,6 @@ export default function AdminUsers() {
     try {
       await deleteUser(deleteTarget.id);
       setDeleteTarget(null);
-      
-      // If we just deleted the only user on a page > 1, go back a page
       if (users.length === 1 && page > 1) {
         setPage((p) => p - 1);
       } else {
@@ -220,25 +232,33 @@ export default function AdminUsers() {
 
       {/* Filters */}
       <div className="admin-users__filters">
-        <form
-          className="admin-users__search"
-          onSubmit={handleSearchSubmit}
-        >
-          <Search size={16} className="admin-users__search-icon" />
-          <input
-            type="text"
-            className="admin-users__search-input"
-            placeholder="Search by name or email…"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="admin-users__search-submit"
+        <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
+          <form className="admin-users__search" onSubmit={handleSearchSubmit} style={{ flex: 1, minWidth: 260 }}>
+            <Search size={16} className="admin-users__search-icon" />
+            <input
+              type="text"
+              className="admin-users__search-input"
+              placeholder="Search by name or email…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+            <button type="submit" className="admin-users__search-submit">
+              Search
+            </button>
+          </form>
+
+          <select
+            className="q-form__select"
+            style={{ width: "auto", minWidth: 180, height: 42, marginTop: 0 }}
+            value={batchFilter}
+            onChange={(e) => handleBatchChange(e.target.value)}
           >
-            Search
-          </button>
-        </form>
+            <option value="all">All Batches</option>
+            {availableBatches.map((b) => (
+              <option key={b} value={b}>{b}</option>
+            ))}
+          </select>
+        </div>
 
         <div className="admin-users__chips">
           {STATUS_OPTIONS.map((opt) => (
@@ -282,6 +302,7 @@ export default function AdminUsers() {
               <thead>
                 <tr>
                   <th>Student</th>
+                  <th>Batch</th>
                   <th>Contact</th>
                   <th>Status</th>
                   <th>Registered</th>
@@ -332,6 +353,12 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td>
+                        <span className="badge badge--silver" style={{ whiteSpace: "nowrap" }}>
+                          <Layers size={10} style={{ marginRight: 4 }} />
+                          {user.batch || "—"}
+                        </span>
+                      </td>
+                      <td>
                         <div className="admin-contact">
                           <span>
                             <Mail size={12} /> {user.email}
@@ -380,7 +407,6 @@ export default function AdminUsers() {
                             </button>
                           )}
                           
-                          {/* Delete Button (Icon Only, Red) */}
                           {admin && user.id !== admin.id && (
                             <button
                               type="button"
