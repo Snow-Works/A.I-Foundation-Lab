@@ -1,4 +1,4 @@
-// src/pages/admin/AdminLogin.jsx
+// src/pages/Admin/AdminLogin.jsx
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
