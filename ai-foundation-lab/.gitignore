@@ -33,3 +33,11 @@ pocketbase/LICENSE.md
 # Local env
 .env
 .env.local
+
+
+
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
