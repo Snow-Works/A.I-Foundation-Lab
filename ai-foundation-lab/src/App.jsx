@@ -47,6 +47,7 @@ const AdminResultDetail = lazy(() =>
   import("./pages/admin/AdminResultDetail.jsx")
 );
 const AdminGate = lazy(() => import("./pages/admin/AdminGate.jsx"));
+const AdminStatus = lazy(() => import("./pages/admin/AdminStatus.jsx"));
 
 // --- Lazy Loaded Style Guide ---
 const StyleGuideLayout = lazy(() =>
@@ -119,6 +120,7 @@ export default function App() {
                   <Route path="questions" element={<AdminQuestions />} />
                   <Route path="violations" element={<AdminViolations />} />
                   <Route path="audit" element={<AdminAudit />} />
+                  <Route path="status" element={<AdminStatus />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
 
