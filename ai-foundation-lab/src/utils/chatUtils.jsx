@@ -30,7 +30,6 @@ export function renderTextWithLinks(text) {
 export function renderAttachment(msg, isAdminView = false) {
   if (!msg.attachment) return null;
   
-  // Use pbAdmin for admin views, pb for student views
   const client = isAdminView ? pbAdmin : pb;
   const url = client.files.getUrl(msg, msg.attachment);
 
@@ -61,6 +60,21 @@ export function renderAttachment(msg, isAdminView = false) {
           maxWidth: "100%",
           maxHeight: "300px",
           borderRadius: "var(--radius-sm)",
+          marginTop: msg.body ? "var(--space-2)" : "0",
+          display: "block",
+        }}
+      />
+    );
+  }
+
+  if (msg.message_type === "audio") {
+    return (
+      <audio
+        src={url}
+        controls
+        style={{
+          width: "100%",
+          minWidth: "250px",
           marginTop: msg.body ? "var(--space-2)" : "0",
           display: "block",
         }}

@@ -16,23 +16,36 @@ export async function getStudentMessages(studentId) {
 }
 
 export async function sendStudentMessage(studentId, body, file = null) {
-  const formData = new FormData();
-  formData.append("student", studentId);
-  formData.append("sender_id", studentId);
-  formData.append("sender_type", "student");
-  formData.append("is_read_by_admin", "false");
-  formData.append("is_read_by_student", "true");
-
   let type = "text";
   if (file) {
-    formData.append("attachment", file);
-    type = file.type.startsWith("image/") ? "image" : "video";
+    if (file.type.startsWith("image/")) type = "image";
+    else if (file.type.startsWith("video/")) type = "video";
+    else if (file.type.startsWith("audio/")) type = "audio";
   }
-  formData.append("message_type", type);
 
-  if (body) formData.append("body", body);
+  if (file) {
+    const formData = new FormData();
+    formData.append("student", studentId);
+    formData.append("sender_id", studentId);
+    formData.append("sender_type", "student");
+    formData.append("is_read_by_admin", "false");
+    formData.append("is_read_by_student", "true");
+    formData.append("message_type", type);
+    if (body) formData.append("body", body);
+    formData.append("attachment", file);
 
-  return pb.collection(COLLECTION).create(formData);
+    return pb.collection(COLLECTION).create(formData);
+  } else {
+    return pb.collection(COLLECTION).create({
+      student: studentId,
+      sender_id: studentId,
+      sender_type: "student",
+      is_read_by_admin: false,
+      is_read_by_student: true,
+      message_type: type,
+      body: body,
+    });
+  }
 }
 
 export async function markMessagesReadByStudent(studentId) {
@@ -90,23 +103,36 @@ export async function getAdminThread(studentId) {
 }
 
 export async function sendAdminMessage(studentId, adminId, body, file = null) {
-  const formData = new FormData();
-  formData.append("student", studentId);
-  formData.append("sender_id", adminId);
-  formData.append("sender_type", "admin");
-  formData.append("is_read_by_admin", "true");
-  formData.append("is_read_by_student", "false");
-
   let type = "text";
   if (file) {
-    formData.append("attachment", file);
-    type = file.type.startsWith("image/") ? "image" : "video";
+    if (file.type.startsWith("image/")) type = "image";
+    else if (file.type.startsWith("video/")) type = "video";
+    else if (file.type.startsWith("audio/")) type = "audio";
   }
-  formData.append("message_type", type);
 
-  if (body) formData.append("body", body);
+  if (file) {
+    const formData = new FormData();
+    formData.append("student", studentId);
+    formData.append("sender_id", adminId);
+    formData.append("sender_type", "admin");
+    formData.append("is_read_by_admin", "true");
+    formData.append("is_read_by_student", "false");
+    formData.append("message_type", type);
+    if (body) formData.append("body", body);
+    formData.append("attachment", file);
 
-  return pbAdmin.collection(COLLECTION).create(formData);
+    return pbAdmin.collection(COLLECTION).create(formData);
+  } else {
+    return pbAdmin.collection(COLLECTION).create({
+      student: studentId,
+      sender_id: adminId,
+      sender_type: "admin",
+      is_read_by_admin: true,
+      is_read_by_student: false,
+      message_type: type,
+      body: body,
+    });
+  }
 }
 
 export async function markThreadReadByAdmin(studentId) {

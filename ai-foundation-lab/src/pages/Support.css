@@ -253,3 +253,222 @@
   transform: translate(-50%, -50%);
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
+
+
+
+
+
+
+
+
+/* Emoji Picker */
+.support__emoji-picker,
+.admin-support__emoji-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(10, 6, 48, 0.95);
+  border-top: 1px solid var(--glass-border);
+}
+
+.support__emoji-picker button,
+.admin-support__emoji-picker button {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform var(--dur-fast);
+}
+
+.support__emoji-picker button:hover,
+.admin-support__emoji-picker button:hover {
+  transform: scale(1.2);
+}
+
+/* Recording State */
+.support__recording-state,
+.admin-support__recording-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--alert-red);
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-sm);
+  animation: support-pulse 1.5s infinite;
+}
+
+@keyframes support-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.support__recording-dot,
+.admin-support__recording-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--alert-red);
+}
+
+.support__stop-btn,
+.admin-support__stop-btn {
+  margin-left: auto;
+  padding: 6px 12px;
+  background: var(--alert-red);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+}
+
+
+
+
+
+
+
+
+/* Video Modal */
+.video-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: var(--space-4);
+}
+
+.video-modal {
+  background: var(--ink-950);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8);
+}
+
+.video-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.video-modal__header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--white);
+}
+
+.video-modal__close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.video-modal__close:hover { color: var(--white); }
+
+.video-modal__preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video-modal__preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-modal__rec-dot {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--alert-red);
+  animation: video-pulse 1s infinite;
+}
+
+@keyframes video-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.video-modal__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5);
+  background: var(--ink-950);
+}
+
+.video-modal__switch {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--white);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-fast);
+}
+.video-modal__switch:hover { background: rgba(255, 255, 255, 0.2); }
+.video-modal__switch:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.video-modal__record-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 4px solid var(--white);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.video-modal__record-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--alert-red);
+  transition: all var(--dur-fast);
+}
+
+.video-modal__record-btn--recording .video-modal__record-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+}
+
+.video-modal__stop-square {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+  background: var(--alert-red);
+}

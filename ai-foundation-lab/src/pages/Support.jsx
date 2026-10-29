@@ -1,7 +1,7 @@
 // src/pages/Support.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Send, Loader2, Paperclip, X } from "lucide-react";
+import { ArrowLeft, Send, Loader2, Paperclip, X, Mic, Smile, Video, SwitchCamera } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
   getStudentMessages,
@@ -14,6 +14,8 @@ import Button from "../components/ui/Button.jsx";
 import LogoMark from "../components/ui/LogoMark.jsx";
 import "./Support.css";
 
+const EMOJIS = ["😀","😂","😍","😎","😭","😡","👍","👎","👏","🙏","🔥","💯","✅","❌","❤️","💔","🎉","🚀","💡","⚠️"];
+
 export default function Support() {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
@@ -23,10 +25,28 @@ export default function Support() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   
+  // Audio Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+
+  // Video Recording State
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isVideoRecording, setIsVideoRecording] = useState(false);
+  const [facingMode, setFacingMode] = useState("user");
+  const videoPreviewRef = useRef(null);
+  const videoMediaRecorderRef = useRef(null);
+  const videoChunksRef = useRef([]);
+  const videoStreamRef = useRef(null);
+
+  // UI State
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const fetchMessages = async (isInitial = false) => {
+  // FIXED: Wrapped in useCallback
+  const fetchMessages = useCallback(async (isInitial = false) => {
     if (!user) return;
     try {
       const msgs = await getStudentMessages(user.id);
@@ -39,14 +59,14 @@ export default function Support() {
     } finally {
       if (isInitial) setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
     fetchMessages(true);
     const interval = setInterval(() => fetchMessages(false), 10000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, fetchMessages]); // Added fetchMessages to deps
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -62,7 +82,7 @@ export default function Support() {
     }
 
     if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
-      alert("Only images and videos are allowed.");
+      alert("Only images and videos are allowed here.");
       return;
     }
 
@@ -77,6 +97,117 @@ export default function Support() {
     setPreviewUrl(null);
   };
 
+  /* ---------------- AUDIO RECORDING ---------------- */
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const file = new File([audioBlob], "voice-note.webm", { type: 'audio/webm' });
+        setSelectedFile(file);
+        setPreviewUrl(URL.createObjectURL(file));
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Mic access denied:", err);
+      alert("Microphone access is required.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  /* ---------------- VIDEO RECORDING ---------------- */
+  const openVideoModal = async () => {
+    setIsVideoModalOpen(true);
+    await startVideoStream(facingMode);
+  };
+
+  const startVideoStream = async (mode) => {
+    try {
+      if (videoStreamRef.current) {
+        videoStreamRef.current.getTracks().forEach(t => t.stop());
+      }
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: mode }, 
+        audio: true 
+      });
+      
+      videoStreamRef.current = stream;
+      if (videoPreviewRef.current) {
+        videoPreviewRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Camera access denied:", err);
+      alert("Camera and microphone access is required for video notes.");
+      closeVideoModal();
+    }
+  };
+
+  const toggleCamera = async () => {
+    const newMode = facingMode === "user" ? "environment" : "user";
+    setFacingMode(newMode);
+    if (!isVideoRecording) {
+      await startVideoStream(newMode);
+    }
+  };
+
+  const startVideoRecording = () => {
+    if (!videoStreamRef.current) return;
+    
+    const mediaRecorder = new MediaRecorder(videoStreamRef.current);
+    videoMediaRecorderRef.current = mediaRecorder;
+    videoChunksRef.current = [];
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) videoChunksRef.current.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const videoBlob = new Blob(videoChunksRef.current, { type: 'video/webm' });
+      const file = new File([videoBlob], "video-note.webm", { type: 'video/webm' });
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      closeVideoModal();
+    };
+
+    mediaRecorder.start();
+    setIsVideoRecording(true);
+  };
+
+  const stopVideoRecording = () => {
+    if (videoMediaRecorderRef.current && isVideoRecording) {
+      videoMediaRecorderRef.current.stop();
+      setIsVideoRecording(false);
+    }
+  };
+
+  const closeVideoModal = () => {
+    if (videoStreamRef.current) {
+      videoStreamRef.current.getTracks().forEach(t => t.stop());
+      videoStreamRef.current = null;
+    }
+    setIsVideoRecording(false);
+    setIsVideoModalOpen(false);
+  };
+
+  /* ---------------- SEND MESSAGE ---------------- */
   const handleSend = async (e) => {
     e.preventDefault();
     if ((!newMessage.trim() && !selectedFile) || !user || sending) return;
@@ -86,18 +217,24 @@ export default function Support() {
     const fileToUpload = selectedFile;
     
     setNewMessage("");
-    cancelFile(); // clear preview immediately
+    cancelFile();
+    setShowEmojiPicker(false);
 
     try {
       const msg = await sendStudentMessage(user.id, body, fileToUpload);
       setMessages((prev) => [...prev, msg]);
     } catch (err) {
-      console.error("[support] send error:", err);
-      setNewMessage(body); // Restore on failure
-      alert("Failed to send message. Please try again.");
+      console.error("[support] error:", err);
+      setNewMessage(body);
+      alert("Failed to send message.");
     } finally {
       setSending(false);
     }
+  };
+
+  const addEmoji = (emoji) => {
+    setNewMessage((prev) => prev + emoji);
+    setShowEmojiPicker(false);
   };
 
   if (loading) {
@@ -152,17 +289,28 @@ export default function Support() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* File Preview */}
           {previewUrl && (
             <div className="support__file-preview">
               {selectedFile?.type.startsWith("image/") ? (
                 <img src={previewUrl} alt="Preview" />
+              ) : selectedFile?.type.startsWith("video/") ? (
+                <video src={previewUrl} controls />
               ) : (
-                <video src={previewUrl} />
+                <audio src={previewUrl} controls style={{ height: 40 }} />
               )}
               <button type="button" className="support__file-cancel" onClick={cancelFile}>
                 <X size={14} />
               </button>
+            </div>
+          )}
+
+          {showEmojiPicker && (
+            <div className="support__emoji-picker">
+              {EMOJIS.map((emoji) => (
+                <button key={emoji} type="button" onClick={() => addEmoji(emoji)}>
+                  {emoji}
+                </button>
+              ))}
             </div>
           )}
 
@@ -174,36 +322,91 @@ export default function Support() {
               onChange={handleFileSelect}
               style={{ display: "none" }}
             />
-            <button
-              type="button"
-              className="support__attach-btn"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={sending}
-              title="Attach image or video"
-            >
+            
+            <button type="button" className="support__attach-btn" onClick={() => setShowEmojiPicker(!showEmojiPicker)} disabled={sending || isRecording}>
+              <Smile size={20} />
+            </button>
+
+            <button type="button" className="support__attach-btn" onClick={() => fileInputRef.current?.click()} disabled={sending || isRecording}>
               <Paperclip size={20} />
             </button>
-            <input
-              type="text"
-              className="support__input"
-              placeholder="Type your message here..."
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              disabled={sending}
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              size="md"
-              rightIcon={<Send size={16} />}
-              loading={sending}
-              disabled={!newMessage.trim() && !selectedFile}
-            >
-              Send
-            </Button>
+
+            <button type="button" className="support__attach-btn" onClick={openVideoModal} disabled={sending || isRecording} title="Record video note">
+              <Video size={20} />
+            </button>
+
+            {isRecording ? (
+              <div className="support__recording-state">
+                <span className="support__recording-dot"></span>
+                Recording audio...
+                <button type="button" className="support__stop-btn" onClick={stopRecording}>Stop</button>
+              </div>
+            ) : (
+              <input
+                type="text"
+                className="support__input"
+                placeholder="Type your message here..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                disabled={sending}
+              />
+            )}
+
+            {!isRecording && !newMessage.trim() && !selectedFile ? (
+              <button type="button" className="support__attach-btn" onClick={startRecording} disabled={sending}>
+                <Mic size={20} />
+              </button>
+            ) : !isRecording ? (
+              <Button type="submit" variant="primary" size="md" rightIcon={<Send size={16} />} loading={sending}>
+                Send
+              </Button>
+            ) : null}
           </form>
         </Card>
       </div>
+
+      {/* VIDEO MODAL */}
+      {isVideoModalOpen && (
+        <div className="video-modal-backdrop">
+          <div className="video-modal">
+            <div className="video-modal__header">
+              <h3>Video Note</h3>
+              <button type="button" onClick={closeVideoModal} className="video-modal__close">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="video-modal__preview">
+              <video 
+                ref={videoPreviewRef} 
+                autoPlay 
+                muted 
+                playsInline 
+                style={{ transform: facingMode === "user" ? "scaleX(-1)" : "none" }}
+              />
+              {isVideoRecording && <span className="video-modal__rec-dot"></span>}
+            </div>
+
+            <div className="video-modal__controls">
+              <button type="button" className="video-modal__switch" onClick={toggleCamera} disabled={isVideoRecording}>
+                <SwitchCamera size={24} />
+              </button>
+
+              {isVideoRecording ? (
+                <button type="button" className="video-modal__record-btn video-modal__record-btn--recording" onClick={stopVideoRecording}>
+                  <div className="video-modal__stop-square" />
+                </button>
+              ) : (
+                <button type="button" className="video-modal__record-btn" onClick={startVideoRecording}>
+                  <div className="video-modal__record-circle" />
+                </button>
+              )}
+
+              <div style={{ width: 24 }}></div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

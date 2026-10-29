@@ -1399,17 +1399,21 @@ onRecordBeforeCreateRequest((e) => {
   const auth = e.httpContext.get("authRecord");
   if (!auth) return;
 
-  if (auth.collection().name === "profiles") {
-    e.record.set("student", auth.id);
-    e.record.set("sender_id", auth.id);
-    e.record.set("sender_type", "student");
-    e.record.set("is_read_by_admin", false);
-    e.record.set("is_read_by_student", true);
-  } else if (auth.collection().name === "admins") {
-    e.record.set("sender_id", auth.id);
-    e.record.set("sender_type", "admin");
-    e.record.set("is_read_by_admin", true);
-    e.record.set("is_read_by_student", false);
+  try {
+    if (auth.collection().name === "profiles") {
+      e.record.set("student", auth.id);
+      e.record.set("sender_id", auth.id);
+      e.record.set("sender_type", "student");
+      e.record.set("is_read_by_admin", false);
+      e.record.set("is_read_by_student", true);
+    } else if (auth.collection().name === "admins") {
+      e.record.set("sender_id", auth.id);
+      e.record.set("sender_type", "admin");
+      e.record.set("is_read_by_admin", true);
+      e.record.set("is_read_by_student", false);
+    }
+  } catch (err) {
+    console.error("[support] create hook error:", err);
   }
 });
 
