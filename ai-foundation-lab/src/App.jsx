@@ -19,7 +19,6 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import Profile from "./pages/Profile.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import AdminLogin from "./pages/admin/AdminLogin.jsx";
 
 // --- Informational Pages ---
 import About from "./pages/About.jsx";
@@ -37,6 +36,9 @@ import ExamEnvironment from "./pages/manual/ExamEnvironment.jsx";
 import RulesProctoring from "./pages/manual/RulesProctoring.jsx";
 import EmergencyProtocol from "./pages/manual/EmergencyProtocol.jsx";
 
+// --- Admin Login (Capital A in 'Admin') ---
+import AdminLogin from "./pages/Admin/AdminLogin.jsx";
+
 // --- Lazy Loaded (Heavy / Secondary pages) ---
 const PhotoUpload = lazy(() => import("./pages/PhotoUpload.jsx"));
 const ExamGate = lazy(() => import("./pages/ExamGate.jsx"));
@@ -44,22 +46,22 @@ const ExamIntro = lazy(() => import("./pages/ExamIntro.jsx"));
 const ExamSession = lazy(() => import("./pages/ExamSession.jsx"));
 const ExamSubmitted = lazy(() => import("./pages/ExamSubmitted.jsx"));
 
-// --- Lazy Loaded Admin Pages ---
-const AdminLayout = lazy(() => import("./pages/admin/AdminLayout.jsx"));
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard.jsx"));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers.jsx"));
-const AdminRoster = lazy(() => import("./pages/admin/AdminRoster.jsx"));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.jsx"));
-const AdminQuestions = lazy(() => import("./pages/admin/AdminQuestions.jsx"));
-const AdminSubmissions = lazy(() => import("./pages/admin/AdminSubmissions.jsx"));
-const AdminMarking = lazy(() => import("./pages/admin/AdminMarking.jsx"));
-const AdminViolations = lazy(() => import("./pages/admin/AdminViolations.jsx"));
-const AdminAudit = lazy(() => import("./pages/admin/AdminAudit.jsx"));
-const AdminResults = lazy(() => import("./pages/admin/AdminResults.jsx"));
-const AdminResultDetail = lazy(() => import("./pages/admin/AdminResultDetail.jsx"));
-const AdminGate = lazy(() => import("./pages/admin/AdminGate.jsx"));
-const AdminStatus = lazy(() => import("./pages/admin/AdminStatus.jsx"));
-const AdminSupport = lazy(() => import("./pages/admin/AdminSupport.jsx"));
+// --- Lazy Loaded Admin Pages (Capital A in 'Admin') ---
+const AdminLayout = lazy(() => import("./pages/Admin/AdminLayout.jsx"));
+const AdminDashboard = lazy(() => import("./pages/Admin/AdminDashboard.jsx"));
+const AdminUsers = lazy(() => import("./pages/Admin/AdminUsers.jsx"));
+const AdminRoster = lazy(() => import("./pages/Admin/AdminRoster.jsx"));
+const AdminSettings = lazy(() => import("./pages/Admin/AdminSettings.jsx"));
+const AdminQuestions = lazy(() => import("./pages/Admin/AdminQuestions.jsx"));
+const AdminSubmissions = lazy(() => import("./pages/Admin/AdminSubmissions.jsx"));
+const AdminMarking = lazy(() => import("./pages/Admin/AdminMarking.jsx"));
+const AdminViolations = lazy(() => import("./pages/Admin/AdminViolations.jsx"));
+const AdminAudit = lazy(() => import("./pages/Admin/AdminAudit.jsx"));
+const AdminResults = lazy(() => import("./pages/Admin/AdminResults.jsx"));
+const AdminResultDetail = lazy(() => import("./pages/Admin/AdminResultDetail.jsx"));
+const AdminGate = lazy(() => import("./pages/Admin/AdminGate.jsx"));
+const AdminStatus = lazy(() => import("./pages/Admin/AdminStatus.jsx"));
+const AdminSupport = lazy(() => import("./pages/Admin/AdminSupport.jsx"));
 
 function RouteFallback() {
   return (
