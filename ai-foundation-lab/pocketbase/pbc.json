@@ -1,7 +1,7 @@
 {
   "build": {
-    "pb_hooks": "pb_hooks",
-    "pb_migrations": "pb_migrations"
+    "pb_hooks": "./pb_hooks",
+    "pb_migrations": "./pb_migrations"
   },
   "runtime": {
     "pocketbase_version": "0.22.21"
