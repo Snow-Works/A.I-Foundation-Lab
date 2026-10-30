@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Array Module Typed Storage",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Create a compact C-type array of signed 4-byte integers.</p><p>Starting code:</p><pre>from array import array\n\nint_array = array(___, [1, 2, 3, 4])</pre>",
+    "rubric": "Full marks for `'i'`.",
+    "sample_solution": "from array import array\n\nint_array = array('i', [1, 2, 3, 4])"
+  },
+  {
+    "title": "Counter Subtract",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Subtract inventory counts using Counter.subtract.</p><p>Starting code:</p><pre>from collections import Counter\n\nstock = Counter(apples=10, oranges=5)\nsold = Counter(apples=3, oranges=2)\nstock.___(sold)</pre>",
+    "rubric": "Full marks for `subtract`.",
+    "sample_solution": "from collections import Counter\n\nstock = Counter(apples=10, oranges=5)\nsold = Counter(apples=3, oranges=2)\nstock.subtract(sold)"
+  },
+  {
+    "title": "Deque Rotation",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Rotate elements in a deque 2 steps to the right.</p><p>Starting code:</p><pre>from collections import deque\n\nring = deque([1, 2, 3, 4, 5])\nring.___(2)</pre>",
+    "rubric": "Full marks for `rotate`.",
+    "sample_solution": "from collections import deque\n\nring = deque([1, 2, 3, 4, 5])\nring.rotate(2)"
+  },
+  {
+    "title": "Deque Maxlen Bounded Buffer",
+    "topic": "Advanced Collections",
+    "difficulty": "hard",
+    "prompt": "<p>Create a bounded deque that automatically discards oldest items beyond capacity 3.</p><p>Starting code:</p><pre>from collections import deque\n\nhistory = deque(___, maxlen=3)</pre>",
+    "rubric": "Full marks for `maxlen`.",
+    "sample_solution": "from collections import deque\n\nhistory = deque(maxlen=3)"
+  },
+  {
+    "title": "Set Symmetric Difference",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Find elements present in either set, but not in both.</p><p>Starting code:</p><pre>a = {1, 2, 3}\nb = {3, 4, 5}\n\nsym_diff = a ___ b</pre>",
+    "rubric": "Full marks for `^`.",
+    "sample_solution": "a = {1, 2, 3}\nb = {3, 4, 5}\n\nsym_diff = a ^ b"
+  },
+  {
+    "title": "Frozenset Creation",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Create an immutable, hashable set that can be used as a dictionary key.</p><p>Starting code:</p><pre>immutable_set = ___(1, 2, 3)\ncache = {immutable_set: \"cached result\"}</pre>",
+    "rubric": "Full marks for `frozenset`.",
+    "sample_solution": "immutable_set = frozenset([1, 2, 3])\ncache = {immutable_set: \"cached result\"}"
+  },
+  {
+    "title": "Dictionary Setdefault",
+    "topic": "Advanced Collections",
+    "difficulty": "hard",
+    "prompt": "<p>Insert a key with a default list value if the key is not already in the dictionary.</p><p>Starting code:</p><pre>index = {}\nindex.___(\"word\", []).append(1)</pre>",
+    "rubric": "Full marks for `setdefault`.",
+    "sample_solution": "index = {}\nindex.setdefault(\"word\", []).append(1)"
+  },
+  {
+    "title": "Dictionary Popitem",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Remove and return the last inserted key-value pair from a dictionary (LIFO).</p><p>Starting code:</p><pre>stack_dict = {\"a\": 1, \"b\": 2, \"c\": 3}\nkey, val = stack_dict.___()</pre>",
+    "rubric": "Full marks for `popitem`.",
+    "sample_solution": "stack_dict = {\"a\": 1, \"b\": 2, \"c\": 3}\nkey, val = stack_dict.popitem()"
+  },
+  {
+    "title": "Graph Topological Sort",
+    "topic": "Advanced Collections",
+    "difficulty": "hard",
+    "prompt": "<p>Use graphlib.TopologicalSorter to order dependent tasks.</p><p>Starting code:</p><pre>from graphlib import ___\n\ngraph = {\"deploy\": {\"test\"}, \"test\": {\"build\"}, \"build\": set()}\nts = TopologicalSorter(graph)\norder = list(ts.static_order())</pre>",
+    "rubric": "Full marks for `TopologicalSorter`.",
+    "sample_solution": "from graphlib import TopologicalSorter\n\ngraph = {\"deploy\": {\"test\"}, \"test\": {\"build\"}, \"build\": set()}\nts = TopologicalSorter(graph)\norder = list(ts.static_order())"
+  },
+  {
+    "title": "Slice Object",
+    "topic": "Advanced Collections",
+    "difficulty": "medium",
+    "prompt": "<p>Create a reusable named slice object to extract characters 0 to 5.</p><p>Starting code:</p><pre>prefix_slice = ___(0, 5)\ntext = \"HelloWorld\"\nsub = text[prefix_slice]</pre>",
+    "rubric": "Full marks for `slice`.",
+    "sample_solution": "prefix_slice = slice(0, 5)\ntext = \"HelloWorld\"\nsub = text[prefix_slice]"
+  },
+  {
+    "title": "Custom Iterator Protocol",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Implement <code>__iter__</code> and <code>__next__</code> for a custom countdown iterator.</p><p>Starting code:</p><pre>class Countdown:\n    def __init__(self, start):\n        self.current = start\n    \n    def ___(self):\n        return self\n        \n    def __next__(self):\n        if self.current == 0:\n            raise StopIteration\n        self.current -= 1\n        return self.current + 1</pre>",
+    "rubric": "Full marks for `__iter__`.",
+    "sample_solution": "class Countdown:\n    def __init__(self, start):\n        self.current = start\n    \n    def __iter__(self):\n        return self\n        \n    def __next__(self):\n        if self.current == 0:\n            raise StopIteration\n        self.current -= 1\n        return self.current + 1"
+  },
+  {
+    "title": "Itertools Islice",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Slice an infinite generator to yield elements from index 5 to 10.</p><p>Starting code:</p><pre>import itertools\n\ngen = itertools.count()\nwindow = list(itertools.___(gen, 5, 10))</pre>",
+    "rubric": "Full marks for `islice`.",
+    "sample_solution": "import itertools\n\ngen = itertools.count()\nwindow = list(itertools.islice(gen, 5, 10))"
+  },
+  {
+    "title": "Itertools Groupby",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Group consecutive identical elements in a sorted list using itertools.groupby.</p><p>Starting code:</p><pre>import itertools\n\ndata = [\"a\", \"a\", \"b\", \"b\", \"b\", \"c\"]\ngroups = [(k, list(g)) for k, g in itertools.___(data)]</pre>",
+    "rubric": "Full marks for `groupby`.",
+    "sample_solution": "import itertools\n\ndata = [\"a\", \"a\", \"b\", \"b\", \"b\", \"c\"]\ngroups = [(k, list(g)) for k, g in itertools.groupby(data)]"
+  },
+  {
+    "title": "Itertools Accumulate",
+    "topic": "Iterators & Itertools",
+    "difficulty": "medium",
+    "prompt": "<p>Compute running cumulative sums of a list of numbers.</p><p>Starting code:</p><pre>import itertools\n\nnums = [1, 2, 3, 4, 5]\nrunning_totals = list(itertools.___(nums))</pre>",
+    "rubric": "Full marks for `accumulate`.",
+    "sample_solution": "import itertools\n\nnums = [1, 2, 3, 4, 5]\nrunning_totals = list(itertools.accumulate(nums))"
+  },
+  {
+    "title": "Itertools Permutations",
+    "topic": "Iterators & Itertools",
+    "difficulty": "medium",
+    "prompt": "<p>Generate all possible 2-element ordered arrangements from a list.</p><p>Starting code:</p><pre>import itertools\n\nitems = [\"A\", \"B\", \"C\"]\nperms = list(itertools.___(items, 2))</pre>",
+    "rubric": "Full marks for `permutations`.",
+    "sample_solution": "import itertools\n\nitems = [\"A\", \"B\", \"C\"]\nperms = list(itertools.permutations(items, 2))"
+  },
+  {
+    "title": "Itertools Combinations",
+    "topic": "Iterators & Itertools",
+    "difficulty": "medium",
+    "prompt": "<p>Generate all unique 2-element unordered subsets without replacement.</p><p>Starting code:</p><pre>import itertools\n\nitems = [1, 2, 3, 4]\ncombs = list(itertools.___(items, 2))</pre>",
+    "rubric": "Full marks for `combinations`.",
+    "sample_solution": "import itertools\n\nitems = [1, 2, 3, 4]\ncombs = list(itertools.combinations(items, 2))"
+  },
+  {
+    "title": "Itertools Zip Longest",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Zip two uneven lists together, filling missing values with 0.</p><p>Starting code:</p><pre>import itertools\n\na = [1, 2, 3]\nb = [10, 20]\npadded = list(itertools.___(a, b, fillvalue=0))</pre>",
+    "rubric": "Full marks for `zip_longest`.",
+    "sample_solution": "import itertools\n\na = [1, 2, 3]\nb = [10, 20]\npadded = list(itertools.zip_longest(a, b, fillvalue=0))"
+  },
+  {
+    "title": "Itertools Takewhile",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Yield elements from a list as long as the predicate remains True.</p><p>Starting code:</p><pre>import itertools\n\nnums = [2, 4, 6, 7, 8, 10]\nprefix = list(itertools.___(lambda x: x % 2 == 0, nums))</pre>",
+    "rubric": "Full marks for `takewhile`.",
+    "sample_solution": "import itertools\n\nnums = [2, 4, 6, 7, 8, 10]\nprefix = list(itertools.takewhile(lambda x: x % 2 == 0, nums))"
+  },
+  {
+    "title": "Itertools Dropwhile",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Drop elements from a sequence until the predicate becomes False, then yield the rest.</p><p>Starting code:</p><pre>import itertools\n\nnums = [1, 3, 5, 6, 7, 8]\nrest = list(itertools.___(lambda x: x < 5, nums))</pre>",
+    "rubric": "Full marks for `dropwhile`.",
+    "sample_solution": "import itertools\n\nnums = [1, 3, 5, 6, 7, 8]\nrest = list(itertools.dropwhile(lambda x: x < 5, nums))"
+  },
+  {
+    "title": "Itertools Compress",
+    "topic": "Iterators & Itertools",
+    "difficulty": "medium",
+    "prompt": "<p>Filter data elements using a corresponding boolean selector mask.</p><p>Starting code:</p><pre>import itertools\n\ndata = [\"A\", \"B\", \"C\", \"D\"]\nmask = [1, 0, 1, 0]\nselected = list(itertools.___(data, mask))</pre>",
+    "rubric": "Full marks for `compress`.",
+    "sample_solution": "import itertools\n\ndata = [\"A\", \"B\", \"C\", \"D\"]\nmask = [1, 0, 1, 0]\nselected = list(itertools.compress(data, mask))"
+  },
+  {
+    "title": "Itertools Starmap",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Apply a function to pre-tupled arguments using itertools.starmap.</p><p>Starting code:</p><pre>import itertools\n\npairs = [(2, 3), (3, 2), (10, 2)]\npowers = list(itertools.___(pow, pairs))</pre>",
+    "rubric": "Full marks for `starmap`.",
+    "sample_solution": "import itertools\n\npairs = [(2, 3), (3, 2), (10, 2)]\npowers = list(itertools.starmap(pow, pairs))"
+  },
+  {
+    "title": "Itertools Tee",
+    "topic": "Iterators & Itertools",
+    "difficulty": "medium",
+    "prompt": "<p>Split a single iterator into two independent iterators.</p><p>Starting code:</p><pre>import itertools\n\nit = iter([1, 2, 3, 4])\nit1, it2 = itertools.___(it, 2)</pre>",
+    "rubric": "Full marks for `tee`.",
+    "sample_solution": "import itertools\n\nit = iter([1, 2, 3, 4])\nit1, it2 = itertools.tee(it, 2)"
+  },
+  {
+    "title": "Itertools Pairwise",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Generate successive overlapping pairs from an iterable.</p><p>Starting code:</p><pre>import itertools\n\npath = [\"A\", \"B\", \"C\", \"D\"]\nedges = list(itertools.___(path))</pre>",
+    "rubric": "Full marks for `pairwise`.",
+    "sample_solution": "import itertools\n\npath = [\"A\", \"B\", \"C\", \"D\"]\nedges = list(itertools.pairwise(path))"
+  },
+  {
+    "title": "Itertools Batched",
+    "topic": "Iterators & Itertools",
+    "difficulty": "hard",
+    "prompt": "<p>Chunk an iterable into tuples of size 3.</p><p>Starting code:</p><pre>import itertools\n\ndata = [1, 2, 3, 4, 5, 6, 7]\nchunks = list(itertools.___(data, 3))</pre>",
+    "rubric": "Full marks for `batched`.",
+    "sample_solution": "import itertools\n\ndata = [1, 2, 3, 4, 5, 6, 7]\nchunks = list(itertools.batched(data, 3))"
+  },
+  {
+    "title": "Built-in Iter with Sentinel",
+    "topic": "Iterators & Itertools",
+    "difficulty": "medium",
+    "prompt": "<p>Read blocks from a stream callable until an empty byte string sentinel is returned.</p><p>Starting code:</p><pre>for block in ___(lambda: stream.read(1024), b\"\"):\n    process(block)</pre>",
+    "rubric": "Full marks for `iter`.",
+    "sample_solution": "for block in iter(lambda: stream.read(1024), b\"\"):\n    process(block)"
+  },
+  {
+    "title": "Data Descriptor Protocol",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Implement a descriptor class with <code>__get__</code> and <code>__set__</code>.</p><p>Starting code:</p><pre>class PositiveNumber:\n    def __set_name__(self, owner, name):\n        self.name = name\n        \n    def ___(self, instance, owner=None):\n        return instance.__dict__.get(self.name, 0)\n        \n    def __set__(self, instance, value):\n        if value < 0:\n            raise ValueError(\"Must be positive\")\n        instance.__dict__[self.name] = value</pre>",
+    "rubric": "Full marks for `__get__`.",
+    "sample_solution": "class PositiveNumber:\n    def __set_name__(self, owner, name):\n        self.name = name\n        \n    def __get__(self, instance, owner=None):\n        return instance.__dict__.get(self.name, 0)\n        \n    def __set__(self, instance, value):\n        if value < 0:\n            raise ValueError(\"Must be positive\")\n        instance.__dict__[self.name] = value"
+  },
+  {
+    "title": "Object Creation (__new__)",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Override <code>__new__</code> to implement a Singleton pattern.</p><p>Starting code:</p><pre>class Singleton:\n    _instance = None\n    \n    def ___(cls, *args, **kwargs):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance</pre>",
+    "rubric": "Full marks for `__new__`.",
+    "sample_solution": "class Singleton:\n    _instance = None\n    \n    def __new__(cls, *args, **kwargs):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance"
+  },
+  {
+    "title": "Subclass Registration Hook",
+    "topic": "Advanced OOP",
+    "difficulty": "hard",
+    "prompt": "<p>Automatically register subclasses using <code>__init_subclass__</code>.</p><p>Starting code:</p><pre>class PluginBase:\n    registry = []\n    \n    def ___(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        cls.registry.append(cls)</pre>",
+    "rubric": "Full marks for `__init_subclass__`.",
+    "sample_solution": "class PluginBase:\n    registry = []\n    \n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        cls.registry.append(cls)"
+  },
+  {
+    "title": "Callable Objects",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Make an instance of Multiplier callable like a function.</p><p>Starting code:</p><pre>class Multiplier:\n    def __init__(self, factor):\n        self.factor = factor\n        \n    def ___(self, x):\n        return x * self.factor</pre>",
+    "rubric": "Full marks for `__call__`.",
+    "sample_solution": "class Multiplier:\n    def __init__(self, factor):\n        self.factor = factor\n        \n    def __call__(self, x):\n        return x * self.factor"
+  },
+  {
+    "title": "Custom Container Length & Indexing",
+    "topic": "Advanced OOP",
+    "difficulty": "medium",
+    "prompt": "<p>Implement sequence dunder methods for length and item lookup.</p><p>Starting code:</p><pre>class CustomList:\n    def __init__(self, items):\n        self._items = list(items)\n        \n    def ___(self):\n        return len(self._items)\n        \n    def __getitem__(self, index):\n        return self._items[index]</pre>",
+    "rubric": "Full marks for `__len__`.",
+    "sample_solution": "class CustomList:\n    def __init__(self, items):\n        self._items = list(items)\n        \n    def __len__(self):\n        return len(self._items)\n        \n    def __getitem__(self, index):\n        return self._items[index]"
+  }
+]

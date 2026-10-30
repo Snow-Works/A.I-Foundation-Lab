@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Email Message Construction",
+    "topic": "Networking & HTTP",
+    "difficulty": "medium",
+    "prompt": "<p>Construct a modern email message object using email.message.EmailMessage.</p><p>Starting code:</p><pre>from email.message import ___\n\nmsg = EmailMessage()\nmsg[\"Subject\"] = \"Alert\"\nmsg.set_content(\"System is healthy.\")</pre>",
+    "rubric": "Full marks for `EmailMessage`.",
+    "sample_solution": "from email.message import EmailMessage\n\nmsg = EmailMessage()\nmsg[\"Subject\"] = \"Alert\"\nmsg.set_content(\"System is healthy.\")"
+  },
+  {
+    "title": "HTML Escaping",
+    "topic": "Networking & HTTP",
+    "difficulty": "medium",
+    "prompt": "<p>Escape special characters (&, <, >) in user input to prevent XSS.</p><p>Starting code:</p><pre>import html\n\nsafe_str = html.___(\"<script>alert(1)</script>\")</pre>",
+    "rubric": "Full marks for `escape`.",
+    "sample_solution": "import html\n\nsafe_str = html.escape(\"<script>alert(1)</script>\")"
+  },
+  {
+    "title": "JSON Custom Encoder",
+    "topic": "Networking & HTTP",
+    "difficulty": "hard",
+    "prompt": "<p>Serialize non-standard objects (like sets) to JSON using the default parameter.</p><p>Starting code:</p><pre>import json\n\ndata = {\"tags\": {\"python\", \"coding\"}}\nout = json.dumps(data, ___=list)</pre>",
+    "rubric": "Full marks for `default`.",
+    "sample_solution": "import json\n\ndata = {\"tags\": {\"python\", \"coding\"}}\nout = json.dumps(data, default=list)"
+  },
+  {
+    "title": "Socket Server Reuse Address",
+    "topic": "Networking & HTTP",
+    "difficulty": "hard",
+    "prompt": "<p>Allow a socket server to bind immediately to a port in TIME_WAIT state.</p><p>Starting code:</p><pre>import socket\n\ns = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\ns.___(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</pre>",
+    "rubric": "Full marks for `setsockopt`.",
+    "sample_solution": "import socket\n\ns = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\ns.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)"
+  },
+  {
+    "title": "Urllib Join Relative Path",
+    "topic": "Networking & HTTP",
+    "difficulty": "medium",
+    "prompt": "<p>Combine a base address and a relative path safely using urllib.</p><p>Starting code:</p><pre>from urllib.parse import ___\n\nfull_path = urljoin(base_address_str, \"guide_page\")</pre>",
+    "rubric": "Full marks for `urljoin`.",
+    "sample_solution": "from urllib.parse import urljoin\n\nfull_path = urljoin(base_address_str, \"guide_page\")"
+  },
+  {
+    "title": "Unittest TestCase Class",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Create a unit test class inheriting from unittest.TestCase.</p><p>Starting code:</p><pre>import unittest\n\nclass TestMath(unittest.___):\n    def test_add(self):\n        self.assertEqual(1 + 1, 2)</pre>",
+    "rubric": "Full marks for `TestCase`.",
+    "sample_solution": "import unittest\n\nclass TestMath(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(1 + 1, 2)"
+  },
+  {
+    "title": "Unittest AssertRaises",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Verify that a specific exception is raised using a context manager in unittest.</p><p>Starting code:</p><pre>def test_zero_division(self):\n    with self.___(ZeroDivisionError):\n        _ = 10 / 0</pre>",
+    "rubric": "Full marks for `assertRaises`.",
+    "sample_solution": "def test_zero_division(self):\n    with self.assertRaises(ZeroDivisionError):\n        _ = 10 / 0"
+  },
+  {
+    "title": "Unittest Mock Patching",
+    "topic": "Testing & Debugging",
+    "difficulty": "hard",
+    "prompt": "<p>Temporarily replace an external function call during a test using unittest.mock.patch.</p><p>Starting code:</p><pre>from unittest.mock import ___\n\nwith patch(\"pkg.service_call\", return_value={\"ok\": True}) as mock_fn:\n    res = run_pipeline()\n    mock_fn.assert_called_once()</pre>",
+    "rubric": "Full marks for `patch`.",
+    "sample_solution": "from unittest.mock import patch\n\nwith patch(\"pkg.service_call\", return_value={\"ok\": True}) as mock_fn:\n    res = run_pipeline()\n    mock_fn.assert_called_once()"
+  },
+  {
+    "title": "MagicMock Return Value",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Configure a MagicMock object to return a specific value when called.</p><p>Starting code:</p><pre>from unittest.mock import ___\n\nmock_service = MagicMock(___=42)\nval = mock_service()</pre>",
+    "rubric": "Full marks for `return_value`.",
+    "sample_solution": "from unittest.mock import MagicMock\n\nmock_service = MagicMock(return_value=42)\nval = mock_service()"
+  },
+  {
+    "title": "Mock Side Effect Exceptions",
+    "topic": "Testing & Debugging",
+    "difficulty": "hard",
+    "prompt": "<p>Configure a mock to raise a TypeError when invoked.</p><p>Starting code:</p><pre>from unittest.mock import MagicMock\n\nmock_client = MagicMock(___=TypeError(\"Connection timed out\"))</pre>",
+    "rubric": "Full marks for `side_effect`.",
+    "sample_solution": "from unittest.mock import MagicMock\n\nmock_client = MagicMock(side_effect=TypeError(\"Connection timed out\"))"
+  },
+  {
+    "title": "Logging Basic Configuration",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Configure root logger level to INFO and log a warning message.</p><p>Starting code:</p><pre>import logging\n\nlogging.___(level=logging.INFO)\nlogger = logging.getLogger(__name__)\nlogger.warning(\"Disk space low\")</pre>",
+    "rubric": "Full marks for `basicConfig`.",
+    "sample_solution": "import logging\n\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\nlogger.warning(\"Disk space low\")"
+  },
+  {
+    "title": "Logging Exception Traceback",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Log an error message along with the full current exception stack trace.</p><p>Starting code:</p><pre>import logging\n\ntry:\n    1/0\nexcept ZeroDivisionError:\n    logging.___(\"Calculation failed\")</pre>",
+    "rubric": "Full marks for `exception`.",
+    "sample_solution": "import logging\n\ntry:\n    1/0\nexcept ZeroDivisionError:\n    logging.exception(\"Calculation failed\")"
+  },
+  {
+    "title": "Interactive Debugger Breakpoint",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Drop into the interactive Python debugger (pdb) using the built-in function.</p><p>Starting code:</p><pre>def complex_calculation(x):\n    ___\n    return x * 42</pre>",
+    "rubric": "Full marks for `breakpoint`.",
+    "sample_solution": "def complex_calculation(x):\n    breakpoint()\n    return x * 42"
+  },
+  {
+    "title": "Traceback Formatting",
+    "topic": "Testing & Debugging",
+    "difficulty": "hard",
+    "prompt": "<p>Capture the current exception traceback as a string using the traceback module.</p><p>Starting code:</p><pre>import traceback\n\ntry:\n    risky_call()\nexcept Exception:\n    err_log = traceback.___()</pre>",
+    "rubric": "Full marks for `format_exc`.",
+    "sample_solution": "import traceback\n\ntry:\n    risky_call()\nexcept Exception:\n    err_log = traceback.format_exc()"
+  },
+  {
+    "title": "Warnings Deprecation",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Emit a DeprecationWarning to alert callers of an obsolete function.</p><p>Starting code:</p><pre>import warnings\n\ndef old_api():\n    warnings.___(\"old_api is deprecated\", DeprecationWarning, stacklevel=2)</pre>",
+    "rubric": "Full marks for `warn`.",
+    "sample_solution": "import warnings\n\ndef old_api():\n    warnings.warn(\"old_api is deprecated\", DeprecationWarning, stacklevel=2)"
+  },
+  {
+    "title": "Timeit Benchmarking",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Measure the execution time of a small code snippet over 10,000 runs.</p><p>Starting code:</p><pre>import timeit\n\nelapsed = timeit.___(\"'-'.join(str(n) for n in range(100))\", number=10000)</pre>",
+    "rubric": "Full marks for `timeit`.",
+    "sample_solution": "import timeit\n\nelapsed = timeit.timeit(\"'-'.join(str(n) for n in range(100))\", number=10000)"
+  },
+  {
+    "title": "Doctest Execution",
+    "topic": "Testing & Debugging",
+    "difficulty": "hard",
+    "prompt": "<p>Run embedded docstring tests automatically within a module.</p><p>Starting code:</p><pre>import doctest\n\nif __name__ == \"__main__\":\n    doctest.___()</pre>",
+    "rubric": "Full marks for `testmod`.",
+    "sample_solution": "import doctest\n\nif __name__ == \"__main__\":\n    doctest.testmod()"
+  },
+  {
+    "title": "Contextlib Suppress Exceptions",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Cleanly ignore a FileNotFoundError without writing a try/except/pass block.</p><p>Starting code:</p><pre>from contextlib import ___\nimport os\n\nwith suppress(FileNotFoundError):\n    os.remove(\"temp_lock_file\")</pre>",
+    "rubric": "Full marks for `suppress`.",
+    "sample_solution": "from contextlib import suppress\nimport os\n\nwith suppress(FileNotFoundError):\n    os.remove(\"temp_lock_file\")"
+  },
+  {
+    "title": "Contextlib Redirect Stdout",
+    "topic": "Testing & Debugging",
+    "difficulty": "medium",
+    "prompt": "<p>Capture standard output printed by a function into a StringIO buffer.</p><p>Starting code:</p><pre>from contextlib import redirect_stdout\nfrom io import StringIO\n\nbuf = StringIO()\nwith ___ (buf):\n    print(\"captured output\")</pre>",
+    "rubric": "Full marks for `redirect_stdout`.",
+    "sample_solution": "from contextlib import redirect_stdout\nfrom io import StringIO\n\nbuf = StringIO()\nwith redirect_stdout(buf):\n    print(\"captured output\")"
+  },
+  {
+    "title": "Contextlib ExitStack",
+    "topic": "Testing & Debugging",
+    "difficulty": "hard",
+    "prompt": "<p>Manage a dynamic number of context managers cleanly using ExitStack.</p><p>Starting code:</p><pre>from contextlib import ___\n\nwith ExitStack() as stack:\n    files = [stack.enter_context(open(fname)) for fname in filenames]</pre>",
+    "rubric": "Full marks for `ExitStack`.",
+    "sample_solution": "from contextlib import ExitStack\n\nwith ExitStack() as stack:\n    files = [stack.enter_context(open(fname)) for fname in filenames]"
+  },
+  {
+    "title": "Hashlib SHA-256 Digest",
+    "topic": "Security & Cryptography",
+    "difficulty": "medium",
+    "prompt": "<p>Compute the hexadecimal SHA-256 hash digest of a byte string.</p><p>Starting code:</p><pre>import hashlib\n\ndigest = hashlib.___(b\"password123\").hexdigest()</pre>",
+    "rubric": "Full marks for `sha256`.",
+    "sample_solution": "import hashlib\n\ndigest = hashlib.sha256(b\"password123\").hexdigest()"
+  },
+  {
+    "title": "Secrets Cryptographic Token",
+    "topic": "Security & Cryptography",
+    "difficulty": "medium",
+    "prompt": "<p>Generate a cryptographically strong URL-safe text token for password reset links.</p><p>Starting code:</p><pre>import secrets\n\nreset_token = secrets.___(32)</pre>",
+    "rubric": "Full marks for `token_urlsafe`.",
+    "sample_solution": "import secrets\n\nreset_token = secrets.token_urlsafe(32)"
+  },
+  {
+    "title": "Secrets Constant-Time Comparison",
+    "topic": "Security & Cryptography",
+    "difficulty": "hard",
+    "prompt": "<p>Compare two secret tokens in constant time to prevent timing attacks.</p><p>Starting code:</p><pre>import secrets\n\nis_valid = secrets.___(user_token, expected_token)</pre>",
+    "rubric": "Full marks for `compare_digest`.",
+    "sample_solution": "import secrets\n\nis_valid = secrets.compare_digest(user_token, expected_token)"
+  },
+  {
+    "title": "HMAC Message Authentication",
+    "topic": "Security & Cryptography",
+    "difficulty": "hard",
+    "prompt": "<p>Generate a keyed-hash message authentication code (HMAC) using SHA-256.</p><p>Starting code:</p><pre>import hmac, hashlib\n\nsig = hmac.___(b\"secret_key\", b\"message_payload\", hashlib.sha256).hexdigest()</pre>",
+    "rubric": "Full marks for `new`.",
+    "sample_solution": "import hmac, hashlib\n\nsig = hmac.new(b\"secret_key\", b\"message_payload\", hashlib.sha256).hexdigest()"
+  },
+  {
+    "title": "PBKDF2 Password Key Derivation",
+    "topic": "Security & Cryptography",
+    "difficulty": "hard",
+    "prompt": "<p>Derive a secure cryptographic key from a password and salt using pbkdf2_hmac.</p><p>Starting code:</p><pre>import hashlib\n\nkey = hashlib.___(\"sha256\", b\"my_password\", b\"random_salt\", 100000)</pre>",
+    "rubric": "Full marks for `pbkdf2_hmac`.",
+    "sample_solution": "import hashlib\n\nkey = hashlib.pbkdf2_hmac(\"sha256\", b\"my_password\", b\"random_salt\", 100000)"
+  },
+  {
+    "title": "Getpass Hidden Password Prompt",
+    "topic": "Security & Cryptography",
+    "difficulty": "medium",
+    "prompt": "<p>Prompt the user for a password in the terminal without echoing characters.</p><p>Starting code:</p><pre>import getpass\n\npwd = getpass.___(\"Enter password: \")</pre>",
+    "rubric": "Full marks for `getpass`.",
+    "sample_solution": "import getpass\n\npwd = getpass.getpass(\"Enter password: \")"
+  },
+  {
+    "title": "Shlex Shell Escaping",
+    "topic": "Security & Cryptography",
+    "difficulty": "medium",
+    "prompt": "<p>Safely quote a user-supplied filename for inclusion in a shell command string.</p><p>Starting code:</p><pre>import shlex\n\nsafe_arg = shlex.___(untrusted_arg)</pre>",
+    "rubric": "Full marks for `quote`.",
+    "sample_solution": "import shlex\n\nsafe_arg = shlex.quote(untrusted_arg)"
+  },
+  {
+    "title": "Ast Literal Eval",
+    "topic": "Security & Cryptography",
+    "difficulty": "hard",
+    "prompt": "<p>Safely evaluate a string containing a Python literal structure without executing arbitrary code.</p><p>Starting code:</p><pre>import ast\n\ndata = ast.___(\"{'a': 1, 'b': [2, 3]}\")</pre>",
+    "rubric": "Full marks for `literal_eval`.",
+    "sample_solution": "import ast\n\ndata = ast.literal_eval(\"{'a': 1, 'b': [2, 3]}\")"
+  },
+  {
+    "title": "Secrets Choice",
+    "topic": "Security & Cryptography",
+    "difficulty": "medium",
+    "prompt": "<p>Select a random element from a sequence using a cryptographically secure RNG.</p><p>Starting code:</p><pre>import secrets\n\nalphabet = \"abcdefghijklmnopqrstuvwxyz0123456789\"\nchar = secrets.___(alphabet)</pre>",
+    "rubric": "Full marks for `choice`.",
+    "sample_solution": "import secrets\n\nalphabet = \"abcdefghijklmnopqrstuvwxyz0123456789\"\nchar = secrets.choice(alphabet)"
+  },
+  {
+    "title": "Hashlib File Checksum",
+    "topic": "Security & Cryptography",
+    "difficulty": "hard",
+    "prompt": "<p>Compute the SHA-256 digest of a file object directly using hashlib.file_digest.</p><p>Starting code:</p><pre>import hashlib\n\nwith open(\"binary_payload\", \"rb\") as f:\n    digest = hashlib.___(f, \"sha256\").hexdigest()</pre>",
+    "rubric": "Full marks for `file_digest`.",
+    "sample_solution": "import hashlib\n\nwith open(\"binary_payload\", \"rb\") as f:\n    digest = hashlib.file_digest(f, \"sha256\").hexdigest()"
+  }
+]

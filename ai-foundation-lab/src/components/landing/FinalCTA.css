@@ -1,0 +1,319 @@
+/* ============================================================
+   FINAL CTA
+   Full-bleed gradient panel that bookends the page.
+   ============================================================ */
+
+.final-cta {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+  overflow: hidden;
+
+  display: grid;
+  place-items: center;
+
+  padding-block: var(--space-5);
+}
+
+/* ---------- BACKGROUND ---------- */
+.final-cta__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.final-cta__gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 100% 90% at 100% 0%,
+      #F2511F 0%,
+      #C4162E 15%,
+      #8A2FD0 42%,
+      #2A1B9B 68%,
+      #140A5C 88%,
+      #0A0630 100%
+    );
+}
+
+.final-cta__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  will-change: transform;
+}
+
+.final-cta__glow--pink {
+  top: -20%;
+  right: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 63, 164, 0.35) 0%,
+    transparent 70%
+  );
+  animation: cta-glow-pink 22s ease-in-out infinite alternate;
+}
+
+.final-cta__glow--cyan {
+  bottom: -25%;
+  left: -20%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(
+    circle,
+    rgba(46, 200, 255, 0.18) 0%,
+    transparent 70%
+  );
+  animation: cta-glow-cyan 26s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes cta-glow-pink {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-3%, 4%) scale(1.06); }
+}
+
+@keyframes cta-glow-cyan {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(4%, -3%) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .final-cta__glow { animation: none; }
+}
+
+.final-cta__pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--white);
+  opacity: 0.10;
+}
+
+/* ---------- EDGE FADES ---------- */
+.final-cta__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+}
+
+.final-cta__fade--top {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--ink-950) 0%,
+    rgba(10, 6, 48, 0.65) 45%,
+    transparent 100%
+  );
+}
+
+.final-cta__fade--bottom {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    var(--ink-950) 0%,
+    rgba(10, 6, 48, 0.65) 45%,
+    transparent 100%
+  );
+}
+
+/* ---------- CONTENT ---------- */
+.final-cta__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--container-lg);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+/* ---------- WORDMARK + ROCKET ---------- */
+.final-cta__wordmark-wrap {
+  position: relative;
+  display: inline-block;
+  margin-inline: auto;
+}
+
+.final-cta__wordmark {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  display: block;
+  margin-inline: auto;
+}
+
+.final-cta__rocket {
+  position: absolute;
+  top: -6%;
+  right: -18%;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 22px rgba(229, 178, 92, 0.45));
+}
+
+.final-cta__rocket-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------- CLOSING LINE ---------- */
+.final-cta__line {
+  font-family: var(--font-body);
+  font-size: clamp(1.0625rem, 0.95rem + 0.6vw, 1.5rem);
+  line-height: var(--lh-relaxed);
+  color: var(--white);
+  margin: 0;
+  max-width: 42ch;
+  font-weight: var(--fw-regular);
+  letter-spacing: 0.005em;
+}
+
+.final-cta__line-emph {
+  display: inline;
+  background: var(--gradient-button);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: var(--fw-bold);
+  padding-inline: 2px;
+}
+
+/* ---------- ACTIONS ---------- */
+.final-cta__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.final-cta__register-btn {
+  background: var(--white) !important;
+  color: var(--ink-950) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+  font-weight: var(--fw-semibold) !important;
+}
+
+.final-cta__register-btn:hover {
+  background: var(--silver) !important;
+  color: var(--ink-950) !important;
+}
+
+.final-cta__ghost-btn {
+  color: var(--white) !important;
+}
+
+.final-cta__ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: var(--white) !important;
+}
+
+/* ---------- TRUST ---------- */
+.final-cta__trust {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.80);
+  margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 767px) {
+  .final-cta {
+    padding-block: var(--space-7);
+  }
+
+  .final-cta__content {
+    gap: var(--space-5);
+  }
+
+  .final-cta__wordmark {
+    max-width: 280px;
+  }
+
+  .final-cta__rocket {
+    width: 48px;
+    height: 48px;
+    right: -14%;
+    top: -4%;
+  }
+
+  .final-cta__fade {
+    height: 100px;
+  }
+}
+
+@media (max-width: 479px) {
+  .final-cta {
+    padding-block: var(--space-7);
+  }
+
+  .final-cta__wordmark {
+    max-width: 220px;
+  }
+
+  .final-cta__rocket {
+    width: 36px;
+    height: 36px;
+    right: -10%;
+  }
+
+  .final-cta__line {
+    font-size: var(--fs-base);
+    max-width: 30ch;
+  }
+
+  .final-cta__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-2);
+  }
+
+  .final-cta__actions > * {
+    width: 100%;
+  }
+
+  .final-cta__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .final-cta__trust {
+    font-size: var(--fs-xs);
+  }
+}
+
+@media (max-width: 359px) {
+  .final-cta {
+    padding-block: var(--space-6);
+  }
+
+  .final-cta__wordmark {
+    max-width: 180px;
+  }
+
+  .final-cta__rocket {
+    width: 30px;
+    height: 30px;
+  }
+
+  .final-cta__line {
+    font-size: 0.9375rem;
+  }
+}

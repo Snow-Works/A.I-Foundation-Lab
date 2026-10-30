@@ -1,0 +1,67 @@
+/* ============================================================
+   EXAM SUBMITTED SCREEN
+   ============================================================ */
+
+.exam-submitted {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-9);
+}
+
+.exam-submitted__container {
+  max-width: 640px;
+}
+
+.exam-submitted__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-5);
+  padding-top: var(--space-3);
+}
+
+.exam-submitted__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(46, 200, 255, 0.12);
+  border: 1px solid rgba(46, 200, 255, 0.45);
+  color: var(--cyan-400);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exam-submitted__meta {
+  margin: 0;
+}
+
+.exam-submitted__status {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  text-align: left;
+}
+
+.exam-submitted__status-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--cyan-400);
+  margin-bottom: var(--space-2);
+}
+
+.exam-submitted__status-desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+  margin: 0;
+}

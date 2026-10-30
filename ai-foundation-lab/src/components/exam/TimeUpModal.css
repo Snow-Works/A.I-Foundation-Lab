@@ -1,0 +1,108 @@
+/* ============================================================
+   TIME UP MODAL
+   ============================================================ */
+
+.time-up-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(5, 3, 24, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.time-up-modal {
+  width: 100%;
+  max-width: 460px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: rgba(20, 10, 92, 0.96);
+  border: 1px solid rgba(46, 200, 255, 0.45);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+}
+
+.time-up-modal__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(46, 200, 255, 0.12);
+  border: 1px solid rgba(46, 200, 255, 0.45);
+  color: var(--cyan-400);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-up-modal__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-2xl);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-tight);
+  color: var(--white);
+  margin: 0;
+}
+
+.time-up-modal__desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+  margin: 0;
+}
+
+.time-up-modal__note {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  color: var(--text-muted);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  width: 100%;
+}
+
+.time-up-modal__actions {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+
+
+
+.time-up-modal__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(46, 200, 255, 0.08);
+  border: 1px solid rgba(46, 200, 255, 0.30);
+  color: var(--cyan-400);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+}
+
+.time-up-modal__spinner {
+  animation: time-up-spin 900ms linear infinite;
+}
+
+@keyframes time-up-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .time-up-modal__spinner { animation: none; }
+}

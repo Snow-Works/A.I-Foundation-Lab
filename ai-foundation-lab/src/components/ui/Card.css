@@ -1,0 +1,222 @@
+/* CARD COMPONENT */
+/* Translucent glass panels from the poster. */
+/* Variants: glass (default), strong, outline, gradient */
+
+
+.card {
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--radius-lg);
+    /* overflow: visible so pill tabs can overlap the top edge */
+    overflow: visible;
+    transition:
+        transform var(--dur-normal) var(--ease-out),
+        box-shadow var(--dur-normal) var(--ease-out);
+}
+
+/*  SURFACE (decorative base layer)  */
+.card__surface {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* CONTENT (above the surface)  */
+.card__content {
+    position: relative;
+    z-index: 1;
+}
+
+/* VARIANTS */
+
+/*  GLASS (default)  */
+.card--glass>.card__surface {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}
+
+/* 1px inner light border on the top edge — catches the "light" */
+.card--glass>.card__surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    pointer-events: none;
+}
+
+/*  STRONG (higher contrast, used for exam / modal surfaces)  */
+.card--strong>.card__surface {
+    background: var(--glass-bg-strong);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+}
+
+.card--strong>.card__surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    pointer-events: none;
+}
+
+/* OUTLINE (border only, no fill)  */
+.card--outline>.card__surface {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+}
+
+/* GRADIENT (signature gradient surface, for hero CTAs) */
+.card--gradient>.card__surface {
+    background: var(--gradient-signature);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow-card);
+}
+
+.card--gradient>.card__surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    pointer-events: none;
+}
+
+/* SIZES (padding on the content wrapper) */
+
+.card--sm>.card__content {
+    padding: var(--space-4);
+}
+
+.card--md>.card__content {
+    padding: var(--space-5) var(--space-6);
+}
+
+.card--lg>.card__content {
+    padding: var(--space-6) var(--space-7);
+}
+
+/* Room above content when a pill tab will overlap */
+.card--with-tab>.card__content {
+    padding-top: var(--space-6);
+}
+
+@media (max-width: 359px) {
+    .card--lg>.card__content {
+        padding: var(--space-5);
+    }
+
+    .card--md>.card__content {
+        padding: var(--space-4) var(--space-5);
+    }
+}
+
+/* INTERACTION */
+
+.card--hoverable {
+    cursor: default;
+}
+
+.card--hoverable:hover {
+    transform: translateY(-3px);
+}
+
+.card--hoverable:hover>.card__surface {
+    box-shadow: 0 14px 50px rgba(0, 0, 0, 0.55);
+}
+
+.card--hoverable.card--glass:hover>.card__surface {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.card--clickable {
+    cursor: pointer;
+}
+
+.card--clickable:focus-visible {
+    outline: none;
+}
+
+.card--clickable:focus-visible>.card__surface {
+    outline: 2px solid var(--accent-focus);
+    outline-offset: 3px;
+    box-shadow: var(--glow-cyan);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card--hoverable:hover {
+        transform: none;
+    }
+}
+
+/* DECORATIVE LAYERS */
+
+/* Faint hex-grid pattern (from the poster, ~6% opacity) */
+.card__pattern {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    background-image:
+        linear-gradient(30deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+        linear-gradient(150deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+        linear-gradient(30deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+        linear-gradient(150deg, #FFFFFF 12%, transparent 12.5%, transparent 87%, #FFFFFF 87.5%, #FFFFFF),
+        linear-gradient(60deg, rgba(255, 255, 255, 0.6) 25%, transparent 25.5%, transparent 75%, rgba(255, 255, 255, 0.6) 75%);
+    background-size: 40px 70px;
+    background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0;
+}
+
+/* Soft radial glow behind the surface */
+.card__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 20% 30%,
+            rgba(255, 63, 164, 0.22) 0%,
+            transparent 55%);
+}
+
+.card__glow--cyan {
+    background: radial-gradient(circle at 80% 20%,
+            rgba(46, 200, 255, 0.18) 0%,
+            transparent 55%);
+}
+
+.card__glow--magenta {
+    background: radial-gradient(circle at 60% 60%,
+            rgba(212, 36, 155, 0.22) 0%,
+            transparent 60%);
+}
+
+.card__glow--orange {
+    background: radial-gradient(circle at 80% 80%,
+            rgba(242, 81, 31, 0.20) 0%,
+            transparent 60%);
+}
+
+/* Accent edge glow around the whole card (subtle halo) */
+.card--accent-cyan>.card__surface {
+    box-shadow: var(--shadow-card), 0 0 40px rgba(46, 200, 255, 0.18);
+}
+
+.card--accent-pink>.card__surface {
+    box-shadow: var(--shadow-card), 0 0 40px rgba(255, 63, 164, 0.22);
+}
+
+.card--accent-magenta>.card__surface {
+    box-shadow: var(--shadow-card), 0 0 40px rgba(212, 36, 155, 0.22);
+}
+
+.card--accent-orange>.card__surface {
+    box-shadow: var(--shadow-card), 0 0 40px rgba(242, 81, 31, 0.20);
+}

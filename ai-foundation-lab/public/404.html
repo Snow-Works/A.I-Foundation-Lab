@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AI Foundation Lab</title>
+    <script>
+      // Redirect any 404 to the app root.
+      sessionStorage.redirect = location.href;
+      location.replace(
+        location.protocol + "//" + location.host + location.pathname + "#/"
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

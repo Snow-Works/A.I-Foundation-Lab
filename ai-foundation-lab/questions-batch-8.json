@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Multiprocessing Pipe",
+    "topic": "Concurrency & Async",
+    "difficulty": "hard",
+    "prompt": "<p>Create a two-way communication pipe between parent and child processes.</p><p>Starting code:</p><pre>from multiprocessing import ___\n\nparent_conn, child_conn = Pipe()\nparent_conn.send(\"hello\")\nmsg = child_conn.recv()</pre>",
+    "rubric": "Full marks for `Pipe`.",
+    "sample_solution": "from multiprocessing import Pipe\n\nparent_conn, child_conn = Pipe()\nparent_conn.send(\"hello\")\nmsg = child_conn.recv()"
+  },
+  {
+    "title": "Asyncio TaskGroup",
+    "topic": "Concurrency & Async",
+    "difficulty": "hard",
+    "prompt": "<p>Run a group of tasks with structured concurrency using asyncio.TaskGroup.</p><p>Starting code:</p><pre>import asyncio\n\nasync def main():\n    async with asyncio.___() as tg:\n        tg.create_task(job1())\n        tg.create_task(job2())</pre>",
+    "rubric": "Full marks for `TaskGroup`.",
+    "sample_solution": "import asyncio\n\nasync def main():\n    async with asyncio.TaskGroup() as tg:\n        tg.create_task(job1())\n        tg.create_task(job2())"
+  },
+  {
+    "title": "Async Generator Comprehension",
+    "topic": "Concurrency & Async",
+    "difficulty": "hard",
+    "prompt": "<p>Collect results from an asynchronous iterable using an async list comprehension.</p><p>Starting code:</p><pre>async def collect(agen):\n    return [x ___ x in agen]</pre>",
+    "rubric": "Full marks for `async for`.",
+    "sample_solution": "async def collect(agen):\n    return [x async for x in agen]"
+  },
+  {
+    "title": "Threading Condition Variable",
+    "topic": "Concurrency & Async",
+    "difficulty": "hard",
+    "prompt": "<p>Notify waiting threads using a threading.Condition object.</p><p>Starting code:</p><pre>from threading import Condition\n\ncond = Condition()\nwith cond:\n    cond.___()</pre>",
+    "rubric": "Full marks for `notify`.",
+    "sample_solution": "from threading import Condition\n\ncond = Condition()\nwith cond:\n    cond.notify()"
+  },
+  {
+    "title": "Threading Barrier",
+    "topic": "Concurrency & Async",
+    "difficulty": "hard",
+    "prompt": "<p>Synchronize 3 threads so they all wait until all 3 reach the barrier point.</p><p>Starting code:</p><pre>from threading import Barrier\n\nbarrier = Barrier(3)\n\n# Inside each worker thread:\nbarrier.___()</pre>",
+    "rubric": "Full marks for `wait`.",
+    "sample_solution": "from threading import Barrier\n\nbarrier = Barrier(3)\n\n# Inside each worker thread:\nbarrier.wait()"
+  },
+  {
+    "title": "CSVDictReader",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Read rows from a CSV file as dictionaries keyed by the header row.</p><p>Starting code:</p><pre>import csv\n\nwith open(\"users_data.csv\", mode=\"r\", newline=\"\") as f:\n    reader = csv.___(f)\n    for row in reader:\n        print(row[\"name\"])</pre>",
+    "rubric": "Full marks for `DictReader`.",
+    "sample_solution": "import csv\n\nwith open(\"users_data.csv\", mode=\"r\", newline=\"\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(row[\"name\"])"
+  },
+  {
+    "title": "CSVDictWriter",
+    "topic": "File I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Write dictionaries to a CSV file, writing the header row first.</p><p>Starting code:</p><pre>import csv\n\nwith open(\"output_data.csv\", \"w\", newline=\"\") as f:\n    writer = csv.DictWriter(f, fieldnames=[\"id\", \"name\"])\n    writer.___()\n    writer.writerow({\"id\": 1, \"name\": \"Alice\"})</pre>",
+    "rubric": "Full marks for `writeheader`.",
+    "sample_solution": "import csv\n\nwith open(\"output_data.csv\", \"w\", newline=\"\") as f:\n    writer = csv.DictWriter(f, fieldnames=[\"id\", \"name\"])\n    writer.writeheader()\n    writer.writerow({\"id\": 1, \"name\": \"Alice\"})"
+  },
+  {
+    "title": "Pickle Serialization",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Serialize a Python object to a byte stream using pickle.</p><p>Starting code:</p><pre>import pickle\n\ndata = {\"a\": [1, 2, 3]}\nraw_bytes = pickle.___(data)\nrestored = pickle.loads(raw_bytes)</pre>",
+    "rubric": "Full marks for `dumps`.",
+    "sample_solution": "import pickle\n\ndata = {\"a\": [1, 2, 3]}\nraw_bytes = pickle.dumps(data)\nrestored = pickle.loads(raw_bytes)"
+  },
+  {
+    "title": "SQLite3 Parameterized Query",
+    "topic": "File I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Execute a safe parameterized SQL query preventing SQL injection.</p><p>Starting code:</p><pre>import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\ncur = conn.cursor()\ncur.execute(\"SELECT * FROM users WHERE id = ___\", (user_id,))</pre>",
+    "rubric": "Full marks for `?`.",
+    "sample_solution": "import sqlite3\n\nconn = sqlite3.connect(\":memory:\")\ncur = conn.cursor()\ncur.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))"
+  },
+  {
+    "title": "Struct Binary Packing",
+    "topic": "File I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Pack a 4-byte network-order unsigned int and a 2-byte short into binary bytes.</p><p>Starting code:</p><pre>import struct\n\npacket = struct.___(\"!IH\", 1024, 80)\nval1, val2 = struct.unpack(\"!IH\", packet)</pre>",
+    "rubric": "Full marks for `pack`.",
+    "sample_solution": "import struct\n\npacket = struct.pack(\"!IH\", 1024, 80)\nval1, val2 = struct.unpack(\"!IH\", packet)"
+  },
+  {
+    "title": "Tempfile NamedTemporaryFile",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Create a temporary file that is automatically cleaned up on close.</p><p>Starting code:</p><pre>import tempfile\n\nwith tempfile.___(mode=\"w+t\") as tmp:\n    tmp.write(\"temporary data\")\n    tmp.seek(0)</pre>",
+    "rubric": "Full marks for `NamedTemporaryFile`.",
+    "sample_solution": "import tempfile\n\nwith tempfile.NamedTemporaryFile(mode=\"w+t\") as tmp:\n    tmp.write(\"temporary data\")\n    tmp.seek(0)"
+  },
+  {
+    "title": "Shutil Directory Copy",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Recursively copy an entire directory tree to a new destination.</p><p>Starting code:</p><pre>import shutil\n\nshutil.___(\"src_folder\", \"backup_folder\")</pre>",
+    "rubric": "Full marks for `copytree`.",
+    "sample_solution": "import shutil\n\nshutil.copytree(\"src_folder\", \"backup_folder\")"
+  },
+  {
+    "title": "Pathlib Globbing",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Find all Python files recursively in a directory tree using pathlib.</p><p>Starting code:</p><pre>from pathlib import Path\n\npy_files = list(Path(\".\").___(“*.py”))</pre>",
+    "rubric": "Full marks for `rglob`.",
+    "sample_solution": "from pathlib import Path\n\npy_files = list(Path(\".\").rglob(\"*.py\"))"
+  },
+  {
+    "title": "Zipfile Extraction",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Extract all members from a ZIP archive into a target directory.</p><p>Starting code:</p><pre>import zipfile\n\nwith zipfile.ZipFile(\"archive_bundle.zip\", \"r\") as zf:\n    zf.___(\"output_dir\")</pre>",
+    "rubric": "Full marks for `extractall`.",
+    "sample_solution": "import zipfile\n\nwith zipfile.ZipFile(\"archive_bundle.zip\", \"r\") as zf:\n    zf.extractall(\"output_dir\")"
+  },
+  {
+    "title": "Gzip Compression",
+    "topic": "File I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Write compressed text data directly to a compressed file.</p><p>Starting code:</p><pre>import gzip\n\nwith gzip.___(\"archive_log.gz\", \"wt\", encoding=\"utf-8\") as f:\n    f.write(\"compressed log entry\")</pre>",
+    "rubric": "Full marks for `open`.",
+    "sample_solution": "import gzip\n\nwith gzip.open(\"archive_log.gz\", \"wt\", encoding=\"utf-8\") as f:\n    f.write(\"compressed log entry\")"
+  },
+  {
+    "title": "ConfigParser INI Files",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Read a configuration file in INI format using configparser.</p><p>Starting code:</p><pre>import configparser\n\nconfig = configparser.___()\nconfig.read(\"settings_config.ini\")\nhost = config[\"DEFAULT\"][\"host\"]</pre>",
+    "rubric": "Full marks for `ConfigParser`.",
+    "sample_solution": "import configparser\n\nconfig = configparser.ConfigParser()\nconfig.read(\"settings_config.ini\")\nhost = config[\"DEFAULT\"][\"host\"]"
+  },
+  {
+    "title": "TOML Parsing",
+    "topic": "File I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Parse a TOML configuration string using the standard library tomllib module.</p><p>Starting code:</p><pre>import tomllib\n\ntoml_str = \"[database]\\nport = 5432\"\ndata = tomllib.___(toml_str)</pre>",
+    "rubric": "Full marks for `loads`.",
+    "sample_solution": "import tomllib\n\ntoml_str = \"[database]\\nport = 5432\"\ndata = tomllib.loads(toml_str)"
+  },
+  {
+    "title": "Io StringIO In-Memory Stream",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Use an in-memory text buffer that behaves like a file object.</p><p>Starting code:</p><pre>from io import ___\n\nbuffer = StringIO()\nbuffer.write(\"hello\")\ncontent = buffer.getvalue()</pre>",
+    "rubric": "Full marks for `StringIO`.",
+    "sample_solution": "from io import StringIO\n\nbuffer = StringIO()\nbuffer.write(\"hello\")\ncontent = buffer.getvalue()"
+  },
+  {
+    "title": "Io BytesIO In-Memory Binary Stream",
+    "topic": "File I/O",
+    "difficulty": "medium",
+    "prompt": "<p>Create an in-memory binary stream for byte operations.</p><p>Starting code:</p><pre>from io import ___\n\nbio = BytesIO(b\"initial bytes\")</pre>",
+    "rubric": "Full marks for `BytesIO`.",
+    "sample_solution": "from io import BytesIO\n\nbio = BytesIO(b\"initial bytes\")"
+  },
+  {
+    "title": "Mmap Memory-Mapped File",
+    "topic": "File I/O",
+    "difficulty": "hard",
+    "prompt": "<p>Memory-map a file for fast random access without reading the entire file into RAM.</p><p>Starting code:</p><pre>import mmap\n\nwith open(\"large_data.bin\", \"r+b\") as f:\n    with mmap.___(f.fileno(), 0) as mm:\n        first_ten = mm[:10]</pre>",
+    "rubric": "Full marks for `mmap`.",
+    "sample_solution": "import mmap\n\nwith open(\"large_data.bin\", \"r+b\") as f:\n    with mmap.mmap(f.fileno(), 0) as mm:\n        first_ten = mm[:10]"
+  },
+  {
+    "title": "Urllib Request Fetching",
+    "topic": "Networking",
+    "difficulty": "medium",
+    "prompt": "<p>Fetch the contents of an endpoint using standard library urllib.request.</p><p>Starting code:</p><pre>import urllib.request\n\nwith urllib.request.___(endpoint_address) as response:\n    body = response.read()</pre>",
+    "rubric": "Full marks for `urlopen`.",
+    "sample_solution": "import urllib.request\n\nwith urllib.request.urlopen(endpoint_address) as response:\n    body = response.read()"
+  },
+  {
+    "title": "Urllib Parse Query Parameters",
+    "topic": "Networking",
+    "difficulty": "medium",
+    "prompt": "<p>Encode a dictionary of query parameters into a URL-safe query string.</p><p>Starting code:</p><pre>import urllib.parse\n\nparams = {\"q\": \"python programming\", \"page\": 1}\nquery_string = urllib.parse.___(params)</pre>",
+    "rubric": "Full marks for `urlencode`.",
+    "sample_solution": "import urllib.parse\n\nparams = {\"q\": \"python programming\", \"page\": 1}\nquery_string = urllib.parse.urlencode(params)"
+  },
+  {
+    "title": "Urllib Parse Decomposition",
+    "topic": "Networking",
+    "difficulty": "medium",
+    "prompt": "<p>Parse an address string into its scheme, netloc, path, and query components.</p><p>Starting code:</p><pre>from urllib.parse import ___\n\nparsed = urlparse(service_endpoint_str)\nhost = parsed.netloc</pre>",
+    "rubric": "Full marks for `urlparse`.",
+    "sample_solution": "from urllib.parse import urlparse\n\nparsed = urlparse(service_endpoint_str)\nhost = parsed.netloc"
+  },
+  {
+    "title": "TCP Socket Client",
+    "topic": "Networking",
+    "difficulty": "hard",
+    "prompt": "<p>Create a TCP/IPv4 socket and connect to a remote host and port.</p><p>Starting code:</p><pre>import socket\n\nwith socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:\n    s.___((\"localhost\", 8080))</pre>",
+    "rubric": "Full marks for `connect`.",
+    "sample_solution": "import socket\n\nwith socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:\n    s.connect((\"localhost\", 8080))"
+  },
+  {
+    "title": "UDP Socket Creation",
+    "topic": "Networking",
+    "difficulty": "medium",
+    "prompt": "<p>Create a connectionless UDP/IPv4 datagram socket.</p><p>Starting code:</p><pre>import socket\n\nudp_sock = socket.socket(socket.AF_INET, socket.___)</pre>",
+    "rubric": "Full marks for `SOCK_DGRAM`.",
+    "sample_solution": "import socket\n\nudp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)"
+  },
+  {
+    "title": "Ipaddress Subnet Check",
+    "topic": "Networking",
+    "difficulty": "hard",
+    "prompt": "<p>Check if an IPv4 address belongs to a specific CIDR network block.</p><p>Starting code:</p><pre>import ipaddress\n\nip = ipaddress.___(\"192.168.1.50\")\nnet = ipaddress.___(\"192.168.1.0/24\")\nin_subnet = ip in net</pre>",
+    "rubric": "Full marks for `ip_address` and `ip_network`.",
+    "sample_solution": "import ipaddress\n\nip = ipaddress.ip_address(\"192.168.1.50\")\nnet = ipaddress.ip_network(\"192.168.1.0/24\")\nin_subnet = ip in net"
+  },
+  {
+    "title": "UUIDv4 Generation",
+    "topic": "Networking",
+    "difficulty": "easy",
+    "prompt": "<p>Generate a random universally unique identifier (UUID version 4).</p><p>Starting code:</p><pre>import uuid\n\nunique_id = str(uuid.___())</pre>",
+    "rubric": "Full marks for `uuid4`.",
+    "sample_solution": "import uuid\n\nunique_id = str(uuid.uuid4())"
+  },
+  {
+    "title": "Base64 Encoding & Decoding",
+    "topic": "Networking",
+    "difficulty": "medium",
+    "prompt": "<p>Encode binary data to URL-safe Base64 ASCII bytes.</p><p>Starting code:</p><pre>import base64\n\nencoded = base64.___(b\"secret:data\")\ndecoded = base64.urlsafe_b64decode(encoded)</pre>",
+    "rubric": "Full marks for `urlsafe_b64encode`.",
+    "sample_solution": "import base64\n\nencoded = base64.urlsafe_b64encode(b\"secret:data\")\ndecoded = base64.urlsafe_b64decode(encoded)"
+  },
+  {
+    "title": "SSL Default Context",
+    "topic": "Networking",
+    "difficulty": "hard",
+    "prompt": "<p>Create a secure default SSL context for verifying TLS certificates.</p><p>Starting code:</p><pre>import ssl\n\nctx = ssl.___()</pre>",
+    "rubric": "Full marks for `create_default_context`.",
+    "sample_solution": "import ssl\n\nctx = ssl.create_default_context()"
+  },
+  {
+    "title": "HTTP Status Enum",
+    "topic": "Networking",
+    "difficulty": "easy",
+    "prompt": "<p>Use http.HTTPStatus to reference standard HTTP status codes and phrases.</p><p>Starting code:</p><pre>from http import ___\n\ncode = HTTPStatus.NOT_FOUND.value</pre>",
+    "rubric": "Full marks for `HTTPStatus`.",
+    "sample_solution": "from http import HTTPStatus\n\ncode = HTTPStatus.NOT_FOUND.value"
+  }
+]

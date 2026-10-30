@@ -1,0 +1,234 @@
+[
+  {
+    "title": "Literal Types",
+    "topic": "Type Annotations",
+    "difficulty": "medium",
+    "prompt": "<p>Restrict argument value to specific constant string values.</p><p>Starting code:</p><pre>from typing import ___\n\ndef set_status(status: ___[\"open\", \"closed\"]) -> None:\n    pass</pre>",
+    "rubric": "Full marks for `Literal`.",
+    "sample_solution": "from typing import Literal\n\ndef set_status(status: Literal[\"open\", \"closed\"]) -> None:\n    pass"
+  },
+  {
+    "title": "Async Function Definition",
+    "topic": "Async Programming",
+    "difficulty": "easy",
+    "prompt": "<p>Declare an asynchronous coroutine function using async def.</p><p>Starting code:</p><pre>___ def fetch_data():\n    return {\"status\": \"ok\"}</pre>",
+    "rubric": "Full marks for `async def`.",
+    "sample_solution": "async def fetch_data():\n    return {\"status\": \"ok\"}"
+  },
+  {
+    "title": "Awaiting Coroutines",
+    "topic": "Async Programming",
+    "difficulty": "easy",
+    "prompt": "<p>Execute and yield control for an async non-blocking sleep call.</p><p>Starting code:</p><pre>import asyncio\n\nasync def main():\n    ___ asyncio.sleep(1)</pre>",
+    "rubric": "Full marks for `await`.",
+    "sample_solution": "import asyncio\n\nasync def main():\n    await asyncio.sleep(1)"
+  },
+  {
+    "title": "Running Async Tasks Concurrently",
+    "topic": "Async Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Schedule multiple coroutines using asyncio.gather.</p><p>Starting code:</p><pre>import asyncio\n\nasync def run_all():\n    results = await asyncio.___(task1(), task2())</pre>",
+    "rubric": "Full marks for `gather`.",
+    "sample_solution": "import asyncio\n\nasync def run_all():\n    results = await asyncio.gather(task1(), task2())"
+  },
+  {
+    "title": "ThreadPoolExecutor Execution",
+    "topic": "Async Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Submit work to pool threads using concurrent.futures.</p><p>Starting code:</p><pre>from concurrent.futures import ThreadPoolExecutor\n\nwith ThreadPoolExecutor() as executor:\n    future = executor.___(pow, 2, 3)</pre>",
+    "rubric": "Full marks for `submit`.",
+    "sample_solution": "from concurrent.futures import ThreadPoolExecutor\n\nwith ThreadPoolExecutor() as executor:\n    future = executor.submit(pow, 2, 3)"
+  },
+  {
+    "title": "Thread Lock Synchronization",
+    "topic": "Async Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Acquire primitive lock using context manager syntax.</p><p>Starting code:</p><pre>from threading import Lock\n\nlock = Lock()\nwith ___:\n    # Critical section\n    pass</pre>",
+    "rubric": "Full marks for `lock`.",
+    "sample_solution": "from threading import Lock\n\nlock = Lock()\nwith lock:\n    # Critical section\n    pass"
+  },
+  {
+    "title": "Multiprocessing Process Creation",
+    "topic": "Async Programming",
+    "difficulty": "hard",
+    "prompt": "<p>Instantiate a process executing target function with args.</p><p>Starting code:</p><pre>from multiprocessing import Process\n\np = Process(target=worker_func, ___=(arg1, arg2))\np.start()</pre>",
+    "rubric": "Full marks for `args`.",
+    "sample_solution": "from multiprocessing import Process\n\np = Process(target=worker_func, args=(arg1, arg2))\np.start()"
+  },
+  {
+    "title": "Queue Communication",
+    "topic": "Async Programming",
+    "difficulty": "medium",
+    "prompt": "<p>Put and get items safely across thread boundaries.</p><p>Starting code:</p><pre>from queue import Queue\n\nq = Queue()\nq.___(\"job1\")\nitem = q.get()</pre>",
+    "rubric": "Full marks for `put`.",
+    "sample_solution": "from queue import Queue\n\nq = Queue()\nq.put(\"job1\")\nitem = q.get()"
+  },
+  {
+    "title": "Try-Except-Else Block",
+    "topic": "Exceptions",
+    "difficulty": "easy",
+    "prompt": "<p>Execute code only if no exceptions were raised inside try.</p><p>Starting code:</p><pre>try:\n    res = 10 / 2\nexcept ZeroDivisionError:\n    print(\"Error\")\n___:\n    print(\"Success, no exceptions!\")</pre>",
+    "rubric": "Full marks for `else`.",
+    "sample_solution": "try:\n    res = 10 / 2\nexcept ZeroDivisionError:\n    print(\"Error\")\nelse:\n    print(\"Success, no exceptions!\")"
+  },
+  {
+    "title": "Finally Block Guarantee",
+    "topic": "Exceptions",
+    "difficulty": "medium",
+    "prompt": "<p>Ensure cleanup logic always executes regardless of exceptions.</p><p>Starting code:</p><pre>try:\n    f = open(\"file.txt\")\nfinally:\n    f.___()</pre>",
+    "rubric": "Full marks for `close`.",
+    "sample_solution": "try:\n    f = open(\"file.txt\")\nfinally:\n    f.close()"
+  },
+  {
+    "title": "Custom Exception Class",
+    "topic": "Exceptions",
+    "difficulty": "easy",
+    "prompt": "<p>Create custom domain exception inheriting from base Exception.</p><p>Starting code:</p><pre>class PaymentFailedError(___):\n    pass</pre>",
+    "rubric": "Full marks for `Exception`.",
+    "sample_solution": "class PaymentFailedError(Exception):\n    pass"
+  },
+  {
+    "title": "Exception Chaining",
+    "topic": "Exceptions",
+    "difficulty": "hard",
+    "prompt": "<p>Raise a new exception while preserving original cause traceback context.</p><p>Starting code:</p><pre>try:\n    int(\"invalid\")\nexcept ValueError as err:\n    raise RuntimeError(\"Processing failed\") ___ err</pre>",
+    "rubric": "Full marks for `from`.",
+    "sample_solution": "try:\n    int(\"invalid\")\nexcept ValueError as err:\n    raise RuntimeError(\"Processing failed\") from err"
+  },
+  {
+    "title": "Context Manager Class",
+    "topic": "Exceptions",
+    "difficulty": "hard",
+    "prompt": "<p>Implement context manager protocol using <code>__enter__</code> and <code>__exit__</code>.</p><p>Starting code:</p><pre>class Resource:\n    def ___(self):\n        return self\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        pass</pre>",
+    "rubric": "Full marks for `__enter__`.",
+    "sample_solution": "class Resource:\n    def __enter__(self):\n        return self\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        pass"
+  },
+  {
+    "title": "Contextmanager Decorator",
+    "topic": "Exceptions",
+    "difficulty": "medium",
+    "prompt": "<p>Create resource context manager using generator decorator utility.</p><p>Starting code:</p><pre>from contextlib import ___\n\n@contextmanager\ndef temp_file():\n    f = open(\"temp.txt\", \"w\")\n    try:\n        yield f\n    finally:\n        f.close()</pre>",
+    "rubric": "Full marks for `contextmanager`.",
+    "sample_solution": "from contextlib import contextmanager\n\n@contextmanager\ndef temp_file():\n    f = open(\"temp.txt\", \"w\")\n    try:\n        yield f\n    finally:\n        f.close()"
+  },
+  {
+    "title": "Datetime Formatting",
+    "topic": "Standard Library",
+    "difficulty": "easy",
+    "prompt": "<p>Format datetime object into string ISO format.</p><p>Starting code:</p><pre>from datetime import datetime\nnow = datetime.now()\niso_str = now.___(\"%Y-%m-%d %H:%M:%S\")</pre>",
+    "rubric": "Full marks for `strftime`.",
+    "sample_solution": "from datetime import datetime\nnow = datetime.now()\niso_str = now.strftime(\"%Y-%m-%d %H:%M:%S\")"
+  },
+  {
+    "title": "Time Delta Calculations",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Add an offset duration of 7 days to current timestamp.</p><p>Starting code:</p><pre>from datetime import datetime, timedelta\nfuture = datetime.now() + ___(days=7)</pre>",
+    "rubric": "Full marks for `timedelta`.",
+    "sample_solution": "from datetime import datetime, timedelta\nfuture = datetime.now() + timedelta(days=7)"
+  },
+  {
+    "title": "Pathlib File Path Joins",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Join directory paths using modern object-oriented pathlib.Path slash operator.</p><p>Starting code:</p><pre>from pathlib import Path\nbase_dir = Path(\"/var/log\")\napp_log = base_dir ___ \"app.log\"</pre>",
+    "rubric": "Full marks for `/`.",
+    "sample_solution": "from pathlib import Path\nbase_dir = Path(\"/var/log\")\napp_log = base_dir / \"app.log\""
+  },
+  {
+    "title": "Reading Path Text",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Read text content directly from path object without explicit open() call.</p><p>Starting code:</p><pre>from pathlib import Path\ncontent = Path(\"config.json\").___()</pre>",
+    "rubric": "Full marks for `read_text`.",
+    "sample_solution": "from pathlib import Path\ncontent = Path(\"config.json\").read_text()"
+  },
+  {
+    "title": "JSON Serialization",
+    "topic": "Standard Library",
+    "difficulty": "easy",
+    "prompt": "<p>Serialize Python dictionary object into formatted JSON string.</p><p>Starting code:</p><pre>import json\ndata = {\"status\": True, \"code\": 200}\njson_str = json.___(data, indent=2)</pre>",
+    "rubric": "Full marks for `dumps`.",
+    "sample_solution": "import json\ndata = {\"status\": True, \"code\": 200}\njson_str = json.dumps(data, indent=2)"
+  },
+  {
+    "title": "Regular Expression Matching",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Extract all numeric digits from text using regular expressions.</p><p>Starting code:</p><pre>import re\ntext = \"Item 42 costs $100\"\ndigits = re.___(r\"\\d+\", text)</pre>",
+    "rubric": "Full marks for `findall`.",
+    "sample_solution": "import re\ntext = \"Item 42 costs $100\"\ndigits = re.findall(r\"\\d+\", text)"
+  },
+  {
+    "title": "Random Sampling",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Select 3 distinct unique elements from a collection randomly without replacement.</p><p>Starting code:</p><pre>import random\nitems = [1, 2, 3, 4, 5, 6, 7]\nsample = random.___(items, 3)</pre>",
+    "rubric": "Full marks for `sample`.",
+    "sample_solution": "import random\nitems = [1, 2, 3, 4, 5, 6, 7]\nsample = random.sample(items, 3)"
+  },
+  {
+    "title": "Math Ceil Calculation",
+    "topic": "Standard Library",
+    "difficulty": "easy",
+    "prompt": "<p>Round floating point value up to nearest ceiling integer.</p><p>Starting code:</p><pre>import math\nval = 4.1\nresult = math.___(val)</pre>",
+    "rubric": "Full marks for `ceil`.",
+    "sample_solution": "import math\nval = 4.1\nresult = math.ceil(val)"
+  },
+  {
+    "title": "Itertools Cycle",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Create infinite cyclic iterator over sequence.</p><p>Starting code:</p><pre>import itertools\ncolors = itertools.___([\"red\", \"green\", \"blue\"])</pre>",
+    "rubric": "Full marks for `cycle`.",
+    "sample_solution": "import itertools\ncolors = itertools.cycle([\"red\", \"green\", \"blue\"])"
+  },
+  {
+    "title": "Itertools Chain",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Combine multiple iterables together seamlessly into single sequence.</p><p>Starting code:</p><pre>import itertools\ncombined = list(itertools.___([1, 2], [3, 4]))</pre>",
+    "rubric": "Full marks for `chain`.",
+    "sample_solution": "import itertools\ncombined = list(itertools.chain([1, 2], [3, 4]))"
+  },
+  {
+    "title": "Itertools Product",
+    "topic": "Standard Library",
+    "difficulty": "hard",
+    "prompt": "<p>Compute Cartesian product of input iterables.</p><p>Starting code:</p><pre>import itertools\npairs = list(itertools.___([1, 2], ['a', 'b']))</pre>",
+    "rubric": "Full marks for `product`.",
+    "sample_solution": "import itertools\npairs = list(itertools.product([1, 2], ['a', 'b']))"
+  },
+  {
+    "title": "Sys Command-line Arguments",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Access command-line flags array passed to executing script.</p><p>Starting code:</p><pre>import sys\nscript_name = sys.___[0]</pre>",
+    "rubric": "Full marks for `argv`.",
+    "sample_solution": "import sys\nscript_name = sys.argv[0]"
+  },
+  {
+    "title": "OS Environment Variables",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Read environment configuration setting with safe fallback.</p><p>Starting code:</p><pre>import os\ndb_url = os.___.get(\"DATABASE_URL\", \"localhost\")</pre>",
+    "rubric": "Full marks for `environ`.",
+    "sample_solution": "import os\ndb_url = os.environ.get(\"DATABASE_URL\", \"localhost\")"
+  },
+  {
+    "title": "Subprocess Command Execution",
+    "topic": "Standard Library",
+    "difficulty": "hard",
+    "prompt": "<p>Run system shell command and capture stdout output text.</p><p>Starting code:</p><pre>import subprocess\nresult = subprocess.___([\"ls\", \"-l\"], capture_output=True, text=True)</pre>",
+    "rubric": "Full marks for `run`.",
+    "sample_solution": "import subprocess\nresult = subprocess.run([\"ls\", \"-l\"], capture_output=True, text=True)"
+  },
+  {
+    "title": "Copy Module (Deep Copy)",
+    "topic": "Standard Library",
+    "difficulty": "medium",
+    "prompt": "<p>Create completely independent duplicated object structure recursively.</p><p>Starting code:</p><pre>import copy\noriginal = [[1, 2], [3, 4]]\ncloned = copy.___(original)</pre>",
+    "rubric": "Full marks for `deepcopy`.",
+    "sample_solution": "import copy\noriginal = [[1, 2], [3, 4]]\ncloned = copy.deepcopy(original)"
+  }
+]

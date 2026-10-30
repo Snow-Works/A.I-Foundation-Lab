@@ -1,0 +1,17 @@
+/* src/styles/admin-tables.css
+   ------------------------------------------------------------
+   Opt-in utilities for the admin data tables. Imported by
+   src/styles/global.css so it's active app-wide.
+   ------------------------------------------------------------ */
+
+/* Smooth touch scrolling + breathing room for the scrollbar */
+.admin-users__table-wrap,
+.admin-questions__table-wrap,
+.admin-roster__table-wrap,
+.admin-submissions__table-wrap,
+.admin-violations__table-wrap,
+.admin-audit__table-wrap {
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-2);
+}

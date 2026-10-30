@@ -1,0 +1,174 @@
+/* ============================================================
+   ADMIN SUBMISSIONS
+   ============================================================ */
+
+.admin-submissions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.admin-submissions__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.admin-submissions__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-2xl);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.admin-submissions__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.admin-submissions__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  color: #FF6B6B;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-submissions__card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.admin-submissions__loading,
+.admin-submissions__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-submissions__spinner {
+  color: var(--cyan-400);
+  animation: admin-sub-spin 900ms linear infinite;
+}
+
+@keyframes admin-sub-spin { to { transform: rotate(360deg); } }
+
+.admin-submissions__table-wrap {
+  overflow-x: auto;
+}
+
+.admin-submissions__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.admin-submissions__table th {
+  text-align: left;
+  padding: 12px var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(10, 6, 48, 0.55);
+}
+
+.admin-submissions__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+  vertical-align: middle;
+}
+
+.admin-submissions__table tbody tr:last-child td { border-bottom: none; }
+
+.admin-sub-student {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.admin-sub-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-button);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-sm);
+}
+
+.admin-sub-name {
+  display: block;
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  color: var(--white);
+}
+
+.admin-sub-email {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-sub-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-sub-mark-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(46, 200, 255, 0.10);
+  border: 1px solid rgba(46, 200, 255, 0.35);
+  color: var(--cyan-400);
+  text-decoration: none;
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  transition: all var(--dur-fast);
+}
+
+.admin-sub-mark-btn:hover {
+  background: rgba(46, 200, 255, 0.20);
+}
+
+
+.admin-sub-mark-btn--view {
+  background: rgba(46, 200, 255, 0.05);
+  border-color: rgba(46, 200, 255, 0.2);
+  color: var(--cyan-400);
+}
+.admin-sub-mark-btn--view:hover {
+  background: rgba(46, 200, 255, 0.15);
+}

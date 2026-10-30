@@ -1,0 +1,232 @@
+/* BUTTON COMPONENT */
+/* Variants: primary, secondary, ghost, danger, icon */
+/*   Sizes: sm, md, lg */
+
+
+.btn {
+    /* Reset & structure */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    line-height: 1;
+    letter-spacing: 0.005em;
+    text-decoration: none;
+    white-space: nowrap;
+    text-align: center;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+
+    transition:
+        background var(--dur-normal) var(--ease-out),
+        color var(--dur-normal) var(--ease-out),
+        border-color var(--dur-normal) var(--ease-out),
+        box-shadow var(--dur-normal) var(--ease-out),
+        opacity var(--dur-normal) var(--ease-out);
+}
+
+/*  SIZES */
+.btn--sm {
+    font-size: var(--fs-sm);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    min-height: 34px;
+}
+
+.btn--md {
+    font-size: var(--fs-sm);
+    padding: 12px 22px;
+    border-radius: var(--radius-md);
+    min-height: 44px;
+}
+
+.btn--lg {
+    font-size: var(--fs-base);
+    padding: 16px 32px;
+    border-radius: var(--radius-md);
+    min-height: 52px;
+}
+
+.btn--full {
+    width: 100%;
+}
+
+/* PRIMARY: pink → orange gradient */
+.btn--primary {
+    background: var(--gradient-button);
+    color: var(--white);
+    box-shadow: var(--shadow-soft);
+}
+
+.btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--gradient-button-hover);
+    box-shadow: var(--glow-pink);
+}
+
+.btn--primary:active:not(:disabled):not([aria-disabled="true"]) {
+    box-shadow: var(--glow-orange);
+}
+
+/* SECONDARY: glass with white border  */
+.btn--secondary {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--white);
+    border-color: var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* GHOST: transparent */
+.btn--ghost {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.btn--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--white);
+}
+
+/*  DANGER: alert red  */
+.btn--danger {
+    background: var(--alert-red);
+    color: var(--white);
+    box-shadow: var(--shadow-soft);
+}
+
+.btn--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--crimson-600);
+    box-shadow: 0 0 20px rgba(225, 6, 0, 0.4);
+}
+
+/*  ICON-ONLY: square  */
+.btn--icon {
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.btn--icon.btn--sm {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+}
+
+.btn--icon.btn--md {
+    width: 40px;
+    height: 40px;
+}
+
+.btn--icon.btn--lg {
+    width: 52px;
+    height: 52px;
+}
+
+.btn--icon:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--white);
+}
+
+/* FOCUS  */
+.btn:focus-visible {
+    outline: 2px solid var(--accent-focus);
+    outline-offset: 3px;
+    box-shadow: var(--glow-cyan);
+}
+
+/* DISABLED  */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+/*  LOADING  */
+.btn--loading {
+    cursor: progress;
+    pointer-events: none;
+}
+
+.btn__spinner {
+    animation: btn-spin 900ms linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn__spinner {
+        animation: none;
+        opacity: 0.9;
+    }
+}
+
+/*  ICON SLOTS */
+.btn__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn__label {
+    display: inline-block;
+}
+
+/*  PULSE (hero CTAs only)  */
+.btn--pulse {
+    animation: btn-pulse 2.4s var(--ease-in-out) infinite;
+}
+
+@keyframes btn-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 rgba(255, 63, 164, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(255, 63, 164, 0.45);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn--pulse {
+        animation: none;
+        box-shadow: var(--shadow-soft);
+    }
+}
+
+/*  TINY SCREEN ADJUSTMENTS  */
+@media (max-width: 359px) {
+    .btn--lg {
+        padding: 14px 20px;
+        min-height: 48px;
+        font-size: var(--fs-sm);
+    }
+
+    .btn--md {
+        padding: 10px 16px;
+    }
+}

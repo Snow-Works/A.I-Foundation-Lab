@@ -1,0 +1,200 @@
+/* src/pages/admin/AdminGate.css */
+.admin-gate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 1000px;
+}
+
+.admin-gate__header {
+  margin-bottom: var(--space-2);
+}
+
+.admin-gate__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-2xl);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.admin-gate__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.admin-gate__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.35);
+  color: #FF6B6B;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-gate__section-title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-lg);
+  color: var(--white);
+  margin: 0 0 var(--space-4);
+}
+
+/* Generator Form */
+.admin-gate__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.admin-gate__form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  max-width: 400px;
+}
+
+@media (max-width: 600px) {
+  .admin-gate__form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Result Box */
+.admin-gate__result {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: rgba(46, 200, 255, 0.05);
+  border: 1px solid rgba(46, 200, 255, 0.25);
+  border-radius: var(--radius-md);
+}
+
+.admin-gate__result-label {
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--cyan-400);
+  margin-bottom: var(--space-2);
+}
+
+.admin-gate__result-url-box {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.admin-gate__result-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(10, 6, 48, 0.55);
+  border: 1px solid var(--glass-border);
+  color: var(--white);
+  font-family: ui-monospace, monospace;
+  font-size: var(--fs-sm);
+  outline: none;
+}
+
+.admin-gate__result-input:focus {
+  border-color: var(--cyan-400);
+}
+
+/* History Table */
+.admin-gate__history-section {
+  margin-top: var(--space-4);
+}
+
+.admin-gate__history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-gate__table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.admin-gate__loading,
+.admin-gate__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.admin-gate__spinner {
+  color: var(--cyan-400);
+  animation: admin-gate-spin 900ms linear infinite;
+}
+
+@keyframes admin-gate-spin { to { transform: rotate(360deg); } }
+
+.admin-gate__table-wrap {
+  overflow-x: auto;
+}
+
+.admin-gate__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.admin-gate__table th {
+  text-align: left;
+  padding: 12px var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(10, 6, 48, 0.55);
+}
+
+.admin-gate__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+  vertical-align: middle;
+}
+
+.admin-gate__table tbody tr:last-child td { border-bottom: none; }
+
+.admin-gate__token-id {
+  font-family: ui-monospace, monospace;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.admin-gate__revoke-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #FF6B6B;
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+
+.admin-gate__revoke-btn:hover {
+  text-decoration: underline;
+}

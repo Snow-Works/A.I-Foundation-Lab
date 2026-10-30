@@ -1,0 +1,99 @@
+.sg-layout {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+    .sg-layout {
+        grid-template-columns: 220px 1fr;
+        gap: var(--space-8);
+        align-items: start;
+    }
+}
+
+/*  SIDEBAR  */
+.sg-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    position: sticky;
+    top: 88px;
+}
+
+@media (max-width: 1023px) {
+    .sg-sidebar {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        padding-bottom: var(--space-3);
+        border-bottom: 1px solid var(--glass-border);
+    }
+}
+
+.sg-sidebar__title {
+    font-family: var(--font-display);
+    font-weight: var(--fw-black);
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--text-muted);
+    padding: var(--space-2) 0;
+}
+
+.sg-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition:
+        background var(--dur-fast) var(--ease-out),
+        color var(--dur-fast) var(--ease-out);
+}
+
+.sg-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--white);
+}
+
+.sg-link--active {
+    background: rgba(46, 200, 255, 0.10);
+    color: var(--cyan-400);
+}
+
+/*  CONTENT  */
+.sg-content {
+    min-width: 0;
+}
+
+.sg-section {
+    margin-bottom: var(--space-9);
+}
+
+.sg-section__header {
+    margin-bottom: var(--space-5);
+}
+
+.sg-section__title {
+    font-family: var(--font-display);
+    font-weight: var(--fw-black);
+    font-size: var(--fs-2xl);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tight);
+    color: var(--white);
+    margin-bottom: var(--space-2);
+}
+
+.sg-section__desc {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    max-width: 60ch;
+}

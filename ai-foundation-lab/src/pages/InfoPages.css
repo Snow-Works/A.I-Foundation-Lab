@@ -1,0 +1,134 @@
+/* src/pages/InfoPages.css */
+.info-page {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-9);
+  flex: 1; /* Fills the app-main flex container */
+}
+
+.info-page__container {
+  max-width: 800px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.info-page__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.info-page__title {
+  color: var(--white);
+  margin: 0;
+}
+
+.info-page__subtitle {
+  color: var(--silver);
+  margin: 0;
+  max-width: 60ch;
+}
+
+.info-page__content {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--silver);
+}
+
+.info-page__content h3 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-xl);
+  color: var(--white);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.info-page__content p {
+  margin-bottom: var(--space-4);
+}
+
+.info-page__content ul {
+  padding-left: var(--space-5);
+  margin-bottom: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.info-page__content strong {
+  color: var(--white);
+}
+
+/* Team Cards */
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .team-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6);
+  background: rgba(20, 10, 92, 0.4);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.team-card__image-wrap {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin-bottom: var(--space-4);
+  padding: 4px;
+  background: var(--gradient-button);
+  position: relative;
+}
+
+.team-card__image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--ink-950);
+}
+
+.team-card__name {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-lg);
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.team-card__role {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--pink-400);
+  margin-bottom: var(--space-3);
+}
+
+.team-card__bio {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--silver);
+  line-height: var(--lh-relaxed);
+  margin: 0;
+}
