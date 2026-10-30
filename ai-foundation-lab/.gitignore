@@ -40,4 +40,6 @@ pocketbase/LICENSE.md
 # Playwright
 /test-results/
 /playwright-report/
-/blob-report/
+/blob-report/pocketbase/pb_data_backup/
+pocketbase/pb_data/
+pocketbase/logs.txt
