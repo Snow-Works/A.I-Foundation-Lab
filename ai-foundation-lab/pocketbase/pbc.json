@@ -1,0 +1,17 @@
+{
+  "build": {
+    "pbPublic": "pb_public",
+    "pbHooks": "pb_hooks",
+    "pbMigrations": "pb_migrations"
+  },
+  "projectId": "eyrp84l5jv99ept",
+  "kind": "pocketbases",
+  "defaultEnvironment": "production",
+  "environments": {
+    "production": {
+      "id": "r20e9n3w20z11gr",
+      "name": "onyx-walnut-1mhx",
+      "revision": 26
+    }
+  }
+}
