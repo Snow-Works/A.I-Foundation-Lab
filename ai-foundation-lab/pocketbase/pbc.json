@@ -1,7 +1,0 @@
-{
-  "build": {
-    "pbPublic": "pb_public",
-    "pbHooks": "pb_hooks",
-    "pbMigrations": "pb_migrations"
-  }
-}
