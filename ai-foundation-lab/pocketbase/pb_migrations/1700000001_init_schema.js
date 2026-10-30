@@ -1,273 +1,347 @@
 /// <reference path="../pb_data/types.d.ts" />
 
 migrate((app) => {
-  const collections = [
-    {
-      name: "admins",
-      type: "auth",
-      fields: [
-        { name: "name", type: "text", required: true },
-        { name: "role", type: "select", required: true, options: { values: ["superadmin", "admin", "marker"], maxSelect: 1 } },
-      ],
-      listRule: '@request.auth.collectionName = "admins"',
-      viewRule: '@request.auth.collectionName = "admins"',
-      createRule: null,
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: null,
-      options: { allowEmailAuth: true, requireEmail: true, minPasswordLength: 8 }
-    },
-    {
-      name: "profiles",
-      type: "auth",
-      fields: [
-        { name: "first_name", type: "text", required: true },
-        { name: "middle_name", type: "text" },
-        { name: "surname", type: "text", required: true },
-        { name: "whatsapp", type: "text", required: true },
-        { name: "batch", type: "text" },
-        { name: "status", type: "select", required: true, options: { values: ["REGISTERED", "EMAIL_VERIFIED", "APPROVED", "PHOTO_VERIFIED", "COMMUNITY_UNLOCKED", "IDENTITY_CONFIRMED", "EXAM_IN_PROGRESS", "SUBMITTED", "MARKED", "REJECTED"], maxSelect: 1 } },
-        { name: "approved_by", type: "relation", options: { collectionId: "admins", maxSelect: 1 } },
-        { name: "approved_at", type: "date" },
-        { name: "photo", type: "file", options: { maxSelect: 1, maxSize: 5242880, mimeTypes: ["image/jpeg", "image/png", "image/webp"], thumbs: ["256x256", "512x512"] } },
-        { name: "photo_verified", type: "bool" },
-        { name: "photo_verified_at", type: "date" },
-        { name: "identity_confirmed_at", type: "date" },
-        { name: "attempts_remaining", type: "number", options: { min: 0, noDecimal: true } },
-        { name: "resets_remaining", type: "number", options: { min: 0, noDecimal: true } },
-        { name: "notes", type: "text" },
-      ],
-      listRule: 'id = @request.auth.id || @request.auth.collectionName = "admins"',
-      viewRule: 'id = @request.auth.id || @request.auth.collectionName = "admins"',
-      createRule: "",
-      updateRule: 'id = @request.auth.id || @request.auth.collectionName = "admins"',
-      deleteRule: null,
-      options: { allowEmailAuth: true, requireEmail: true, minPasswordLength: 8 }
-    },
-    {
-      name: "roster",
-      type: "base",
-      fields: [
-        { name: "first_name", type: "text", required: true },
-        { name: "middle_name", type: "text" },
-        { name: "surname", type: "text", required: true },
-        { name: "batch", type: "text" },
-        { name: "notes", type: "text" },
-      ],
-      listRule: '@request.auth.collectionName = "admins"',
-      viewRule: '@request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "app_settings",
-      type: "base",
-      fields: [
-        { name: "telegram_group_url", type: "text" },
-        { name: "telegram_enabled", type: "bool" },
-        { name: "exam_telegram_group_url", type: "text" },
-        { name: "exam_telegram_enabled", type: "bool" },
-        { name: "require_roster_match", type: "bool" },
-        { name: "registration_open", type: "bool" },
-        { name: "exam_duration_minutes", type: "number", options: { noDecimal: true } },
-        { name: "attempt_limit", type: "number", options: { noDecimal: true } },
-        { name: "announcement", type: "text" },
-      ],
-      listRule: '@request.auth.collectionName = "admins" || (@request.auth.id != "" && @request.auth.photo_verified = true)',
-      viewRule: '@request.auth.collectionName = "admins" || (@request.auth.id != "" && @request.auth.photo_verified = true)',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: null,
-    },
-    {
-      name: "questions",
-      type: "base",
-      fields: [
-        { name: "title", type: "text", required: true },
-        { name: "prompt", type: "text", required: true },
-        { name: "difficulty", type: "select", required: true, options: { values: ["easy", "medium", "hard"], maxSelect: 1 } },
-        { name: "topic", type: "text" },
-        { name: "rubric", type: "text" },
-        { name: "sample_solution", type: "text" },
-        { name: "active", type: "bool" },
-        { name: "created_by", type: "relation", options: { collectionId: "admins", maxSelect: 1 } },
-      ],
-      listRule: '@request.auth.collectionName = "admins"',
-      viewRule: '@request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "exam_blueprints",
-      type: "base",
-      fields: [
-        { name: "name", type: "text", required: true },
-        { name: "is_active", type: "bool" },
-        { name: "easy_count", type: "number", options: { noDecimal: true } },
-        { name: "medium_count", type: "number", options: { noDecimal: true } },
-        { name: "hard_count", type: "number", options: { noDecimal: true } },
-        { name: "notes", type: "text" },
-      ],
-      listRule: '@request.auth.id != ""',
-      viewRule: '@request.auth.id != ""',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "attempts",
-      type: "base",
-      fields: [
-        { name: "student", type: "relation", required: true, options: { collectionId: "profiles", maxSelect: 1 } },
-        { name: "blueprint", type: "relation", options: { collectionId: "exam_blueprints", maxSelect: 1 } },
-        { name: "status", type: "select", required: true, options: { values: ["in_progress", "submitted", "marked", "released", "terminated"], maxSelect: 1 } },
-        { name: "started_at", type: "date", required: true },
-        { name: "submitted_at", type: "date" },
-        { name: "deadline_at", type: "date" },
-        { name: "duration_seconds", type: "number", options: { noDecimal: true } },
-        { name: "violation_count", type: "number", options: { noDecimal: true } },
-        { name: "auto_terminated", type: "bool" },
-        { name: "score_total", type: "number" },
-        { name: "score_max", type: "number" },
-        { name: "admin_notes", type: "text" },
-      ],
-      listRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      viewRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "attempt_questions",
-      type: "base",
-      fields: [
-        { name: "attempt", type: "relation", required: true, options: { collectionId: "attempts", maxSelect: 1 } },
-        { name: "question", type: "relation", required: true, options: { collectionId: "questions", maxSelect: 1 } },
-        { name: "order", type: "number", options: { noDecimal: true } },
-        { name: "assigned_at", type: "date" },
-      ],
-      listRule: 'attempt.student = @request.auth.id || @request.auth.collectionName = "admins"',
-      viewRule: 'attempt.student = @request.auth.id || @request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "answers",
-      type: "base",
-      fields: [
-        { name: "attempt", type: "relation", required: true, options: { collectionId: "attempts", maxSelect: 1 } },
-        { name: "question", type: "relation", required: true, options: { collectionId: "questions", maxSelect: 1 } },
-        { name: "student", type: "relation", required: true, options: { collectionId: "profiles", maxSelect: 1 } },
-        { name: "body", type: "text" },
-        { name: "is_draft", type: "bool" },
-        { name: "saved_at", type: "date" },
-        { name: "submitted_at", type: "date" },
-      ],
-      listRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      viewRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      createRule: 'student = @request.auth.id',
-      updateRule: 'student = @request.auth.id',
-      deleteRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-    },
-    {
-      name: "violations",
-      type: "base",
-      fields: [
-        { name: "attempt", type: "relation", required: true, options: { collectionId: "attempts", maxSelect: 1 } },
-        { name: "student", type: "relation", options: { collectionId: "profiles", maxSelect: 1 } },
-        { name: "type", type: "text", required: true },
-        { name: "occurred_at", type: "date", required: true },
-        { name: "details", type: "json" },
-      ],
-      listRule: '@request.auth.collectionName = "admins"',
-      viewRule: '@request.auth.collectionName = "admins"',
-      createRule: 'attempt.student = @request.auth.id',
-      updateRule: null,
-      deleteRule: null,
-    },
-    {
-      name: "marks",
-      type: "base",
-      fields: [
-        { name: "attempt_question", type: "relation", required: true, options: { collectionId: "attempt_questions", maxSelect: 1 } },
-        { name: "score", type: "number" },
-        { name: "max_score", type: "number" },
-        { name: "comment", type: "text" },
-        { name: "marked_by", type: "relation", options: { collectionId: "admins", maxSelect: 1 } },
-        { name: "marked_at", type: "date" },
-        { name: "released", type: "bool" },
-      ],
-      listRule: 'attempt_question.attempt.student = @request.auth.id && attempt_question.attempt.status = "released" || @request.auth.collectionName = "admins"',
-      viewRule: 'attempt_question.attempt.student = @request.auth.id && attempt_question.attempt.status = "released" || @request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "gate_tokens",
-      type: "base",
-      fields: [
-        { name: "token", type: "text", required: true },
-        { name: "expires_at", type: "date", required: true },
-        { name: "used_by", type: "relation", options: { collectionId: "profiles", maxSelect: 1 } },
-        { name: "used_at", type: "date" },
-        { name: "created_by", type: "relation", options: { collectionId: "admins", maxSelect: 1 } },
-        { name: "revoked", type: "bool" },
-        { name: "max_uses", type: "number", options: { noDecimal: true } },
-      ],
-      listRule: '@request.auth.collectionName = "admins"',
-      viewRule: '@request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: '@request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-    {
-      name: "audit_log",
-      type: "base",
-      fields: [
-        { name: "actor", type: "text" },
-        { name: "actor_type", type: "select", options: { values: ["admin", "student", "system"], maxSelect: 1 } },
-        { name: "action", type: "text", required: true },
-        { name: "target_type", type: "text" },
-        { name: "target_id", type: "text" },
-        { name: "details", type: "json" },
-        { name: "occurred_at", type: "date" },
-      ],
-      listRule: '@request.auth.collectionName = "admins"',
-      viewRule: '@request.auth.collectionName = "admins"',
-      createRule: '@request.auth.collectionName = "admins"',
-      updateRule: null,
-      deleteRule: null,
-    },
-    {
-      name: "support_messages",
-      type: "base",
-      fields: [
-        { name: "student", type: "relation", required: true, options: { collectionId: "profiles", maxSelect: 1, cascadeDelete: true } },
-        { name: "sender_id", type: "text" },
-        { name: "sender_type", type: "select", required: true, options: { values: ["student", "admin"], maxSelect: 1 } },
-        { name: "body", type: "text" },
-        { name: "is_read_by_admin", type: "bool" },
-        { name: "is_read_by_student", type: "bool" },
-        { name: "attachment", type: "file", options: { maxSelect: 1, maxSize: 10485760, mimeTypes: ["image/*", "video/*", "audio/*"] } },
-        { name: "message_type", type: "select", required: true, options: { values: ["text", "image", "video", "audio"], maxSelect: 1 } },
-      ],
-      listRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      viewRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      createRule: '@request.auth.id != ""',
-      updateRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
-      deleteRule: '@request.auth.collectionName = "admins"',
-    },
-  ];
+  // 1. ADMINS
+  const admins = new Collection({
+    id: "ad0000000000001",
+    name: "admins",
+    type: "auth",
+    system: false,
+    fields: [
+      { id: "adf000000000001", name: "name", type: "text", required: true },
+      { id: "adf000000000002", name: "role", type: "select", required: true, options: { values: ["superadmin", "admin", "marker"], maxSelect: 1 } },
+    ],
+    listRule: '@request.auth.collectionName = "admins"',
+    viewRule: '@request.auth.collectionName = "admins"',
+    createRule: null,
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: null,
+    options: { allowEmailAuth: true, requireEmail: true, minPasswordLength: 8 }
+  });
+  app.save(admins);
 
-  for (const col of collections) {
-    const collection = new Collection(col);
-    app.save(collection);
-  }
+  // 2. PROFILES
+  const profiles = new Collection({
+    id: "pr0000000000001",
+    name: "profiles",
+    type: "auth",
+    system: false,
+    fields: [
+      { id: "prf000000000001", name: "first_name", type: "text", required: true },
+      { id: "prf000000000002", name: "middle_name", type: "text" },
+      { id: "prf000000000003", name: "surname", type: "text", required: true },
+      { id: "prf000000000004", name: "whatsapp", type: "text", required: true },
+      { id: "prf000000000005", name: "batch", type: "text" },
+      { id: "prf000000000006", name: "status", type: "select", required: true, options: { values: ["REGISTERED", "EMAIL_VERIFIED", "APPROVED", "PHOTO_VERIFIED", "COMMUNITY_UNLOCKED", "IDENTITY_CONFIRMED", "EXAM_IN_PROGRESS", "SUBMITTED", "MARKED", "REJECTED"], maxSelect: 1 } },
+      { id: "prf000000000007", name: "approved_by", type: "relation", options: { collectionId: "ad0000000000001", maxSelect: 1 } },
+      { id: "prf000000000008", name: "approved_at", type: "date" },
+      { id: "prf000000000009", name: "photo", type: "file", options: { maxSelect: 1, maxSize: 5242880, mimeTypes: ["image/jpeg", "image/png", "image/webp"], thumbs: ["256x256", "512x512"] } },
+      { id: "prf000000000010", name: "photo_verified", type: "bool" },
+      { id: "prf000000000011", name: "photo_verified_at", type: "date" },
+      { id: "prf000000000012", name: "identity_confirmed_at", type: "date" },
+      { id: "prf000000000013", name: "attempts_remaining", type: "number", options: { min: 0, noDecimal: true } },
+      { id: "prf000000000014", name: "resets_remaining", type: "number", options: { min: 0, noDecimal: true } },
+      { id: "prf000000000015", name: "notes", type: "text" },
+    ],
+    listRule: 'id = @request.auth.id || @request.auth.collectionName = "admins"',
+    viewRule: 'id = @request.auth.id || @request.auth.collectionName = "admins"',
+    createRule: "",
+    updateRule: 'id = @request.auth.id || @request.auth.collectionName = "admins"',
+    deleteRule: null,
+    options: { allowEmailAuth: true, requireEmail: true, minPasswordLength: 8 }
+  });
+  app.save(profiles);
+
+  // 3. ROSTER
+  const roster = new Collection({
+    id: "ro0000000000001",
+    name: "roster",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "rof000000000001", name: "first_name", type: "text", required: true },
+      { id: "rof000000000002", name: "middle_name", type: "text" },
+      { id: "rof000000000003", name: "surname", type: "text", required: true },
+      { id: "rof000000000004", name: "batch", type: "text" },
+      { id: "rof000000000005", name: "notes", type: "text" },
+    ],
+    listRule: '@request.auth.collectionName = "admins"',
+    viewRule: '@request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(roster);
+
+  // 4. APP SETTINGS
+  const app_settings = new Collection({
+    id: "as0000000000001",
+    name: "app_settings",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "asf000000000001", name: "telegram_group_url", type: "text" },
+      { id: "asf000000000002", name: "telegram_enabled", type: "bool" },
+      { id: "asf000000000003", name: "exam_telegram_group_url", type: "text" },
+      { id: "asf000000000004", name: "exam_telegram_enabled", type: "bool" },
+      { id: "asf000000000005", name: "require_roster_match", type: "bool" },
+      { id: "asf000000000006", name: "registration_open", type: "bool" },
+      { id: "asf000000000007", name: "exam_duration_minutes", type: "number", options: { noDecimal: true } },
+      { id: "asf000000000008", name: "attempt_limit", type: "number", options: { noDecimal: true } },
+      { id: "asf000000000009", name: "announcement", type: "text" },
+    ],
+    listRule: '@request.auth.collectionName = "admins" || (@request.auth.id != "" && @request.auth.photo_verified = true)',
+    viewRule: '@request.auth.collectionName = "admins" || (@request.auth.id != "" && @request.auth.photo_verified = true)',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: null,
+    options: {}
+  });
+  app.save(app_settings);
+
+  // 5. QUESTIONS
+  const questions = new Collection({
+    id: "qu0000000000001",
+    name: "questions",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "quf000000000001", name: "title", type: "text", required: true },
+      { id: "quf000000000002", name: "prompt", type: "text", required: true },
+      { id: "quf000000000003", name: "difficulty", type: "select", required: true, options: { values: ["easy", "medium", "hard"], maxSelect: 1 } },
+      { id: "quf000000000004", name: "topic", type: "text" },
+      { id: "quf000000000005", name: "rubric", type: "text" },
+      { id: "quf000000000006", name: "sample_solution", type: "text" },
+      { id: "quf000000000007", name: "active", type: "bool" },
+      { id: "quf000000000008", name: "created_by", type: "relation", options: { collectionId: "ad0000000000001", maxSelect: 1 } },
+    ],
+    listRule: '@request.auth.collectionName = "admins"',
+    viewRule: '@request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(questions);
+
+  // 6. EXAM BLUEPRINTS
+  const exam_blueprints = new Collection({
+    id: "bp0000000000001",
+    name: "exam_blueprints",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "bpf000000000001", name: "name", type: "text", required: true },
+      { id: "bpf000000000002", name: "is_active", type: "bool" },
+      { id: "bpf000000000003", name: "easy_count", type: "number", options: { noDecimal: true } },
+      { id: "bpf000000000004", name: "medium_count", type: "number", options: { noDecimal: true } },
+      { id: "bpf000000000005", name: "hard_count", type: "number", options: { noDecimal: true } },
+      { id: "bpf000000000006", name: "notes", type: "text" },
+    ],
+    listRule: '@request.auth.id != ""',
+    viewRule: '@request.auth.id != ""',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(exam_blueprints);
+
+  // 7. ATTEMPTS
+  const attempts = new Collection({
+    id: "at0000000000001",
+    name: "attempts",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "atf000000000001", name: "student", type: "relation", required: true, options: { collectionId: "pr0000000000001", maxSelect: 1 } },
+      { id: "atf000000000002", name: "blueprint", type: "relation", options: { collectionId: "bp0000000000001", maxSelect: 1 } },
+      { id: "atf000000000003", name: "status", type: "select", required: true, options: { values: ["in_progress", "submitted", "marked", "released", "terminated"], maxSelect: 1 } },
+      { id: "atf000000000004", name: "started_at", type: "date", required: true },
+      { id: "atf000000000005", name: "submitted_at", type: "date" },
+      { id: "atf000000000006", name: "deadline_at", type: "date" },
+      { id: "atf000000000007", name: "duration_seconds", type: "number", options: { noDecimal: true } },
+      { id: "atf000000000008", name: "violation_count", type: "number", options: { noDecimal: true } },
+      { id: "atf000000000009", name: "auto_terminated", type: "bool" },
+      { id: "atf000000000010", name: "score_total", type: "number" },
+      { id: "atf000000000011", name: "score_max", type: "number" },
+      { id: "atf000000000012", name: "admin_notes", type: "text" },
+    ],
+    listRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    viewRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(attempts);
+
+  // 8. ATTEMPT QUESTIONS
+  const attempt_questions = new Collection({
+    id: "aq0000000000001",
+    name: "attempt_questions",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "aqf000000000001", name: "attempt", type: "relation", required: true, options: { collectionId: "at0000000000001", maxSelect: 1 } },
+      { id: "aqf000000000002", name: "question", type: "relation", required: true, options: { collectionId: "qu0000000000001", maxSelect: 1 } },
+      { id: "aqf000000000003", name: "order", type: "number", options: { noDecimal: true } },
+      { id: "aqf000000000004", name: "assigned_at", type: "date" },
+    ],
+    listRule: 'attempt.student = @request.auth.id || @request.auth.collectionName = "admins"',
+    viewRule: 'attempt.student = @request.auth.id || @request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(attempt_questions);
+
+  // 9. ANSWERS
+  const answers = new Collection({
+    id: "an0000000000001",
+    name: "answers",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "anf000000000001", name: "attempt", type: "relation", required: true, options: { collectionId: "at0000000000001", maxSelect: 1 } },
+      { id: "anf000000000002", name: "question", type: "relation", required: true, options: { collectionId: "qu0000000000001", maxSelect: 1 } },
+      { id: "anf000000000003", name: "student", type: "relation", required: true, options: { collectionId: "pr0000000000001", maxSelect: 1 } },
+      { id: "anf000000000004", name: "body", type: "text" },
+      { id: "anf000000000005", name: "is_draft", type: "bool" },
+      { id: "anf000000000006", name: "saved_at", type: "date" },
+      { id: "anf000000000007", name: "submitted_at", type: "date" },
+    ],
+    listRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    viewRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    createRule: 'student = @request.auth.id',
+    updateRule: 'student = @request.auth.id',
+    deleteRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(answers);
+
+  // 10. VIOLATIONS
+  const violations = new Collection({
+    id: "vi0000000000001",
+    name: "violations",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "vif000000000001", name: "attempt", type: "relation", required: true, options: { collectionId: "at0000000000001", maxSelect: 1 } },
+      { id: "vif000000000002", name: "student", type: "relation", options: { collectionId: "pr0000000000001", maxSelect: 1 } },
+      { id: "vif000000000003", name: "type", type: "text", required: true },
+      { id: "vif000000000004", name: "occurred_at", type: "date", required: true },
+      { id: "vif000000000005", name: "details", type: "json" },
+    ],
+    listRule: '@request.auth.collectionName = "admins"',
+    viewRule: '@request.auth.collectionName = "admins"',
+    createRule: 'attempt.student = @request.auth.id',
+    updateRule: null,
+    deleteRule: null,
+    options: {}
+  });
+  app.save(violations);
+
+  // 11. MARKS
+  const marks = new Collection({
+    id: "ma0000000000001",
+    name: "marks",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "maf000000000001", name: "attempt_question", type: "relation", required: true, options: { collectionId: "aq0000000000001", maxSelect: 1 } },
+      { id: "maf000000000002", name: "score", type: "number" },
+      { id: "maf000000000003", name: "max_score", type: "number" },
+      { id: "maf000000000004", name: "comment", type: "text" },
+      { id: "maf000000000005", name: "marked_by", type: "relation", options: { collectionId: "ad0000000000001", maxSelect: 1 } },
+      { id: "maf000000000006", name: "marked_at", type: "date" },
+      { id: "maf000000000007", name: "released", type: "bool" },
+    ],
+    listRule: 'attempt_question.attempt.student = @request.auth.id && attempt_question.attempt.status = "released" || @request.auth.collectionName = "admins"',
+    viewRule: 'attempt_question.attempt.student = @request.auth.id && attempt_question.attempt.status = "released" || @request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(marks);
+
+  // 12. GATE TOKENS
+  const gate_tokens = new Collection({
+    id: "gt0000000000001",
+    name: "gate_tokens",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "gtf000000000001", name: "token", type: "text", required: true },
+      { id: "gtf000000000002", name: "expires_at", type: "date", required: true },
+      { id: "gtf000000000003", name: "used_by", type: "relation", options: { collectionId: "pr0000000000001", maxSelect: 1 } },
+      { id: "gtf000000000004", name: "used_at", type: "date" },
+      { id: "gtf000000000005", name: "created_by", type: "relation", options: { collectionId: "ad0000000000001", maxSelect: 1 } },
+      { id: "gtf000000000006", name: "revoked", type: "bool" },
+      { id: "gtf000000000007", name: "max_uses", type: "number", options: { noDecimal: true } },
+    ],
+    listRule: '@request.auth.collectionName = "admins"',
+    viewRule: '@request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: '@request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(gate_tokens);
+
+  // 13. AUDIT LOG
+  const audit_log = new Collection({
+    id: "al0000000000001",
+    name: "audit_log",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "alf000000000001", name: "actor", type: "text" },
+      { id: "alf000000000002", name: "actor_type", type: "select", options: { values: ["admin", "student", "system"], maxSelect: 1 } },
+      { id: "alf000000000003", name: "action", type: "text", required: true },
+      { id: "alf000000000004", name: "target_type", type: "text" },
+      { id: "alf000000000005", name: "target_id", type: "text" },
+      { id: "alf000000000006", name: "details", type: "json" },
+      { id: "alf000000000007", name: "occurred_at", type: "date" },
+    ],
+    listRule: '@request.auth.collectionName = "admins"',
+    viewRule: '@request.auth.collectionName = "admins"',
+    createRule: '@request.auth.collectionName = "admins"',
+    updateRule: null,
+    deleteRule: null,
+    options: {}
+  });
+  app.save(audit_log);
+
+  // 14. SUPPORT MESSAGES
+  const support_messages = new Collection({
+    id: "sm0000000000001",
+    name: "support_messages",
+    type: "base",
+    system: false,
+    fields: [
+      { id: "smf000000000001", name: "student", type: "relation", required: true, options: { collectionId: "pr0000000000001", maxSelect: 1, cascadeDelete: true } },
+      { id: "smf000000000002", name: "sender_id", type: "text" },
+      { id: "smf000000000003", name: "sender_type", type: "select", required: true, options: { values: ["student", "admin"], maxSelect: 1 } },
+      { id: "smf000000000004", name: "body", type: "text" },
+      { id: "smf000000000005", name: "is_read_by_admin", type: "bool" },
+      { id: "smf000000000006", name: "is_read_by_student", type: "bool" },
+      { id: "smf000000000007", name: "attachment", type: "file", options: { maxSelect: 1, maxSize: 10485760, mimeTypes: ["image/*", "video/*", "audio/*"] } },
+      { id: "smf000000000008", name: "message_type", type: "select", required: true, options: { values: ["text", "image", "video", "audio"], maxSelect: 1 } },
+    ],
+    listRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    viewRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    createRule: '@request.auth.id != ""',
+    updateRule: 'student = @request.auth.id || @request.auth.collectionName = "admins"',
+    deleteRule: '@request.auth.collectionName = "admins"',
+    options: {}
+  });
+  app.save(support_messages);
+
 }, (app) => {
-  // Rollback: delete all collections
   const names = ["support_messages", "audit_log", "gate_tokens", "marks", "violations", "answers", "attempt_questions", "attempts", "exam_blueprints", "questions", "app_settings", "roster", "profiles", "admins"];
   for (const name of names) {
     try {
