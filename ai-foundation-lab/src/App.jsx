@@ -199,7 +199,7 @@ export default function App() {
                     <Route path="rules-proctoring" element={<RulesProctoring />} />
                     <Route path="emergency" element={<EmergencyProtocol />} />
                   </Route>
-
+                  
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
