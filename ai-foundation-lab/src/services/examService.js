@@ -87,7 +87,7 @@ export async function getLeaderboard(batchFilter = "") {
     sort: "-score_total",
   });
 
-  //  Format the data to match exactly what Leaderboard.jsx expects
+  //  Format the data
   const leaderboard = records.map((record, index) => {
     const student = record.expand?.student || {};
     return {
@@ -98,12 +98,11 @@ export async function getLeaderboard(batchFilter = "") {
       batch: student.batch || "N/A",
       totalScore: record.score_total || 0,
       maxScore: record.score_max || 0,
-      // Pass mark logic (matches your admin marking logic: 180 out of 250)
       passed: (record.score_total || 0) >= 180,
     };
   });
 
-  //  Fetch available batches so the dropdown filter works
+  //  Fetch available batches
   const profiles = await pb.collection("profiles").getFullList({ fields: "batch" });
   const batches = [...new Set(profiles.map(p => p.batch).filter(Boolean))].sort();
 
