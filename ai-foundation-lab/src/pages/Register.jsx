@@ -56,14 +56,11 @@ export default function Register() {
     try {
       await authService.register({
         email: values.email,
-        password: values.password,
-        passwordConfirm: values.confirmPassword,
-        first_name: values.firstName,
-        middle_name: values.middleName || "",
-        surname: values.surname,
-        batch: values.batch || "",
-        whatsapp: e164,
+        // ... other fields
       });
+
+      // Add this line: Trigger the email immediately!
+      await authService.requestVerification(values.email);
 
       navigate(
         `/verify-pending?email=${encodeURIComponent(values.email)}`,
