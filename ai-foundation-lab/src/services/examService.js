@@ -73,7 +73,39 @@ export async function getReleasedResult() {
   return res.result || null;
 }
 
-export async function getLeaderboard(batch = "") {
-  const query = batch ? `?batch=${encodeURIComponent(batch)}` : "";
-  return pb.send(`/api/leaderboard${query}`, { method: "GET" });
+export async function getLeaderboard(batchFilter = "") {
+  //  Build the filter (only released exams)
+  let filter = 'status = "released"';
+  if (batchFilter) {
+    filter += ` && student.batch = "${batchFilter}"`;
+  }
+
+  //  Fetch attempts, expand the student profile, and sort by highest score
+  const records = await pb.collection("attempts").getFullList({
+    filter: filter,
+    expand: "student",
+    sort: "-score_total",
+  });
+
+  //  Format the data to match exactly what Leaderboard.jsx expects
+  const leaderboard = records.map((record, index) => {
+    const student = record.expand?.student || {};
+    return {
+      studentId: record.student,
+      rank: index + 1,
+      first_name: student.first_name || "Unknown",
+      surname: student.surname || "",
+      batch: student.batch || "N/A",
+      totalScore: record.score_total || 0,
+      maxScore: record.score_max || 0,
+      // Pass mark logic (matches your admin marking logic: 180 out of 250)
+      passed: (record.score_total || 0) >= 180,
+    };
+  });
+
+  //  Fetch available batches so the dropdown filter works
+  const profiles = await pb.collection("profiles").getFullList({ fields: "batch" });
+  const batches = [...new Set(profiles.map(p => p.batch).filter(Boolean))].sort();
+
+  return { leaderboard, batches };
 }
