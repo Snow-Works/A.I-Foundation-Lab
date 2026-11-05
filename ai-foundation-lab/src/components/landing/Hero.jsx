@@ -49,7 +49,7 @@ export default function Hero() {
                 size="lg"
                 rightIcon={<ArrowRight size={18} />}
                 as={Link}
-                to="pages/register"
+                to="/register"
               >
                 Register
               </Button>
