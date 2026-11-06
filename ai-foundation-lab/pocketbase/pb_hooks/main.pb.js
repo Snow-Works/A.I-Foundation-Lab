@@ -108,3 +108,102 @@ onRecordBeforeCreateRequest((e) => {
     else { const rosterBatch = exact[0].get("batch"); if (rosterBatch && !e.record.get("batch")) e.record.set("batch", rosterBatch); }
   } catch (err) { if (err instanceof BadRequestError) throw err; }
 });
+
+
+
+
+
+
+
+
+// ==========================================
+// ADMIN DASHBOARD ANALYTICS
+// ==========================================
+routerAdd("GET", "/api/admin/analytics", (c) => {
+  try {
+    const app = c.app;
+    const authRecord = $apis.requestInfo(c).authRecord;
+    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
+
+    // 1. Pass vs Fail
+    const releasedAttempts = app.findRecordsByFilter("attempts", 'status = "released"', "", 0, 0, {});
+    let passed = 0, failed = 0;
+    for (const a of releasedAttempts) {
+      if ((a.get("score_total") || 0) >= 180) passed++;
+      else failed++;
+    }
+
+    // 2. Top Violations
+    const violations = app.findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
+    const vCounts = {};
+    for (const v of violations) {
+      const type = v.get("type");
+      vCounts[type] = (vCounts[type] || 0) + 1;
+    }
+    const topViolations = Object.keys(vCounts).map(k => ({ name: k, count: vCounts[k] })).sort((a,b) => b.count - a.count).slice(0, 5);
+
+    // 3. Signups (Last 30 days - mocked for simplicity to avoid SQL heavy lifting)
+    const signups = []; 
+    // PocketBase JSVM doesn't easily do raw SQL GROUP BY, so we'll return empty signups array or fetch recent
+    const recentProfiles = app.findRecordsByFilter("profiles", "id != ''", "-created", 30, 0, {});
+    for (const p of recentProfiles) {
+       signups.push({ date: p.get("created").substring(5, 10), count: 1 }); // Just basic grouping
+    }
+
+    return c.json(200, {
+      passFail: [ { name: "Passed", value: passed }, { name: "Failed", value: failed } ],
+      violations: topViolations.length > 0 ? topViolations : [{ name: "None", count: 0 }],
+      signups: signups.length > 0 ? signups : [{ date: "Today", count: recentProfiles.length }]
+    });
+  } catch (err) {
+    return c.json(500, { message: "Error", details: String(err) });
+  }
+});
+
+// ==========================================
+// SYSTEM STATUS
+// ==========================================
+routerAdd("GET", "/api/admin/status", (c) => {
+  try {
+    const app = c.app;
+    const authRecord = $apis.requestInfo(c).authRecord;
+    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
+
+    const totalStudents = app.countRecords("profiles");
+    const totalAttempts = app.countRecords("attempts");
+    const activeExams = app.findRecordsByFilter("attempts", 'status = "in_progress"', "", 0, 0, {}).length;
+    
+    // Stalled = in progress and deadline passed
+    const now = new Date().toISOString();
+    const stalledExams = app.findRecordsByFilter("attempts", `status = "in_progress" && deadline_at < "${now}"`, "", 0, 0, {}).length;
+
+    return c.json(200, { totalStudents, totalAttempts, activeExams, stalledExams });
+  } catch (err) {
+    return c.json(500, { message: "Error", details: String(err) });
+  }
+});
+
+// ==========================================
+// SWEEP STALLED EXAMS
+// ==========================================
+routerAdd("POST", "/api/admin/sweep", (c) => {
+  try {
+    const app = c.app;
+    const authRecord = $apis.requestInfo(c).authRecord;
+    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
+
+    const now = new Date().toISOString();
+    const stalled = app.findRecordsByFilter("attempts", `status = "in_progress" && deadline_at < "${now}"`, "", 0, 0, {});
+    let swept = 0;
+    for (const a of stalled) {
+      a.set("status", "submitted");
+      a.set("submitted_at", a.get("deadline_at"));
+      a.set("auto_terminated", true);
+      app.save(a);
+      swept++;
+    }
+    return c.json(200, { swept });
+  } catch (err) {
+    return c.json(500, { message: "Error", details: String(err) });
+  }
+});
