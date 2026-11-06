@@ -25,7 +25,6 @@ export async function listQuestions({
 
   return pbAdmin.collection(COLLECTION).getList(page, perPage, {
     filter: filter || undefined,
-    sort: "-created",
   });
 }
 

@@ -52,7 +52,7 @@ export async function listMarkedResults() {
 
 export async function getSubmissionDetails(attemptId) {
   const attempt = await pbAdmin.collection("attempts").getOne(attemptId, {
-    expand: "student",
+    
   });
 
   const attemptQuestions = await pbAdmin.collection("attempt_questions").getFullList({

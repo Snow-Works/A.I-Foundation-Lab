@@ -5,39 +5,26 @@ import { logAdminAction } from "./adminAuditService.js";
 const PROFILES = "profiles";
 
 export async function listUsers({
-  page = 1,
-  perPage = 30,
-  search = "",
-  statusFilter = "all",
-  batchFilter = "all",
+  page = 1, perPage = 30, search = "", statusFilter = "all", batchFilter = "all",
 } = {}) {
   const filters = [];
-
   if (search && search.trim()) {
     const q = search.trim().replace(/"/g, '\\"');
-    filters.push(
-      `(first_name ~ "${q}" || surname ~ "${q}" || middle_name ~ "${q}" || email ~ "${q}")`
-    );
+    filters.push(`(first_name ~ "${q}" || surname ~ "${q}" || middle_name ~ "${q}" || email ~ "${q}")`);
   }
-
-  if (statusFilter && statusFilter !== "all") {
-    filters.push(`status = "${statusFilter}"`);
-  }
-
-  if (batchFilter && batchFilter !== "all") {
-    filters.push(`batch = "${batchFilter.replace(/"/g, '\\"')}"`);
-  }
+  if (statusFilter && statusFilter !== "all") filters.push(`status = "${statusFilter}"`);
+  if (batchFilter && batchFilter !== "all") filters.push(`batch = "${batchFilter.replace(/"/g, '\\"')}"`);
 
   const filter = filters.join(" && ");
 
   const result = await pbAdmin.collection(PROFILES).getList(page, perPage, {
     filter: filter || undefined,
     sort: "-created",
-    expand: "approved_by",
+    // REMOVED expand: "approved_by" (This was causing the 400)
   });
-
   return result;
 }
+
 
 export async function getBatches() {
   try {

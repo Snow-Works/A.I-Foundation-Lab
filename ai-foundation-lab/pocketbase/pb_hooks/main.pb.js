@@ -125,7 +125,6 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
     const authRecord = $apis.requestInfo(c).authRecord;
     if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
 
-    // 1. Pass vs Fail
     const releasedAttempts = app.findRecordsByFilter("attempts", 'status = "released"', "", 0, 0, {});
     let passed = 0, failed = 0;
     for (const a of releasedAttempts) {
@@ -133,7 +132,6 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
       else failed++;
     }
 
-    // 2. Top Violations
     const violations = app.findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
     const vCounts = {};
     for (const v of violations) {
@@ -142,12 +140,10 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
     }
     const topViolations = Object.keys(vCounts).map(k => ({ name: k, count: vCounts[k] })).sort((a,b) => b.count - a.count).slice(0, 5);
 
-    // 3. Signups (Last 30 days - mocked for simplicity to avoid SQL heavy lifting)
-    const signups = []; 
-    // PocketBase JSVM doesn't easily do raw SQL GROUP BY, so we'll return empty signups array or fetch recent
+    const signups = [];
     const recentProfiles = app.findRecordsByFilter("profiles", "id != ''", "-created", 30, 0, {});
     for (const p of recentProfiles) {
-       signups.push({ date: p.get("created").substring(5, 10), count: 1 }); // Just basic grouping
+       signups.push({ date: p.get("created").substring(5, 10), count: 1 });
     }
 
     return c.json(200, {
@@ -160,9 +156,6 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
   }
 });
 
-// ==========================================
-// SYSTEM STATUS
-// ==========================================
 routerAdd("GET", "/api/admin/status", (c) => {
   try {
     const app = c.app;
@@ -172,37 +165,10 @@ routerAdd("GET", "/api/admin/status", (c) => {
     const totalStudents = app.countRecords("profiles");
     const totalAttempts = app.countRecords("attempts");
     const activeExams = app.findRecordsByFilter("attempts", 'status = "in_progress"', "", 0, 0, {}).length;
-    
-    // Stalled = in progress and deadline passed
     const now = new Date().toISOString();
     const stalledExams = app.findRecordsByFilter("attempts", `status = "in_progress" && deadline_at < "${now}"`, "", 0, 0, {}).length;
 
     return c.json(200, { totalStudents, totalAttempts, activeExams, stalledExams });
-  } catch (err) {
-    return c.json(500, { message: "Error", details: String(err) });
-  }
-});
-
-// ==========================================
-// SWEEP STALLED EXAMS
-// ==========================================
-routerAdd("POST", "/api/admin/sweep", (c) => {
-  try {
-    const app = c.app;
-    const authRecord = $apis.requestInfo(c).authRecord;
-    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
-
-    const now = new Date().toISOString();
-    const stalled = app.findRecordsByFilter("attempts", `status = "in_progress" && deadline_at < "${now}"`, "", 0, 0, {});
-    let swept = 0;
-    for (const a of stalled) {
-      a.set("status", "submitted");
-      a.set("submitted_at", a.get("deadline_at"));
-      a.set("auto_terminated", true);
-      app.save(a);
-      swept++;
-    }
-    return c.json(200, { swept });
   } catch (err) {
     return c.json(500, { message: "Error", details: String(err) });
   }

@@ -68,7 +68,6 @@ export async function markMessagesReadByStudent(studentId) {
 export async function getAdminInbox() {
   const messages = await pbAdmin.collection(COLLECTION).getFullList({
     sort: "-created",
-    expand: "student",
   });
 
   const threadsMap = {};
