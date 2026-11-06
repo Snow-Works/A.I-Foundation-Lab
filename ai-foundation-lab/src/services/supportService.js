@@ -3,9 +3,7 @@ import pbAdmin from "../lib/pocketbaseAdmin";
 
 const COLLECTION = "support_messages";
 
-/* ------------------------------------------------------------
-   STUDENT FUNCTIONS
-   ------------------------------------------------------------ */
+/*  STUDENT FUNCTIONS */
 export async function getStudentMessages(studentId) {
   return pb.collection(COLLECTION).getFullList({ filter: `student = "${studentId}"`, sort: "created" });
 }
