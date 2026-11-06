@@ -140,3 +140,65 @@ onRecordCreateRequest((e) => {
 
   return e.next();
 });
+
+
+
+
+
+// ==========================================
+// ADMIN DASHBOARD ANALYTICS
+// ==========================================
+routerAdd("GET", "/api/admin/analytics", (c) => {
+  try {
+    const app = c.app;
+    const authRecord = $apis.requestInfo(c).authRecord;
+    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
+
+    const releasedAttempts = app.findRecordsByFilter("attempts", 'status = "released"', "", 0, 0, {});
+    let passed = 0, failed = 0;
+    for (const a of releasedAttempts) {
+      if ((a.get("score_total") || 0) >= 180) passed++;
+      else failed++;
+    }
+
+    const violations = app.findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
+    const vCounts = {};
+    for (const v of violations) {
+      const type = v.get("type");
+      vCounts[type] = (vCounts[type] || 0) + 1;
+    }
+    const topViolations = Object.keys(vCounts).map(k => ({ name: k, count: vCounts[k] })).sort((a,b) => b.count - a.count).slice(0, 5);
+
+    const signups = [];
+    const recentProfiles = app.findRecordsByFilter("profiles", "id != ''", "-created", 30, 0, {});
+    for (const p of recentProfiles) {
+       signups.push({ date: p.get("created").substring(5, 10), count: 1 });
+    }
+
+    return c.json(200, {
+      passFail: [ { name: "Passed", value: passed }, { name: "Failed", value: failed } ],
+      violations: topViolations.length > 0 ? topViolations : [{ name: "None", count: 0 }],
+      signups: signups.length > 0 ? signups : [{ date: "Today", count: recentProfiles.length }]
+    });
+  } catch (err) {
+    return c.json(500, { message: "Error", details: String(err) });
+  }
+});
+
+routerAdd("GET", "/api/admin/status", (c) => {
+  try {
+    const app = c.app;
+    const authRecord = $apis.requestInfo(c).authRecord;
+    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
+
+    const totalStudents = app.countRecords("profiles");
+    const totalAttempts = app.countRecords("attempts");
+    const activeExams = app.findRecordsByFilter("attempts", 'status = "in_progress"', "", 0, 0, {}).length;
+    const now = new Date().toISOString();
+    const stalledExams = app.findRecordsByFilter("attempts", `status = "in_progress" && deadline_at < "${now}"`, "", 0, 0, {}).length;
+
+    return c.json(200, { totalStudents, totalAttempts, activeExams, stalledExams });
+  } catch (err) {
+    return c.json(500, { message: "Error", details: String(err) });
+  }
+});
