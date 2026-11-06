@@ -1,5 +1,5 @@
 // src/services/adminUserService.js
-import pbAdmin from "../lib/pocketbase";
+import pbAdmin from "../lib/pocketbaseAdmin";
 import { logAdminAction } from "./adminAuditService.js";
 
 const PROFILES = "profiles";
