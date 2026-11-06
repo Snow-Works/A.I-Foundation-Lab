@@ -1,12 +1,12 @@
 /// <reference path="../pb_data/types.d.ts" />
 
-routerAdd("GET", "/api/ping", (c) => c.json(200, { message: "pong" }));
+routerAdd("GET", "/api/ping", (e) => e.json(200, { message: "pong" }));
 
-routerAdd("POST", "/api/exam/start", (c) => {
+routerAdd("POST", "/api/exam/start", (e) => {
   try {
-    const app = c.app;
-    const authRecord = $apis.requestInfo(c).authRecord;
-    if (!authRecord || authRecord.collection().name !== "profiles") return c.json(401, { message: "Unauthorized" });
+    const app = e.app;
+    const authRecord = e.auth;
+    if (!authRecord || authRecord.collection().name !== "profiles") return e.json(401, { message: "Unauthorized" });
 
     try {
       const nowStr = new Date().toISOString().replace("T", " ").substring(0, 19);
@@ -21,24 +21,24 @@ routerAdd("POST", "/api/exam/start", (c) => {
       if (swept > 0 && authRecord.get("status") === "EXAM_IN_PROGRESS") { authRecord.set("status", "IDENTITY_CONFIRMED"); app.save(authRecord); }
     } catch (err) {}
 
-    if (authRecord.get("status") !== "IDENTITY_CONFIRMED") return c.json(403, { message: "Confirm identity first." });
+    if (authRecord.get("status") !== "IDENTITY_CONFIRMED") return e.json(403, { message: "Confirm identity first." });
 
     let settings = null;
     try { const list = app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {}); settings = list[0] || null; } catch (_) {}
 
     const attemptLimit = settings ? settings.get("attempt_limit") || 2 : 2;
     const priorAttempts = app.findRecordsByFilter("attempts", "student = {:student} && status != 'in_progress'", "", 0, 0, { student: authRecord.id });
-    if (priorAttempts.length >= attemptLimit) return c.json(403, { message: `Out of attempts.` });
+    if (priorAttempts.length >= attemptLimit) return e.json(403, { message: "Out of attempts." });
 
     const existing = app.findRecordsByFilter("attempts", "student = {:student} && status = 'in_progress'", "", 1, 0, { student: authRecord.id });
-    if (existing.length > 0) return c.json(409, { message: "Already in progress.", data: { attemptId: existing[0].id } });
+    if (existing.length > 0) return e.json(409, { message: "Already in progress.", data: { attemptId: existing[0].id } });
 
     let blueprint = null;
     try { const bps = app.findRecordsByFilter("exam_blueprints", "is_active = true", "", 1, 0, {}); blueprint = bps[0] || null; } catch (_) {}
 
     const totalQuestions = blueprint ? (blueprint.get("easy_count") || 0) + (blueprint.get("medium_count") || 0) + (blueprint.get("hard_count") || 0) : 25;
     const allActive = app.findRecordsByFilter("questions", "active = true", "", 0, 0, {});
-    if (allActive.length < totalQuestions) return c.json(400, { message: "Not enough questions." });
+    if (allActive.length < totalQuestions) return e.json(400, { message: "Not enough questions." });
 
     const shuffled = allActive.slice();
     for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
@@ -62,114 +62,81 @@ routerAdd("POST", "/api/exam/start", (c) => {
     }
 
     authRecord.set("status", "EXAM_IN_PROGRESS"); app.save(authRecord);
-    return c.json(200, { attempt: { id: attempt.id, started_at: attempt.get("started_at"), deadline_at: attempt.get("deadline_at"), duration_seconds: attempt.get("duration_seconds"), status: attempt.get("status") }, questions: questionsPayload, drafts: [] });
-  } catch (err) { return c.json(500, { message: "Error", details: String(err) }); }
+    return e.json(200, { attempt: { id: attempt.id, started_at: attempt.get("started_at"), deadline_at: attempt.get("deadline_at"), duration_seconds: attempt.get("duration_seconds"), status: attempt.get("status") }, questions: questionsPayload, drafts: [] });
+  } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
 });
 
-routerAdd("POST", "/api/exam/violation", (c) => {
+routerAdd("POST", "/api/exam/violation", (e) => {
   try {
-    const app = c.app; const authRecord = $apis.requestInfo(c).authRecord; const data = $apis.requestInfo(c).data;
+    const app = e.app;
+    const authRecord = e.auth;
+    if (!authRecord || authRecord.collection().name !== "profiles") return e.json(401, { message: "Unauthorized" });
+    const data = e.requestInfo().body;
+
     const attempt = app.findRecordById("attempts", data.attempt);
+    if (attempt.get("student") !== authRecord.id) return e.json(403, { message: "Forbidden" });
+
     const newCount = (attempt.get("violation_count") || 0) + 1; attempt.set("violation_count", newCount);
     const shouldTerminate = newCount >= 2 || data.type === "fullscreen_exit";
     if (shouldTerminate) { attempt.set("status", "terminated"); attempt.set("auto_terminated", true); }
     app.save(attempt);
+
     const v = new Record(app.findCollectionByNameOrId("violations"));
     v.set("attempt", data.attempt); v.set("student", authRecord.id); v.set("type", data.type); v.set("occurred_at", data.occurred_at || new Date().toISOString()); v.set("details", data.details || {}); app.save(v);
     if (shouldTerminate) { authRecord.set("status", "IDENTITY_CONFIRMED"); app.save(authRecord); }
-    return c.json(200, { violation_count: newCount, terminated: shouldTerminate });
-  } catch (err) { return c.json(500, { message: "Error", details: String(err) }); }
+    return e.json(200, { violation_count: newCount, terminated: shouldTerminate });
+  } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
 });
 
-routerAdd("POST", "/api/exam/submit", (c) => {
+routerAdd("POST", "/api/exam/submit", (e) => {
   try {
-    const app = c.app; const authRecord = $apis.requestInfo(c).authRecord; const data = $apis.requestInfo(c).data;
-    const attempt = app.findRecordById("attempts", data.attempt); const now = new Date().toISOString();
+    const app = e.app;
+    const authRecord = e.auth;
+    if (!authRecord || authRecord.collection().name !== "profiles") return e.json(401, { message: "Unauthorized" });
+    const data = e.requestInfo().body;
+
+    const attempt = app.findRecordById("attempts", data.attempt);
+    if (attempt.get("student") !== authRecord.id) return e.json(403, { message: "Forbidden" });
+
+    const now = new Date().toISOString();
     const drafts = app.findRecordsByFilter("answers", "attempt = {:attempt} && is_draft = true", "", 0, 0, { attempt: data.attempt });
     for (const d of drafts) { d.set("is_draft", false); d.set("submitted_at", now); app.save(d); }
     attempt.set("status", "submitted"); attempt.set("submitted_at", now); app.save(attempt);
     authRecord.set("status", "SUBMITTED"); app.save(authRecord);
-    return c.json(200, { success: true });
-  } catch (err) { return c.json(500, { message: "Error", details: String(err) }); }
+    return e.json(200, { success: true });
+  } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
 });
 
-onRecordBeforeCreateRequest((e) => {
-  if (e.collection.name !== "profiles") return;
-  try { if (e.httpContext.admin()) return; const auth = e.httpContext.get("authRecord"); if (auth && auth.collection().name === "admins") return; } catch (_) {}
+// v0.23+: onRecordCreateRequest; code before e.next() runs "before" the save
+onRecordCreateRequest((e) => {
+  // every early exit must call e.next(), otherwise the record is never created
+  if (e.collection.name !== "profiles") return e.next();
+
+  // superusers (replaces e.httpContext.admin()) and your custom "admins" collection skip the check
+  if (e.hasSuperuserAuth()) return e.next();
+  if (e.auth && e.auth.collection().name === "admins") return e.next();
+
   let requireMatch = false;
-  try { const settings = e.app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {}); if (settings.length > 0) requireMatch = settings[0].get("require_roster_match") === true; } catch (err) { return; }
-  if (!requireMatch) return;
-  const firstName = String(e.record.get("first_name") || "").trim(); const surname = String(e.record.get("surname") || "").trim();
-  if (!firstName || !surname) return;
+  try {
+    const settings = e.app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {});
+    if (settings.length > 0) requireMatch = settings[0].get("require_roster_match") === true;
+  } catch (err) { return e.next(); }
+  if (!requireMatch) return e.next();
+
+  const firstName = String(e.record.get("first_name") || "").trim();
+  const surname = String(e.record.get("surname") || "").trim();
+  if (!firstName || !surname) return e.next();
+
   try {
     const candidates = e.app.findRecordsByFilter("roster", "first_name ~ {:f} && surname ~ {:s}", "", 20, 0, { f: firstName, s: surname });
-    const exact = candidates.filter((r) => String(r.get("first_name") || "").trim().toLowerCase() === firstName.toLowerCase() && String(r.get("surname") || "").trim().toLowerCase() === surname.toLowerCase());
+    const exact = candidates.filter((r) =>
+      String(r.get("first_name") || "").trim().toLowerCase() === firstName.toLowerCase() &&
+      String(r.get("surname") || "").trim().toLowerCase() === surname.toLowerCase()
+    );
     if (exact.length === 0) throw new BadRequestError("Your name is not on the approved roster.");
-    else { const rosterBatch = exact[0].get("batch"); if (rosterBatch && !e.record.get("batch")) e.record.set("batch", rosterBatch); }
+    const rosterBatch = exact[0].get("batch");
+    if (rosterBatch && !e.record.get("batch")) e.record.set("batch", rosterBatch);
   } catch (err) { if (err instanceof BadRequestError) throw err; }
-});
 
-
-
-
-
-
-
-
-// ==========================================
-// ADMIN DASHBOARD ANALYTICS
-// ==========================================
-routerAdd("GET", "/api/admin/analytics", (c) => {
-  try {
-    const app = c.app;
-    const authRecord = $apis.requestInfo(c).authRecord;
-    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
-
-    const releasedAttempts = app.findRecordsByFilter("attempts", 'status = "released"', "", 0, 0, {});
-    let passed = 0, failed = 0;
-    for (const a of releasedAttempts) {
-      if ((a.get("score_total") || 0) >= 180) passed++;
-      else failed++;
-    }
-
-    const violations = app.findRecordsByFilter("violations", "id != ''", "", 0, 0, {});
-    const vCounts = {};
-    for (const v of violations) {
-      const type = v.get("type");
-      vCounts[type] = (vCounts[type] || 0) + 1;
-    }
-    const topViolations = Object.keys(vCounts).map(k => ({ name: k, count: vCounts[k] })).sort((a,b) => b.count - a.count).slice(0, 5);
-
-    const signups = [];
-    const recentProfiles = app.findRecordsByFilter("profiles", "id != ''", "-created", 30, 0, {});
-    for (const p of recentProfiles) {
-       signups.push({ date: p.get("created").substring(5, 10), count: 1 });
-    }
-
-    return c.json(200, {
-      passFail: [ { name: "Passed", value: passed }, { name: "Failed", value: failed } ],
-      violations: topViolations.length > 0 ? topViolations : [{ name: "None", count: 0 }],
-      signups: signups.length > 0 ? signups : [{ date: "Today", count: recentProfiles.length }]
-    });
-  } catch (err) {
-    return c.json(500, { message: "Error", details: String(err) });
-  }
-});
-
-routerAdd("GET", "/api/admin/status", (c) => {
-  try {
-    const app = c.app;
-    const authRecord = $apis.requestInfo(c).authRecord;
-    if (!authRecord || authRecord.collection().name !== "admins") return c.json(403, { message: "Forbidden" });
-
-    const totalStudents = app.countRecords("profiles");
-    const totalAttempts = app.countRecords("attempts");
-    const activeExams = app.findRecordsByFilter("attempts", 'status = "in_progress"', "", 0, 0, {}).length;
-    const now = new Date().toISOString();
-    const stalledExams = app.findRecordsByFilter("attempts", `status = "in_progress" && deadline_at < "${now}"`, "", 0, 0, {}).length;
-
-    return c.json(200, { totalStudents, totalAttempts, activeExams, stalledExams });
-  } catch (err) {
-    return c.json(500, { message: "Error", details: String(err) });
-  }
+  return e.next();
 });
