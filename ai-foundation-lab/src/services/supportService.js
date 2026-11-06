@@ -1,4 +1,3 @@
-// src/services/supportService.js
 import pb from "../lib/pocketbase";
 import pbAdmin from "../lib/pocketbaseAdmin";
 
@@ -7,12 +6,8 @@ const COLLECTION = "support_messages";
 /* ------------------------------------------------------------
    STUDENT FUNCTIONS
    ------------------------------------------------------------ */
-
 export async function getStudentMessages(studentId) {
-  return pb.collection(COLLECTION).getFullList({
-    filter: `student = "${studentId}"`,
-    sort: "created",
-  });
+  return pb.collection(COLLECTION).getFullList({ filter: `student = "${studentId}"`, sort: "created" });
 }
 
 export async function sendStudentMessage(studentId, body, file = null) {
@@ -33,17 +28,11 @@ export async function sendStudentMessage(studentId, body, file = null) {
     formData.append("message_type", type);
     if (body) formData.append("body", body);
     formData.append("attachment", file);
-
     return pb.collection(COLLECTION).create(formData);
   } else {
     return pb.collection(COLLECTION).create({
-      student: studentId,
-      sender_id: studentId,
-      sender_type: "student",
-      is_read_by_admin: false,
-      is_read_by_student: true,
-      message_type: type,
-      body: body,
+      student: studentId, sender_id: studentId, sender_type: "student",
+      is_read_by_admin: false, is_read_by_student: true, message_type: type, body: body,
     });
   }
 }
@@ -53,52 +42,44 @@ export async function markMessagesReadByStudent(studentId) {
     const unread = await pb.collection(COLLECTION).getFullList({
       filter: `student = "${studentId}" && sender_type = "admin" && is_read_by_student = false`,
     });
-    for (const msg of unread) {
-      await pb.collection(COLLECTION).update(msg.id, { is_read_by_student: true });
-    }
-  } catch (err) {
-    console.warn("[support] failed to mark messages as read:", err);
-  }
+    for (const msg of unread) await pb.collection(COLLECTION).update(msg.id, { is_read_by_student: true });
+  } catch (err) { }
 }
 
 /* ------------------------------------------------------------
    ADMIN FUNCTIONS
    ------------------------------------------------------------ */
-
 export async function getAdminInbox() {
-  const messages = await pbAdmin.collection(COLLECTION).getFullList({
-    sort: "-created",
+  // REMOVED expand: "student"
+  const messages = await pbAdmin.collection(COLLECTION).getFullList({ sort: "-created" });
+
+  // Manually fetch profiles
+  const studentIds = [...new Set(messages.map(m => m.student))];
+  const profiles = await pbAdmin.collection("profiles").getFullList({
+    filter: studentIds.map(id => `id="${id}"`).join(" || "),
   });
+  const profileMap = Object.fromEntries(profiles.map(p => [p.id, p]));
 
   const threadsMap = {};
   for (const msg of messages) {
     const studentId = msg.student;
+    const profile = profileMap[studentId];
     if (!threadsMap[studentId]) {
       threadsMap[studentId] = {
         studentId,
-        studentName: msg.expand?.student
-          ? `${msg.expand.student.first_name} ${msg.expand.student.surname}`
-          : "Unknown",
-        studentEmail: msg.expand?.student?.email || "No email",
+        studentName: profile ? `${profile.first_name} ${profile.surname}` : "Unknown",
+        studentEmail: profile?.email || "No email",
         unreadCount: 0,
         lastMessageAt: msg.created,
       };
     }
-    if (msg.sender_type === "student" && !msg.is_read_by_admin) {
-      threadsMap[studentId].unreadCount++;
-    }
+    if (msg.sender_type === "student" && !msg.is_read_by_admin) threadsMap[studentId].unreadCount++;
   }
-
-  return Object.values(threadsMap).sort(
-    (a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt)
-  );
+  return Object.values(threadsMap).sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
 }
 
 export async function getAdminThread(studentId) {
-  return pbAdmin.collection(COLLECTION).getFullList({
-    filter: `student = "${studentId}"`,
-    sort: "created",
-  });
+  return pbAdmin.collection(COLLECTION).getFullList({ filter: `student = "${studentId}"`, sort: "created" });
 }
 
 export async function sendAdminMessage(studentId, adminId, body, file = null) {
@@ -119,17 +100,11 @@ export async function sendAdminMessage(studentId, adminId, body, file = null) {
     formData.append("message_type", type);
     if (body) formData.append("body", body);
     formData.append("attachment", file);
-
     return pbAdmin.collection(COLLECTION).create(formData);
   } else {
     return pbAdmin.collection(COLLECTION).create({
-      student: studentId,
-      sender_id: adminId,
-      sender_type: "admin",
-      is_read_by_admin: true,
-      is_read_by_student: false,
-      message_type: type,
-      body: body,
+      student: studentId, sender_id: adminId, sender_type: "admin",
+      is_read_by_admin: true, is_read_by_student: false, message_type: type, body: body,
     });
   }
 }
@@ -139,10 +114,6 @@ export async function markThreadReadByAdmin(studentId) {
     const unread = await pbAdmin.collection(COLLECTION).getFullList({
       filter: `student = "${studentId}" && sender_type = "student" && is_read_by_admin = false`,
     });
-    for (const msg of unread) {
-      await pbAdmin.collection(COLLECTION).update(msg.id, { is_read_by_admin: true });
-    }
-  } catch (err) {
-    console.warn("[support] admin failed to mark thread read:", err);
-  }
+    for (const msg of unread) await pbAdmin.collection(COLLECTION).update(msg.id, { is_read_by_admin: true });
+  } catch (err) { }
 }
