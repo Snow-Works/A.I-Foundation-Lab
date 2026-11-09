@@ -109,10 +109,7 @@ routerAdd("POST", "/api/exam/submit", (e) => {
 
 // v0.23+: onRecordCreateRequest; code before e.next() runs "before" the save
 onRecordCreateRequest((e) => {
-  // every early exit must call e.next(), otherwise the record is never created
   if (e.collection.name !== "profiles") return e.next();
-
-  // superusers (replaces e.httpContext.admin()) and your custom "admins" collection skip the check
   if (e.hasSuperuserAuth()) return e.next();
   if (e.auth && e.auth.collection().name === "admins") return e.next();
 
@@ -120,27 +117,39 @@ onRecordCreateRequest((e) => {
   try {
     const settings = e.app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {});
     if (settings.length > 0) requireMatch = settings[0].get("require_roster_match") === true;
-  } catch (err) { return e.next(); }
-  if (!requireMatch) return e.next();
+  } catch (err) {}
 
   const firstName = String(e.record.get("first_name") || "").trim();
   const surname = String(e.record.get("surname") || "").trim();
   if (!firstName || !surname) return e.next();
 
+  let match = null;
+  let lookupFailed = false;
   try {
-    const candidates = e.app.findRecordsByFilter("roster", "first_name ~ {:f} && surname ~ {:s}", "", 20, 0, { f: firstName, s: surname });
+    const candidates = e.app.findRecordsByFilter(
+      "roster",
+      "first_name ~ {:f} && surname ~ {:s}",
+      "", 20, 0,
+      { f: firstName, s: surname }
+    );
     const exact = candidates.filter((r) =>
       String(r.get("first_name") || "").trim().toLowerCase() === firstName.toLowerCase() &&
       String(r.get("surname") || "").trim().toLowerCase() === surname.toLowerCase()
     );
-    if (exact.length === 0) throw new BadRequestError("Your name is not on the approved roster.");
-    const rosterBatch = exact[0].get("batch");
+    match = exact[0] || null;
+  } catch (err) {
+    lookupFailed = true;
+  }
+
+  if (match) {
+    const rosterBatch = match.get("batch");
     if (rosterBatch && !e.record.get("batch")) e.record.set("batch", rosterBatch);
-  } catch (err) { if (err instanceof BadRequestError) throw err; }
+  } else if (requireMatch && !lookupFailed) {
+    throw new BadRequestError("Your name is not on the approved roster.");
+  }
 
   return e.next();
 });
-
 
 
 

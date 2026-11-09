@@ -21,6 +21,7 @@ const COLLECTION = "profiles";
  * @param {string} data.whatsapp  - E.164 format, e.g. "+2348012345678"
  * @returns {Promise<Object>} the created profile record
  */
+
 export async function register(data) {
   const record = await pb.collection(COLLECTION).create({
     email: data.email,
@@ -29,11 +30,14 @@ export async function register(data) {
     first_name: data.first_name,
     middle_name: data.middle_name || "",
     surname: data.surname,
+    batch: data.batch || "",
     whatsapp: data.whatsapp,
     status: "REGISTERED",
   });
   return record;
 }
+
+
 
 /* ---------- Log in ---------- */
 export async function login(email, password) {

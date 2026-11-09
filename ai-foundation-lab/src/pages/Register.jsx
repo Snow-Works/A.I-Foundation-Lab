@@ -48,64 +48,67 @@ export default function Register() {
 
 
   const onSubmit = async (values) => {
-  setSubmitting(true);
-  setFormError(null);
+    setSubmitting(true);
+    setFormError(null);
 
-  const country = COUNTRIES[values.whatsapp.country] || COUNTRIES.NG;
-  const e164 = `${country.code}${values.whatsapp.digits}`;
+    const country = COUNTRIES[values.whatsapp.country] || COUNTRIES.NG;
+    const digits = values.whatsapp.digits.replace(/^0+/, "");
+    const e164 = `${country.code}${digits}`;
 
-  try {
-    await authService.register({
-      email: values.email,
-      password: values.password,
-      passwordConfirm: values.confirmPassword,
-      first_name: values.firstName,
-      middle_name: values.middleName,
-      surname: values.surname,
-      whatsapp: e164,
-    });
 
-    await authService.requestVerification(values.email);
+    try {
+      await authService.register({
+        email: values.email,
+        password: values.password,
+        passwordConfirm: values.confirmPassword,
+        first_name: values.firstName,
+        middle_name: values.middleName,
+        surname: values.surname,
+        batch: values.batch,
+        whatsapp: e164,
+      });
 
-    navigate(
-      `/verify-pending?email=${encodeURIComponent(values.email)}`,
-      { replace: true }
-    );
-  } catch (err) {
-    const pbErrors = err?.response?.data || {};
-    let handled = false;
+      await authService.requestVerification(values.email);
 
-    const fieldMap = {
-      email: "email",
-      password: "password",
-      passwordConfirm: "confirmPassword",
-      first_name: "firstName",
-      middle_name: "middleName",
-      surname: "surname",
-      whatsapp: "whatsapp",
-    };
-
-    for (const field of Object.keys(pbErrors)) {
-      const message = pbErrors[field]?.message;
-      if (!message) continue;
-      const formField = fieldMap[field];
-      if (formField) {
-        setError(formField, { type: "server", message });
-      } else {
-        setFormError(`${field}: ${message}`);
-      }
-      handled = true;
-    }
-
-    if (!handled) {
-      setFormError(
-        err?.message || "Something went wrong. Please try again."
+      navigate(
+        `/verify-pending?email=${encodeURIComponent(values.email)}`,
+        { replace: true }
       );
+    } catch (err) {
+      const pbErrors = err?.response?.data || {};
+      let handled = false;
+
+      const fieldMap = {
+        email: "email",
+        password: "password",
+        passwordConfirm: "confirmPassword",
+        first_name: "firstName",
+        middle_name: "middleName",
+        surname: "surname",
+        whatsapp: "whatsapp",
+      };
+
+      for (const field of Object.keys(pbErrors)) {
+        const message = pbErrors[field]?.message;
+        if (!message) continue;
+        const formField = fieldMap[field];
+        if (formField) {
+          setError(formField, { type: "server", message });
+        } else {
+          setFormError(`${field}: ${message}`);
+        }
+        handled = true;
+      }
+
+      if (!handled) {
+        setFormError(
+          err?.message || "Something went wrong. Please try again."
+        );
+      }
+    } finally {
+      setSubmitting(false);
     }
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
 
   return (
