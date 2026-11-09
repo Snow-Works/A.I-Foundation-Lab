@@ -123,34 +123,38 @@ onRecordCreateRequest((e) => {
   const surname = String(e.record.get("surname") || "").trim();
   if (!firstName || !surname) return e.next();
 
+  const firstLower = firstName.toLowerCase();
+  const firstWord = firstLower.split(/\s+/)[0];
+  const surnameLower = surname.toLowerCase();
+
   let match = null;
   let lookupFailed = false;
   try {
     const candidates = e.app.findRecordsByFilter(
       "roster",
-      "first_name ~ {:f} && surname ~ {:s}",
-      "", 20, 0,
-      { f: firstName, s: surname }
+      "surname ~ {:s}",
+      "", 50, 0,
+      { s: surname }
     );
-    const exact = candidates.filter((r) =>
-      String(r.get("first_name") || "").trim().toLowerCase() === firstName.toLowerCase() &&
-      String(r.get("surname") || "").trim().toLowerCase() === surname.toLowerCase()
-    );
+    const exact = candidates.filter((r) => {
+      const rf = String(r.get("first_name") || "").trim().toLowerCase();
+      const rs = String(r.get("surname") || "").trim().toLowerCase();
+      return rs === surnameLower && (rf === firstLower || rf === firstWord);
+    });
     match = exact[0] || null;
   } catch (err) {
     lookupFailed = true;
   }
 
-  if (match) {
+  
+    if (match) {
+    // Roster is the authority when there is a match
     const rosterBatch = match.get("batch");
-    if (rosterBatch && !e.record.get("batch")) e.record.set("batch", rosterBatch);
-  } else if (requireMatch && !lookupFailed) {
-    throw new BadRequestError("Your name is not on the approved roster.");
+    if (rosterBatch) e.record.set("batch", rosterBatch);
   }
 
   return e.next();
 });
-
 
 
 
