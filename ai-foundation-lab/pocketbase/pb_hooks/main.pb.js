@@ -146,17 +146,15 @@ onRecordCreateRequest((e) => {
     lookupFailed = true;
   }
 
-  if (match) {
+  
+    if (match) {
     // Roster is the authority when there is a match
     const rosterBatch = match.get("batch");
     if (rosterBatch) e.record.set("batch", rosterBatch);
-  } else if (requireMatch && !lookupFailed) {
-    throw new BadRequestError("Your name is not on the approved roster.");
   }
 
   return e.next();
 });
-
 
 
 
