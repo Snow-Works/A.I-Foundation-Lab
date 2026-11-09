@@ -46,52 +46,67 @@ export default function Register() {
     },
   });
 
+
   const onSubmit = async (values) => {
-    setSubmitting(true);
-    setFormError(null);
+  setSubmitting(true);
+  setFormError(null);
 
-    const country = COUNTRIES[values.whatsapp.country] || COUNTRIES.NG;
-    const e164 = `${country.code}${values.whatsapp.digits}`;
+  const country = COUNTRIES[values.whatsapp.country] || COUNTRIES.NG;
+  const e164 = `${country.code}${values.whatsapp.digits}`;
 
-    try {
-      await authService.register({
-        email: values.email,
-        // ... other fields
-      });
+  try {
+    await authService.register({
+      email: values.email,
+      password: values.password,
+      passwordConfirm: values.confirmPassword,
+      first_name: values.firstName,
+      middle_name: values.middleName,
+      surname: values.surname,
+      whatsapp: e164,
+    });
 
-      // Add this line: Trigger the email immediately!
-      await authService.requestVerification(values.email);
+    await authService.requestVerification(values.email);
 
-      navigate(
-        `/verify-pending?email=${encodeURIComponent(values.email)}`,
-        { replace: true }
-      );
-    } catch (err) {
-      const pbErrors = err?.response?.data || {};
-      let handled = false;
+    navigate(
+      `/verify-pending?email=${encodeURIComponent(values.email)}`,
+      { replace: true }
+    );
+  } catch (err) {
+    const pbErrors = err?.response?.data || {};
+    let handled = false;
 
-      for (const field of Object.keys(pbErrors)) {
-        const message = pbErrors[field]?.message;
-        if (!message) continue;
+    const fieldMap = {
+      email: "email",
+      password: "password",
+      passwordConfirm: "confirmPassword",
+      first_name: "firstName",
+      middle_name: "middleName",
+      surname: "surname",
+      whatsapp: "whatsapp",
+    };
 
-        if (field === "email") {
-          setError("email", { type: "server", message });
-          handled = true;
-        } else if (field === "password") {
-          setError("password", { type: "server", message });
-          handled = true;
-        }
+    for (const field of Object.keys(pbErrors)) {
+      const message = pbErrors[field]?.message;
+      if (!message) continue;
+      const formField = fieldMap[field];
+      if (formField) {
+        setError(formField, { type: "server", message });
+      } else {
+        setFormError(`${field}: ${message}`);
       }
-
-      if (!handled) {
-        setFormError(
-          err?.message || "Something went wrong. Please try again."
-        );
-      }
-    } finally {
-      setSubmitting(false);
+      handled = true;
     }
-  };
+
+    if (!handled) {
+      setFormError(
+        err?.message || "Something went wrong. Please try again."
+      );
+    }
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   return (
     <section className="register section">
