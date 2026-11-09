@@ -221,3 +221,198 @@ routerAdd("GET", "/api/admin/status", (c) => {
     return c.json(200, { totalStudents: 0, totalAttempts: 0, activeExams: 0, stalledExams: 0 });
   }
 });
+
+
+
+
+
+
+// ==========================================
+// EXAM GATE: claim a link (student must be logged in)
+// ==========================================
+routerAdd("POST", "/api/gate/claim", (e) => {
+  const authRecord = e.auth;
+  if (!authRecord || authRecord.collection().name !== "profiles") {
+    return e.json(401, { message: "Unauthorized" });
+  }
+
+  const body = e.requestInfo().body || {};
+  const id = body.recordId;
+  if (!id) return e.json(200, { valid: false, reason: "not_found" });
+
+  let rec;
+  try {
+    rec = e.app.findRecordById("gate_tokens", id);
+  } catch (err) {
+    return e.json(200, { valid: false, reason: "not_found" });
+  }
+
+  if (rec.get("revoked") === true) {
+    return e.json(200, { valid: false, reason: "revoked" });
+  }
+
+  const usedBy = rec.get("used_by");
+  if (usedBy && String(usedBy).length > 0) {
+    return e.json(200, { valid: false, reason: "already_used" });
+  }
+
+  const expiresMs = new Date(String(rec.get("expires_at") || "").replace(" ", "T")).getTime();
+  if (!isNaN(expiresMs) && expiresMs < Date.now()) {
+    return e.json(200, { valid: false, reason: "expired" });
+  }
+
+
+
+
+    // Eligibility: photo uploaded + joined the groups
+  const GROUP_FIELD = "joined_groups"; // <-- change to your real field name
+
+  const hasPhoto = !!authRecord.get("photo") && authRecord.get("photo_verified") === true;
+  if (!hasPhoto) {
+    return e.json(403, { message: "Upload your profile photo before taking the exam." });
+  }
+
+  if (authRecord.get(GROUP_FIELD) !== true) {
+    return e.json(403, { message: "Join the community groups before taking the exam." });
+  }
+
+
+
+
+
+
+  // Burn the link
+  rec.set("used_by", authRecord.id);
+  rec.set("used_at", new Date().toISOString());
+  e.app.save(rec);
+
+  // Unlock /api/exam/start (it requires IDENTITY_CONFIRMED)
+  if (authRecord.get("status") !== "EXAM_IN_PROGRESS") {
+    authRecord.set("status", "IDENTITY_CONFIRMED");
+    e.app.save(authRecord);
+  }
+
+  return e.json(200, { valid: true });
+});
+
+
+
+
+
+
+
+
+// ==========================================
+// EXAM: meta (intro page details)
+// ==========================================
+routerAdd("GET", "/api/exam/meta", (e) => {
+  const app = e.app;
+  let settings = null;
+  try { settings = app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {})[0] || null; } catch (_) {}
+  let blueprint = null;
+  try { blueprint = app.findRecordsByFilter("exam_blueprints", "is_active = true", "", 1, 0, {})[0] || null; } catch (_) {}
+
+  const questionCount = blueprint
+    ? (blueprint.get("easy_count") || 0) + (blueprint.get("medium_count") || 0) + (blueprint.get("hard_count") || 0)
+    : 25;
+
+  return e.json(200, {
+    question_count: questionCount,
+    duration_minutes: settings ? settings.get("exam_duration_minutes") || 60 : 60,
+    attempt_limit: settings ? settings.get("attempt_limit") || 2 : 2,
+  });
+});
+
+// ==========================================
+// EXAM: resume an in-progress attempt
+// ==========================================
+routerAdd("GET", "/api/exam/resume", (e) => {
+  try {
+    const app = e.app;
+    const authRecord = e.auth;
+    if (!authRecord || authRecord.collection().name !== "profiles") return e.json(401, { message: "Unauthorized" });
+
+    const list = app.findRecordsByFilter("attempts", "student = {:s} && status = 'in_progress'", "-created", 1, 0, { s: authRecord.id });
+    if (list.length === 0) return e.json(404, { message: "No active exam session." });
+    const attempt = list[0];
+
+    const deadlineMs = new Date(String(attempt.get("deadline_at") || "").replace(" ", "T")).getTime();
+    if (!isNaN(deadlineMs) && deadlineMs < Date.now()) {
+      return e.json(410, { message: "Your exam time has ended. Go back to the exam intro to continue." });
+    }
+
+    const aqs = app.findRecordsByFilter("attempt_questions", "attempt = {:a}", "order", 0, 0, { a: attempt.id });
+    const questions = [];
+    for (const aq of aqs) {
+      const q = app.findRecordById("questions", aq.get("question"));
+      questions.push({
+        id: q.id, title: q.get("title"), prompt: q.get("prompt"),
+        difficulty: q.get("difficulty"), topic: q.get("topic") || "", order: aq.get("order"),
+      });
+    }
+
+    const drafts = app.findRecordsByFilter("answers", "attempt = {:a} && is_draft = true", "", 0, 0, { a: attempt.id })
+      .map((d) => ({ questionId: d.get("question"), body: d.get("body") || "", answerId: d.id }));
+
+    return e.json(200, {
+      attempt: {
+        id: attempt.id, started_at: attempt.get("started_at"), deadline_at: attempt.get("deadline_at"),
+        duration_seconds: attempt.get("duration_seconds"), status: attempt.get("status"),
+      },
+      questions, drafts,
+    });
+  } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
+});
+
+// ==========================================
+// EXAM: abandon the current attempt (uses a reset)
+// ==========================================
+routerAdd("POST", "/api/exam/abandon", (e) => {
+  try {
+    const app = e.app;
+    const authRecord = e.auth;
+    if (!authRecord || authRecord.collection().name !== "profiles") return e.json(401, { message: "Unauthorized" });
+
+    const resets = authRecord.get("resets_remaining");
+    const left = resets === null || resets === undefined || resets === "" ? 3 : Number(resets);
+    if (left <= 0) return e.json(403, { message: "No resets remaining." });
+
+    const list = app.findRecordsByFilter("attempts", "student = {:s} && status = 'in_progress'", "", 0, 0, { s: authRecord.id });
+    for (const attempt of list) {
+      for (const a of app.findRecordsByFilter("answers", "attempt = {:a}", "", 0, 0, { a: attempt.id })) app.delete(a);
+      for (const aq of app.findRecordsByFilter("attempt_questions", "attempt = {:a}", "", 0, 0, { a: attempt.id })) app.delete(aq);
+      app.delete(attempt);
+    }
+
+    authRecord.set("resets_remaining", left - 1);
+    authRecord.set("status", "IDENTITY_CONFIRMED");
+    app.save(authRecord);
+
+    return e.json(200, { success: true, resets_remaining: left - 1 });
+  } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
+});
+
+// ==========================================
+// EXAM: latest released result (summary)
+// ==========================================
+routerAdd("GET", "/api/exam/result", (e) => {
+  try {
+    const authRecord = e.auth;
+    if (!authRecord || authRecord.collection().name !== "profiles") return e.json(401, { message: "Unauthorized" });
+
+    const list = e.app.findRecordsByFilter("attempts", "student = {:s} && status = 'released'", "-created", 1, 0, { s: authRecord.id });
+    if (list.length === 0) return e.json(200, { result: null });
+
+    const a = list[0];
+    const total = a.get("score_total") || 0;
+    return e.json(200, {
+      result: {
+        attemptId: a.id,
+        score_total: total,
+        score_max: a.get("score_max") || 0,
+        passed: total >= 180,
+        submitted_at: a.get("submitted_at"),
+      },
+    });
+  } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
+});
