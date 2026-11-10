@@ -19,12 +19,12 @@ routerAdd("POST", "/api/exam/start", (e) => {
         }
       }
       if (swept > 0 && authRecord.get("status") === "EXAM_IN_PROGRESS") { authRecord.set("status", "IDENTITY_CONFIRMED"); app.save(authRecord); }
-    } catch (err) {}
+    } catch (err) { }
 
     if (authRecord.get("status") !== "IDENTITY_CONFIRMED") return e.json(403, { message: "Confirm identity first." });
 
     let settings = null;
-    try { const list = app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {}); settings = list[0] || null; } catch (_) {}
+    try { const list = app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {}); settings = list[0] || null; } catch (_) { }
 
     const attemptLimit = settings ? settings.get("attempt_limit") || 2 : 2;
     const priorAttempts = app.findRecordsByFilter("attempts", "student = {:student} && status != 'in_progress'", "", 0, 0, { student: authRecord.id });
@@ -34,14 +34,14 @@ routerAdd("POST", "/api/exam/start", (e) => {
     if (existing.length > 0) return e.json(409, { message: "Already in progress.", data: { attemptId: existing[0].id } });
 
     let blueprint = null;
-    try { const bps = app.findRecordsByFilter("exam_blueprints", "is_active = true", "", 1, 0, {}); blueprint = bps[0] || null; } catch (_) {}
+    try { const bps = app.findRecordsByFilter("exam_blueprints", "is_active = true", "", 1, 0, {}); blueprint = bps[0] || null; } catch (_) { }
 
     const totalQuestions = blueprint ? (blueprint.get("easy_count") || 0) + (blueprint.get("medium_count") || 0) + (blueprint.get("hard_count") || 0) : 25;
     const allActive = app.findRecordsByFilter("questions", "active = true", "", 0, 0, {});
     if (allActive.length < totalQuestions) return e.json(400, { message: "Not enough questions." });
 
     const shuffled = allActive.slice();
-    for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+    for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
     const selected = shuffled.slice(0, totalQuestions);
 
     const durationMinutes = settings ? settings.get("exam_duration_minutes") || 60 : 60;
@@ -117,7 +117,7 @@ onRecordCreateRequest((e) => {
   try {
     const settings = e.app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {});
     if (settings.length > 0) requireMatch = settings[0].get("require_roster_match") === true;
-  } catch (err) {}
+  } catch (err) { }
 
   const firstName = String(e.record.get("first_name") || "").trim();
   const surname = String(e.record.get("surname") || "").trim();
@@ -146,8 +146,8 @@ onRecordCreateRequest((e) => {
     lookupFailed = true;
   }
 
-  
-    if (match) {
+
+  if (match) {
     // Roster is the authority when there is a match
     const rosterBatch = match.get("batch");
     if (rosterBatch) e.record.set("batch", rosterBatch);
@@ -184,7 +184,7 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
         const type = v.get("type") || "unknown";
         vCounts[type] = (vCounts[type] || 0) + 1;
       }
-      topViolations = Object.keys(vCounts).map(k => ({ name: k, count: vCounts[k] })).sort((a,b) => b.count - a.count).slice(0, 5);
+      topViolations = Object.keys(vCounts).map(k => ({ name: k, count: vCounts[k] })).sort((a, b) => b.count - a.count).slice(0, 5);
     } catch (e) { console.log("Analytics: violations failed", e); }
 
     let signups = [{ date: "Total", count: 0 }];
@@ -194,14 +194,14 @@ routerAdd("GET", "/api/admin/analytics", (c) => {
     } catch (e) { console.log("Analytics: profiles failed", e); }
 
     return c.json(200, {
-      passFail: [ { name: "Passed", value: passed }, { name: "Failed", value: failed } ],
+      passFail: [{ name: "Passed", value: passed }, { name: "Failed", value: failed }],
       violations: topViolations.length > 0 ? topViolations : [{ name: "None", count: 0 }],
       signups: signups
     });
   } catch (err) {
     // Fail gracefully with 200 OK so the frontend doesn't crash
     return c.json(200, {
-      passFail: [ { name: "Passed", value: 0 }, { name: "Failed", value: 0 } ],
+      passFail: [{ name: "Passed", value: 0 }, { name: "Failed", value: 0 }],
       violations: [{ name: "None", count: 0 }],
       signups: [{ date: "Total", count: 0 }]
     });
@@ -268,20 +268,11 @@ routerAdd("POST", "/api/gate/claim", (e) => {
 
 
 
-    // Eligibility: photo uploaded + joined the groups
-  const GROUP_FIELD = "joined_groups"; // <-- change to your real field name
-
+  // Eligibility: photo must be uploaded and verified
   const hasPhoto = !!authRecord.get("photo") && authRecord.get("photo_verified") === true;
   if (!hasPhoto) {
     return e.json(403, { message: "Upload your profile photo before taking the exam." });
   }
-
-  if (authRecord.get(GROUP_FIELD) !== true) {
-    return e.json(403, { message: "Join the community groups before taking the exam." });
-  }
-
-
-
 
 
 
@@ -312,9 +303,9 @@ routerAdd("POST", "/api/gate/claim", (e) => {
 routerAdd("GET", "/api/exam/meta", (e) => {
   const app = e.app;
   let settings = null;
-  try { settings = app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {})[0] || null; } catch (_) {}
+  try { settings = app.findRecordsByFilter("app_settings", "id != ''", "", 1, 0, {})[0] || null; } catch (_) { }
   let blueprint = null;
-  try { blueprint = app.findRecordsByFilter("exam_blueprints", "is_active = true", "", 1, 0, {})[0] || null; } catch (_) {}
+  try { blueprint = app.findRecordsByFilter("exam_blueprints", "is_active = true", "", 1, 0, {})[0] || null; } catch (_) { }
 
   const questionCount = blueprint
     ? (blueprint.get("easy_count") || 0) + (blueprint.get("medium_count") || 0) + (blueprint.get("hard_count") || 0)
