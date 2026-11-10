@@ -411,3 +411,40 @@ routerAdd("GET", "/api/exam/result", (e) => {
     });
   } catch (err) { return e.json(500, { message: "Error", details: String(err) }); }
 });
+
+
+
+
+
+
+
+// ==========================================
+// EXAM GATE: validate a link (public, no login needed)
+// ==========================================
+routerAdd("GET", "/api/gate/validate", (e) => {
+  const id = e.request.url.query().get("id");
+  if (!id) return e.json(200, { valid: false, reason: "not_found" });
+
+  let rec;
+  try {
+    rec = e.app.findRecordById("gate_tokens", id);
+  } catch (err) {
+    return e.json(200, { valid: false, reason: "not_found" });
+  }
+
+  if (rec.get("revoked") === true) {
+    return e.json(200, { valid: false, reason: "revoked" });
+  }
+
+  const usedBy = rec.get("used_by");
+  if (usedBy && String(usedBy).length > 0) {
+    return e.json(200, { valid: false, reason: "already_used" });
+  }
+
+  const expiresMs = new Date(String(rec.get("expires_at") || "").replace(" ", "T")).getTime();
+  if (!isNaN(expiresMs) && expiresMs < Date.now()) {
+    return e.json(200, { valid: false, reason: "expired" });
+  }
+
+  return e.json(200, { valid: true });
+});
